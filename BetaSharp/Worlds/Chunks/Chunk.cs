@@ -32,9 +32,9 @@ public class Chunk
     public int MinHeightMapValue;
     public ChunkNibbleArray SkyLight;
     public bool TerrainPopulated;
-    public World World;
+    public IBlockWorldContext Level;
 
-    public Chunk(World world, int x, int z)
+    public Chunk(IBlockWorldContext level, int x, int z)
     {
         BlockEntities = [];
         Entities = new List<Entity>[8];
@@ -42,7 +42,7 @@ public class Chunk
         Dirty = false;
         LastSaveHadEntities = false;
         LastSaveTime = 0L;
-        World = world;
+        Level = level;
         X = x;
         Z = z;
         HeightMap = new byte[256];
@@ -119,7 +119,7 @@ public class Chunk
                     minHeight = y;
                 }
 
-                if (!World.dimension.HasCeiling)
+                if (!Level.dimension.HasCeiling)
                 {
                     int lightLevel = 15;
                     int currentY = 127;
@@ -169,15 +169,15 @@ public class Chunk
 
     private void LightGap(int worldX, int worldZ, int height)
     {
-        int topY = World.getTopY(worldX, worldZ);
+        int topY = Level.BlocksReader.GetTopY(worldX, worldZ);
         if (topY > height)
         {
-            World.Lighting.QueueLightUpdate(LightType.Sky, worldX, height, worldZ, worldX, topY, worldZ);
+            Level.Lighting.QueueLightUpdate(LightType.Sky, worldX, height, worldZ, worldX, topY, worldZ);
             Dirty = true;
         }
         else if (topY < height)
         {
-            World.Lighting.QueueLightUpdate(LightType.Sky, worldX, topY, worldZ, worldX, height, worldZ);
+            Level.Lighting.QueueLightUpdate(LightType.Sky, worldX, topY, worldZ, worldX, height, worldZ);
             Dirty = true;
         }
     }
@@ -203,7 +203,7 @@ public class Chunk
             return;
         }
 
-        World.setBlocksDirty(localX, localZ, newHeight, oldHeight);
+        Level.Broadcaster.SetBlocksDirty(localX, localZ, newHeight, oldHeight);
         HeightMap[(localZ << 4) | localX] = (byte)newHeight;
 
         if (newHeight < MinHeightMapValue)
@@ -239,7 +239,7 @@ public class Chunk
         }
         else
         {
-            World.Lighting.QueueLightUpdate(LightType.Sky, worldX, oldHeight, worldZ, worldX, newHeight, worldZ);
+            Level.Lighting.QueueLightUpdate(LightType.Sky, worldX, oldHeight, worldZ, worldX, newHeight, worldZ);
             for (int currY = oldHeight; currY < newHeight; ++currY)
             {
                 SkyLight.SetNibble(localX, currY, localZ, 0);
@@ -274,7 +274,7 @@ public class Chunk
 
         if (newHeight != updateY)
         {
-            World.Lighting.QueueLightUpdate(LightType.Sky, worldX - 1, newHeight, worldZ - 1, worldX + 1, updateY, worldZ + 1);
+            Level.Lighting.QueueLightUpdate(LightType.Sky, worldX - 1, newHeight, worldZ - 1, worldX + 1, updateY, worldZ + 1);
         }
 
         Dirty = true;
@@ -297,14 +297,14 @@ public class Chunk
         int worldZ = Z * 16 + localZ;
         Blocks[(localX << 11) | (localZ << 7) | y] = newId;
 
-        if (oldId != 0 && !World.IsRemote)
+        if (oldId != 0 && !Level.IsRemote)
         {
-            Block.Blocks[oldId].onBreak(World, worldX, y, worldZ);
+            Block.Blocks[oldId].onBreak(new OnBreakEvt(Level, null, worldX, y, worldZ));
         }
 
         Meta.SetNibble(localX, y, localZ, meta);
 
-        if (!World.dimension.HasCeiling)
+        if (!Level.dimension.HasCeiling)
         {
             if (Block.BlockLightOpacity[newId] != 0)
             {
@@ -318,16 +318,16 @@ public class Chunk
                 UpdateHeightMap(localX, y, localZ);
             }
 
-            World.Lighting.QueueLightUpdate(LightType.Sky, worldX, y, worldZ, worldX, y, worldZ);
+            Level.Lighting.QueueLightUpdate(LightType.Sky, worldX, y, worldZ, worldX, y, worldZ);
         }
 
-        World.Lighting.QueueLightUpdate(LightType.Block, worldX, y, worldZ, worldX, y, worldZ);
+        Level.Lighting.QueueLightUpdate(LightType.Block, worldX, y, worldZ, worldX, y, worldZ);
         LightGaps(localX, localZ);
         Meta.SetNibble(localX, y, localZ, meta);
 
         if (rawId != 0)
         {
-            Block.Blocks[rawId].onPlaced(World, worldX, y, worldZ);
+            Block.Blocks[rawId].onPlaced(new OnPlacedEvt(Level, null, 0, 0, worldX, y, worldZ));
         }
 
         Dirty = true;
@@ -351,7 +351,7 @@ public class Chunk
 
         if (oldId != 0)
         {
-            Block.Blocks[oldId].onBreak(World, worldX, y, worldZ);
+            Block.Blocks[oldId].onBreak(new OnBreakEvt(Level, null, worldX, y, worldZ));
         }
 
         Meta.SetNibble(localX, y, localZ, 0);
@@ -368,13 +368,13 @@ public class Chunk
             UpdateHeightMap(localX, y, localZ);
         }
 
-        World.Lighting.QueueLightUpdate(LightType.Sky, worldX, y, worldZ, worldX, y, worldZ);
-        World.Lighting.QueueLightUpdate(LightType.Block, worldX, y, worldZ, worldX, y, worldZ);
+        Level.Lighting.QueueLightUpdate(LightType.Sky, worldX, y, worldZ, worldX, y, worldZ);
+        Level.Lighting.QueueLightUpdate(LightType.Block, worldX, y, worldZ, worldX, y, worldZ);
         LightGaps(localX, localZ);
 
-        if (rawId != 0 && !World.IsRemote)
+        if (rawId != 0 && !Level.IsRemote)
         {
-            Block.Blocks[rawId].onPlaced(World, worldX, y, worldZ);
+            Block.Blocks[rawId].onPlaced(new OnPlacedEvt(Level, null, 0, 0, worldX, y, worldZ));
         }
 
         Dirty = true;
@@ -480,7 +480,7 @@ public class Chunk
             }
 
             BlockWithEntity blockWithEntity = (BlockWithEntity)Block.Blocks[id];
-            blockWithEntity.onPlaced(World, X * 16 + localX, y, Z * 16 + localZ);
+            blockWithEntity.onPlaced(new OnPlacedEvt(Level, null, 0, 0, X * 16 + localX, y, Z * 16 + localZ));
             BlockEntities.TryGetValue(pos, out entity);
         }
 
@@ -501,14 +501,14 @@ public class Chunk
 
         if (Loaded)
         {
-            World.Entities.BlockEntities.Add(blockEntity);
+            Level.Entities.BlockEntities.Add(blockEntity);
         }
     }
 
     public virtual void SetBlockEntity(int localX, int y, int localZ, BlockEntity blockEntity)
     {
         BlockPos pos = new(localX, y, localZ);
-        blockEntity.World = World;
+        blockEntity.Level = Level;
         blockEntity.X = X * 16 + localX;
         blockEntity.Y = y;
         blockEntity.Z = Z * 16 + localZ;
@@ -537,11 +537,11 @@ public class Chunk
     public virtual void Load()
     {
         Loaded = true;
-        World.Entities.ProcessBlockUpdates(BlockEntities.Values);
+        Level.Entities.ProcessBlockUpdates(BlockEntities.Values);
 
         foreach (List<Entity> list in Entities)
         {
-            World.Entities.AddEntities(list);
+            Level.Entities.AddEntities(list);
         }
     }
 
@@ -556,7 +556,7 @@ public class Chunk
 
         for (int var3 = 0; var3 < Entities.Length; ++var3)
         {
-            World.Entities.UnloadEntities(Entities[var3]);
+            Level.Entities.UnloadEntities(Entities[var3]);
         }
     }
 
@@ -625,12 +625,12 @@ public class Chunk
 
         if (saveEntities)
         {
-            if (LastSaveHadEntities && World.GetTime() != LastSaveTime)
+            if (LastSaveHadEntities && Level.GetTime() != LastSaveTime)
             {
                 return true;
             }
         }
-        else if (LastSaveHadEntities && World.GetTime() >= LastSaveTime + 600L)
+        else if (LastSaveHadEntities && Level.GetTime() >= LastSaveTime + 600L)
         {
             return true;
         }
@@ -773,7 +773,7 @@ public class Chunk
         return offset;
     }
 
-    public virtual JavaRandom GetSlimeRandom(long scrambler) => new((World.GetSeed() + X * X * 4987142 + X * 5947611 + Z * Z * 4392871L + Z * 389711) ^ scrambler);
+    public virtual JavaRandom GetSlimeRandom(long scrambler) => new((Level.Seed + X * X * 4987142 + X * 5947611 + Z * Z * 4392871L + Z * 389711) ^ scrambler);
 
     public virtual bool IsEmpty() => false;
 

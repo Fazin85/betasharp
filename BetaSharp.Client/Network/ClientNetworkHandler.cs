@@ -95,7 +95,7 @@ public class ClientNetworkHandler : NetHandler
         _game.statFileWriter.ReadStat(Stats.Stats.JoinMultiplayerStat, 1);
         worldClient = new ClientWorld(this, packet.worldSeed, packet.dimensionId)
         {
-            isRemote = true
+            IsRemote = true
         };
         _game.changeWorld(worldClient);
         _game.player.dimensionId = packet.dimensionId;
@@ -619,7 +619,7 @@ public class ClientNetworkHandler : NetHandler
             terrainLoaded = false;
             worldClient = new ClientWorld(this, worldClient.Properties.RandomSeed, packet.dimensionId)
             {
-                isRemote = true
+                IsRemote = true
             };
             _game.changeWorld(worldClient);
             _game.player.dimensionId = packet.dimensionId;

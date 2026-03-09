@@ -18,7 +18,7 @@ public interface IBlockWorldContext
     LightingEngine Lighting { get; }
     EnvironmentManager Environment { get; }
     Dimension dimension { get; }
-
+    long Seed { get; }
     bool IsRemote { get; }
     RuleSet Rules { get; }
     JavaRandom random { get; }

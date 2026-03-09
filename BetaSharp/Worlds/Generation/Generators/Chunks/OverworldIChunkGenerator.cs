@@ -4,7 +4,6 @@ using BetaSharp.Util.Maths;
 using BetaSharp.Util.Maths.Noise;
 using BetaSharp.Worlds.Chunks;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 using BetaSharp.Worlds.Generation.Biomes;
 using BetaSharp.Worlds.Generation.Biomes.Source;
 using BetaSharp.Worlds.Generation.Generators.Carvers;
@@ -28,7 +27,7 @@ internal class OverworldIChunkGenerator : IChunkSource
     // Seed and per-instance biome source (allows thread-safe parallel generation)
     private readonly long _seed;
     private readonly OctavePerlinNoiseSampler _selectorNoise;
-    private readonly World _world;
+    private readonly IBlockWorldContext _level;
     private Biome[] _biomes;
     private double[] _depthBuffer = new double[256];
     private double[] _depthNoiseBuffer;
@@ -69,7 +68,7 @@ internal class OverworldIChunkGenerator : IChunkSource
 
     public OverworldIChunkGenerator(World world, long seed)
     {
-        _world = world;
+        _level = world;
         _random = new JavaRandom(seed);
         _minLimitPerlinNoise = new OctavePerlinNoiseSampler(_random, 16);
         _maxLimitPerlinNoise = new OctavePerlinNoiseSampler(_random, 16);
@@ -84,9 +83,9 @@ internal class OverworldIChunkGenerator : IChunkSource
         InitFeatures();
     }
 
-    private OverworldIChunkGenerator(World world, long seed, BiomeSource biomeSource)
+    private OverworldIChunkGenerator(IBlockWorldContext level, long seed, BiomeSource biomeSource)
     {
-        _world = world;
+        _level = level;
         _seed = seed;
         _biomeSource = biomeSource;
         _random = new JavaRandom(seed);
@@ -104,7 +103,7 @@ internal class OverworldIChunkGenerator : IChunkSource
     // Creates a thread-safe parallel generator with its own BiomeSource and _random state.
     // All noise samplers are deterministically equivalent (same seed), so chunk output is identical.
     public IChunkSource CreateParallelInstance()
-        => new OverworldIChunkGenerator(_world, _seed, new BiomeSource(_world));
+        => new OverworldIChunkGenerator(_level, _seed, new BiomeSource(_level));
 
     public Chunk LoadChunk(int chunkX, int chunkZ) => GetChunk(chunkX, chunkZ);
 
@@ -119,12 +118,12 @@ internal class OverworldIChunkGenerator : IChunkSource
     {
         _random.SetSeed(chunkX * 341873128712L + chunkZ * 132897987541L);
         byte[] blocks = new byte[-short.MinValue];
-        Chunk chunk = new(_world, blocks, chunkX, chunkZ);
+        Chunk chunk = new(_level, blocks, chunkX, chunkZ);
         _biomes = _biomeSource.GetBiomesInArea(_biomes, chunkX * 16, chunkZ * 16, 16, 16);
         double[] temperatureMap = _biomeSource.TemperatureMap;
         BuildTerrain(chunkX, chunkZ, blocks, _biomes, temperatureMap);
         BuildSurfaces(chunkX, chunkZ, blocks, _biomes);
-        _carver.carve(this, _world, chunkX, chunkZ, blocks);
+        _carver.carve(this, _level, chunkX, chunkZ, blocks);
         chunk.PopulateHeightMap();
         return chunk;
     }
@@ -144,10 +143,10 @@ internal class OverworldIChunkGenerator : IChunkSource
         int blockX = chunkX * 16;
         int blockZ = chunkZ * 16;
         Biome chunkBiome = _biomeSource.GetBiome(blockX + 16, blockZ + 16);
-        _random.SetSeed(_world.GetSeed());
+        _random.SetSeed(_level.Seed);
         long xOffset = _random.NextLong() / 2L * 2L + 1L;
         long zOffset = _random.NextLong() / 2L * 2L + 1L;
-        _random.SetSeed((chunkX * xOffset + chunkZ * zOffset) ^ _world.GetSeed());
+        _random.SetSeed((chunkX * xOffset + chunkZ * zOffset) ^ _level.Seed);
         double fraction;
         int featureX;
         int featureY;
@@ -159,7 +158,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            _featureWaterLake.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureWaterLake.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate lava lakes
@@ -170,7 +169,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureZ = blockZ + _random.NextInt(16) + 8;
             if (featureY < 64 || _random.NextInt(10) == 0)
             {
-                _featureLavaLake.Generate(_world, _random, featureX, featureY, featureZ);
+                _featureLavaLake.Generate(_level, featureX, featureY, featureZ);
             }
         }
 
@@ -180,7 +179,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            _featureDungeon.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureDungeon.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate Clay patches
@@ -189,7 +188,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16);
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16);
-            _featureClay.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureClay.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate Dirt blobs
@@ -198,7 +197,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16);
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16);
-            _featureDirt.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureDirt.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate Gravel blobs
@@ -207,7 +206,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16);
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16);
-            _featureGravel.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureGravel.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate Coal Ore Veins
@@ -216,7 +215,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16);
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16);
-            _featureCoal.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureCoal.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate Iron Ore Veins
@@ -225,7 +224,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16);
             featureY = _random.NextInt(64);
             featureZ = blockZ + _random.NextInt(16);
-            _featureIron.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureIron.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate Gold Ore Veins
@@ -234,7 +233,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16);
             featureY = _random.NextInt(32);
             featureZ = blockZ + _random.NextInt(16);
-            _featureGold.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureGold.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate Redstone Ore Veins
@@ -243,7 +242,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16);
             featureY = _random.NextInt(16);
             featureZ = blockZ + _random.NextInt(16);
-            _featureRedstone.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureRedstone.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate Diamond Ore Veins
@@ -252,7 +251,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16);
             featureY = _random.NextInt(16);
             featureZ = blockZ + _random.NextInt(16);
-            _featureDiamond.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureDiamond.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate Lapis Lazuli Ore Veins
@@ -261,7 +260,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16);
             featureY = _random.NextInt(16);
             featureZ = blockZ + _random.NextInt(16);
-            _featureLapis.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureLapis.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Determine the number and type of trees that should be generated
@@ -314,7 +313,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureZ = blockZ + _random.NextInt(16) + 8;
             Feature treeFeature = chunkBiome.GetRandomWorldGenForTrees(_random);
             treeFeature.prepare(1.0D, 1.0D, 1.0D);
-            treeFeature.Generate(_world, _random, featureX, _world.getTopY(featureX, featureZ), featureZ);
+            treeFeature.Generate(_level, featureX, _level.BlocksReader.GetTopY(featureX, featureZ), featureZ);
         }
 
         // Choose an appropriate amount of Dandelions
@@ -346,7 +345,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            _featureDandelion.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureDandelion.Generate(_level, featureX, featureY, featureZ);
         }
 
         byte amountOfTallgrass = 0;
@@ -388,7 +387,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            (grassMeta == 1 ? _featureGrass1 : _featureGrass2).Generate(_world, _random, featureX, featureY, featureZ);
+            (grassMeta == 1 ? _featureGrass1 : _featureGrass2).Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate Deadbushes
@@ -403,7 +402,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            _featureDeadBush.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureDeadBush.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate Roses
@@ -412,7 +411,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            _featureRose.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureRose.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate Brown Mushrooms
@@ -421,7 +420,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            _featureBrownMushroom.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureBrownMushroom.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate Red Mushrooms
@@ -430,7 +429,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            _featureRedMushroom.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureRedMushroom.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate Sugarcane
@@ -439,7 +438,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            _featureSugarcane.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureSugarcane.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate Pumpkin Patches
@@ -448,7 +447,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            _featurePumpkin.Generate(_world, _random, featureX, featureY, featureZ);
+            _featurePumpkin.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate Cacti
@@ -463,7 +462,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            _featureCactus.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureCactus.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate one-block water sources
@@ -472,7 +471,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(_random.NextInt(120) + 8);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            _featureWaterSpring.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureWaterSpring.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Generate one-block lava sources
@@ -481,7 +480,7 @@ internal class OverworldIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(_random.NextInt(_random.NextInt(112) + 8) + 8);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            _featureLavaSpring.Generate(_world, _random, featureX, featureY, featureZ);
+            _featureLavaSpring.Generate(_level, featureX, featureY, featureZ);
         }
 
         // Place Snow in cold regions
@@ -493,11 +492,11 @@ internal class OverworldIChunkGenerator : IChunkSource
             {
                 int offsetX = x - (blockX + 8);
                 int offsetZ = z - (blockZ + 8);
-                int var22 = _world.getTopSolidBlockY(x, z);
+                int var22 = _level.BlocksReader.GetTopSolidBlockY(x, z);
                 double temperatureSample = _temperatures[offsetX * 16 + offsetZ] - (var22 - 64) / 64.0D * 0.3D;
-                if (temperatureSample < 0.5D && var22 > 0 && var22 < 128 && _world.isAir(x, var22, z) && _world.getMaterial(x, var22 - 1, z).BlocksMovement && _world.getMaterial(x, var22 - 1, z) != Material.Ice)
+                if (temperatureSample < 0.5D && var22 > 0 && var22 < 128 && _level.BlocksReader.IsAir(x, var22, z) && _level.BlocksReader.GetMaterial(x, var22 - 1, z).BlocksMovement && _level.BlocksReader.GetMaterial(x, var22 - 1, z) != Material.Ice)
                 {
-                    _world.setBlock(x, var22, z, Block.Snow.id);
+                    _level.BlockWriter.SetBlock(x, var22, z, Block.Snow.id);
                 }
             }
         }

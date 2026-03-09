@@ -119,11 +119,11 @@ public class ServerWorld : World
         return var10;
     }
 
-    public override void playNoteBlockActionAt(int x, int y, int z, int soundType, int pitch)
-    {
-        base.playNoteBlockActionAt(x, y, z, soundType, pitch);
-        server.playerManager.sendToAround(x, y, z, 64.0, dimension.Id, new PlayNoteSoundS2CPacket(x, y, z, soundType, pitch));
-    }
+    // public override void playNoteBlockActionAt(int x, int y, int z, int soundType, int pitch)
+    // {
+    //     base.playNoteBlockActionAt(x, y, z, soundType, pitch);
+    //     server.playerManager.sendToAround(x, y, z, 64.0, dimension.Id, new PlayNoteSoundS2CPacket(x, y, z, soundType, pitch));
+    // }
 
     public void forceSave() => Storage.ForceSave();
 

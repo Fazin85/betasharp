@@ -80,9 +80,10 @@ internal class NetherLavaSpringFeature : Feature
         {
             level.BlockWriter.SetBlock(x, y, z, _lavaBlockId);
 
-            level.InstantBlockUpdateEnabled = true;
+            // TODO: Implement this
+            //level.InstantBlockUpdateEnabled = true;
             Block.Blocks[_lavaBlockId].onTick(new OnTickEvt(level, x, y, z, level.BlocksReader.GetBlockMeta(x, y, z), level.BlocksReader.GetBlockId(x, y, z)));
-            level.InstantBlockUpdateEnabled = false;
+            //level.InstantBlockUpdateEnabled = false;
         }
 
         return true;

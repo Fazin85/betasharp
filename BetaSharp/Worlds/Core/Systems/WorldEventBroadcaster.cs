@@ -23,7 +23,7 @@ public class WorldEventBroadcaster
         _reader = reader;
     }
 
-    public void PlaySoundToEntity(Entity entity, string sound, float volume, float pitch)
+    public void PlaySoundAtEntity(Entity entity, string sound, float volume, float pitch)
     {
         foreach (var t in _eventListeners)
         {

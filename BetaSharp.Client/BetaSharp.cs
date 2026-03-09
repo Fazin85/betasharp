@@ -1239,7 +1239,7 @@ public partial class BetaSharp
             {
                 displayGuiScreen((GuiScreen)null);
             }
-            else if (player.isSleeping() && world != null && world.isRemote)
+            else if (player.isSleeping() && world != null && world.IsRemote)
             {
                 displayGuiScreen(new GuiSleepMP());
             }
@@ -1288,7 +1288,7 @@ public partial class BetaSharp
                 internalServer.SetDifficulty(options.Difficulty);
             }
 
-            if (world.isRemote)
+            if (world.IsRemote)
             {
                 world.difficulty = 3;
             }
@@ -1536,7 +1536,7 @@ public partial class BetaSharp
 
     public bool isMultiplayerWorld()
     {
-        return world != null && world.isRemote;
+        return world != null && world.IsRemote;
     }
 
     public void startWorld(string worldName, string mainMenuText, long seed)
