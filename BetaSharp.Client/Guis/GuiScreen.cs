@@ -161,6 +161,13 @@ public class GuiScreen : Gui
                 MouseMovedOrUp(scaledMouseX, scaledMouseY, 0);
             }
         }
+        else if (Controller.GetEventButton() == 1) // B on Xbox layout
+        {
+            if (Controller.GetEventButtonState())
+            {
+                KeyTyped('\0', Keyboard.KEY_ESCAPE);
+            }
+        }
     }
 
     public void HandleKeyboardInput()
