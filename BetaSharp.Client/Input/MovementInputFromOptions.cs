@@ -96,7 +96,7 @@ public class MovementInputFromOptions : MovementInput
             moveForward -= ly;
         }
 
-        jump = _movementKeyStates[4] || Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.A);
+        jump = _movementKeyStates[4];
         sneak = _movementKeyStates[5];
         if (sneak)
         {

@@ -1549,6 +1549,22 @@ public partial class BetaSharp
             }
         }
 
+
+        while (Controller.Next())
+        {
+            if (currentScreen != null)
+            {
+                currentScreen.HandleControllerInput();
+            }
+            else if (inGameHasFocus)
+            {
+                if (Controller.GetEventButton() == (int)Silk.NET.GLFW.GamepadButton.A)
+                {
+                    player.movementInput.checkKeyForMovementInput(options.KeyBindJump.keyCode, Controller.GetEventButtonState());
+                }
+            }
+        }
+
         if (currentScreen == null)
         {
             if (isControllerMode && inGameHasFocus)
@@ -1870,7 +1886,7 @@ public partial class BetaSharp
             if (sessionToken == "-")
             {
                 hasPaidCheckTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-;
+    ;
             }
         }
         else
