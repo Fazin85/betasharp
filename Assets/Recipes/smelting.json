@@ -1,0 +1,92 @@
+[
+  {
+    "Type": "smelting",
+    "Input": "betasharp:iron_ore",
+    "Result": {
+      "Name": "betasharp:iron_ingot",
+      "Count": 1,
+      "Meta": 0
+    }
+  },
+  {
+    "Type": "smelting",
+    "Input": "betasharp:gold_ore",
+    "Result": {
+      "Name": "betasharp:gold_ingot",
+      "Count": 1,
+      "Meta": 0
+    }
+  },
+  {
+    "Type": "smelting",
+    "Input": "betasharp:diamond_ore",
+    "Result": {
+      "Name": "betasharp:diamond",
+      "Count": 1,
+      "Meta": 0
+    }
+  },
+  {
+    "Type": "smelting",
+    "Input": "betasharp:sand",
+    "Result": {
+      "Name": "betasharp:glass",
+      "Count": 1,
+      "Meta": 0
+    }
+  },
+  {
+    "Type": "smelting",
+    "Input": "betasharp:raw_porkchop",
+    "Result": {
+      "Name": "betasharp:cooked_porkchop",
+      "Count": 1,
+      "Meta": 0
+    }
+  },
+  {
+    "Type": "smelting",
+    "Input": "betasharp:raw_fish",
+    "Result": {
+      "Name": "betasharp:cooked_fish",
+      "Count": 1,
+      "Meta": 0
+    }
+  },
+  {
+    "Type": "smelting",
+    "Input": "betasharp:cobblestone",
+    "Result": {
+      "Name": "betasharp:stone",
+      "Count": 1,
+      "Meta": 0
+    }
+  },
+  {
+    "Type": "smelting",
+    "Input": "betasharp:clay",
+    "Result": {
+      "Name": "betasharp:brick",
+      "Count": 1,
+      "Meta": 0
+    }
+  },
+  {
+    "Type": "smelting",
+    "Input": "betasharp:cactus",
+    "Result": {
+      "Name": "betasharp:dye",
+      "Count": 1,
+      "Meta": 2
+    }
+  },
+  {
+    "Type": "smelting",
+    "Input": "betasharp:log",
+    "Result": {
+      "Name": "betasharp:coal",
+      "Count": 1,
+      "Meta": 1
+    }
+  }
+]

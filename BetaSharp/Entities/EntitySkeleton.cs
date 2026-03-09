@@ -7,7 +7,7 @@ namespace BetaSharp.Entities;
 
 public class EntitySkeleton : EntityMonster
 {
-    private static readonly ItemStack defaultHeldItem = new ItemStack(Item.BOW, 1);
+    private static readonly ItemStack defaultHeldItem = new ItemStack(Item.Bow, 1);
 
     public EntitySkeleton(World world) : base(world)
     {
@@ -79,7 +79,7 @@ public class EntitySkeleton : EntityMonster
 
     protected override int getDropItemId()
     {
-        return Item.ARROW.id;
+        return Item.Arrow.id;
     }
 
     protected override void dropFewItems()
@@ -89,7 +89,7 @@ public class EntitySkeleton : EntityMonster
         int i;
         for (i = 0; i < amount; ++i)
         {
-            dropItem(Item.ARROW.id, 1);
+            dropItem(Item.Arrow.id, 1);
         }
 
         amount = random.NextInt(3);

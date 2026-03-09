@@ -37,6 +37,7 @@ using Silk.NET.Input;
 using Silk.NET.OpenGL;
 using Silk.NET.OpenGL.Extensions.ImGui;
 using Exception = System.Exception;
+using BetaSharp.Recipes;
 using GLEnum = BetaSharp.Client.Rendering.Core.OpenGL.GLEnum;
 
 namespace BetaSharp.Client;
@@ -262,6 +263,22 @@ public partial class BetaSharp
 
         try
         {
+            var recipeErrors = RecipeLoader.ValidateRecipes("Assets/Recipes/recipes.json");
+            var smeltingErrors = RecipeLoader.ValidateSmelting("Assets/Recipes/smelting.json");
+            int totalErrors = recipeErrors.Count + smeltingErrors.Count;
+            if (totalErrors > 0)
+            {
+                _logger.LogWarning("Found {TotalErrors} recipe/smelting data issues during validation.", totalErrors);
+                foreach (var error in recipeErrors)
+                {
+                    _logger.LogWarning("Recipe validation error [{Source}] id='{Id}': {Message}", error.Source, error.Id, error.Message);
+                }
+                foreach (var error in smeltingErrors)
+                {
+                    _logger.LogWarning("Smelting validation error [{Source}] id='{Id}': {Message}", error.Source, error.Id, error.Message);
+                }
+            }
+
             var window = Display.getWindow();
             var input = window.CreateInput();
             imGuiController = new(((LegacyGL)GLManager.GL).SilkGL, window, input);
