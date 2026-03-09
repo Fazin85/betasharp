@@ -47,8 +47,8 @@ public class EntityLightningBolt : EntityWeatherEffect
         base.tick();
         if (flashTimer == 2)
         {
-            _ctx.playSound(x, y, z, "ambient.weather.thunder", 10000.0F, 0.8F + random.NextFloat() * 0.2F);
-            _ctx.playSound(x, y, z, "random.explode", 2.0F, 0.5F + random.NextFloat() * 0.2F);
+            _level.playSound(x, y, z, "ambient.weather.thunder", 10000.0F, 0.8F + random.NextFloat() * 0.2F);
+            _level.playSound(x, y, z, "random.explode", 2.0F, 0.5F + random.NextFloat() * 0.2F);
         }
 
         --flashTimer;
@@ -63,14 +63,14 @@ public class EntityLightningBolt : EntityWeatherEffect
                 --flashCount;
                 flashTimer = 1;
                 renderSeed = random.NextLong();
-                if (_ctx.isRegionLoaded(MathHelper.Floor(x), MathHelper.Floor(y), MathHelper.Floor(z), 10))
+                if (_level.isRegionLoaded(MathHelper.Floor(x), MathHelper.Floor(y), MathHelper.Floor(z), 10))
                 {
                     int floorX = MathHelper.Floor(x);
                     int floorY = MathHelper.Floor(y);
                     int floorZ = MathHelper.Floor(z);
-                    if (_ctx.getBlockId(floorX, floorY, floorZ) == 0 && Block.Fire.canPlaceAt(_ctx.BlocksView, floorX, floorY, floorZ))
+                    if (_level.getBlockId(floorX, floorY, floorZ) == 0 && Block.Fire.canPlaceAt(_level.BlocksView, floorX, floorY, floorZ))
                     {
-                        _ctx.setBlock(floorX, floorY, floorZ, Block.Fire.id);
+                        _level.setBlock(floorX, floorY, floorZ, Block.Fire.id);
                     }
                 }
             }
@@ -79,7 +79,7 @@ public class EntityLightningBolt : EntityWeatherEffect
         if (flashTimer >= 0)
         {
             double searchRadius = 3.0D;
-            var entities = _ctx.getEntities(this, new Box(x - searchRadius, y - searchRadius, z - searchRadius, x + searchRadius, y + 6.0D + searchRadius, z + searchRadius));
+            var entities = _level.getEntities(this, new Box(x - searchRadius, y - searchRadius, z - searchRadius, x + searchRadius, y + 6.0D + searchRadius, z + searchRadius));
 
             for (int i = 0; i < entities.Count; ++i)
             {
@@ -87,7 +87,7 @@ public class EntityLightningBolt : EntityWeatherEffect
                 entity.onStruckByLightning(this);
             }
 
-            _ctx.lightningTicksLeft = 2;
+            _level.lightningTicksLeft = 2;
         }
 
     }

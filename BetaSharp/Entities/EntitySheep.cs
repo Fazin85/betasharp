@@ -19,7 +19,7 @@ public class EntitySheep : EntityAnimal
 
     public override void PostSpawn()
     {
-        setFleeceColor(getRandomFleeceColor(_ctx.random));
+        setFleeceColor(getRandomFleeceColor(_level.random));
     }
 
     protected override void initDataTracker()
@@ -47,7 +47,7 @@ public class EntitySheep : EntityAnimal
         ItemStack heldItem = player.inventory.getSelectedItem();
         if (heldItem != null && heldItem.itemId == Item.Shears.id && !getSheared())
         {
-            if (!_ctx.isRemote)
+            if (!_level.isRemote)
             {
                 setSheared(true);
                 int woolCount = 2 + random.NextInt(3);

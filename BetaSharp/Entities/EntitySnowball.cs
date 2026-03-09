@@ -108,7 +108,7 @@ public class EntitySnowball : Entity
 
         if (inGroundSnowball)
         {
-            int var1 = _ctx.getBlockId(xTileSnowball, yTileSnowball, zTileSnowball);
+            int var1 = _level.getBlockId(xTileSnowball, yTileSnowball, zTileSnowball);
             if (var1 == inTileSnowball)
             {
                 ++ticksInGroundSnowball;
@@ -134,7 +134,7 @@ public class EntitySnowball : Entity
 
         Vec3D var15 = new Vec3D(x, y, z);
         Vec3D var2 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
-        HitResult var3 = _ctx.raycast(var15, var2);
+        HitResult var3 = _level.raycast(var15, var2);
         var15 = new Vec3D(x, y, z);
         var2 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
         if (var3.Type != HitResultType.MISS)
@@ -142,10 +142,10 @@ public class EntitySnowball : Entity
             var2 = new Vec3D(var3.Pos.x, var3.Pos.y, var3.Pos.z);
         }
 
-        if (!_ctx.isRemote)
+        if (!_level.isRemote)
         {
             Entity var4 = null;
-            var var5 = _ctx.getEntities(this, boundingBox.Stretch(velocityX, velocityY, velocityZ).Expand(1.0D, 1.0D, 1.0D));
+            var var5 = _level.getEntities(this, boundingBox.Stretch(velocityX, velocityY, velocityZ).Expand(1.0D, 1.0D, 1.0D));
             double var6 = 0.0D;
 
             for (int var8 = 0; var8 < var5.Count; ++var8)
@@ -182,7 +182,7 @@ public class EntitySnowball : Entity
 
             for (int var16 = 0; var16 < 8; ++var16)
             {
-                _ctx.addParticle("snowballpoof", x, y, z, 0.0D, 0.0D, 0.0D);
+                _level.addParticle("snowballpoof", x, y, z, 0.0D, 0.0D, 0.0D);
             }
 
             markDead();
@@ -222,7 +222,7 @@ public class EntitySnowball : Entity
             for (int var7 = 0; var7 < 4; ++var7)
             {
                 float var20 = 0.25F;
-                _ctx.addParticle("bubble", x - velocityX * (double)var20, y - velocityY * (double)var20, z - velocityZ * (double)var20, velocityX, velocityY, velocityZ);
+                _level.addParticle("bubble", x - velocityX * (double)var20, y - velocityY * (double)var20, z - velocityZ * (double)var20, velocityX, velocityY, velocityZ);
             }
 
             var18 = 0.8F;
@@ -259,7 +259,7 @@ public class EntitySnowball : Entity
     {
         if (inGroundSnowball && thrower == player && shakeSnowball <= 0 && player.inventory.addItemStackToInventory(new ItemStack(Item.ARROW, 1)))
         {
-            _ctx.playSound(this, "random.pop", 0.2F, ((random.NextFloat() - random.NextFloat()) * 0.7F + 1.0F) * 2.0F);
+            _level.playSound(this, "random.pop", 0.2F, ((random.NextFloat() - random.NextFloat()) * 0.7F + 1.0F) * 2.0F);
             player.sendPickup(this, 1);
             markDead();
         }

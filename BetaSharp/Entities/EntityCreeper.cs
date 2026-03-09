@@ -41,7 +41,7 @@ public class EntityCreeper : EntityMonster
 
     protected override void attackBlockedEntity(Entity entity, float distance)
     {
-        if (!_ctx.isRemote)
+        if (!_level.isRemote)
         {
             if (timeSinceIgnited > 0)
             {
@@ -59,12 +59,12 @@ public class EntityCreeper : EntityMonster
     public override void tick()
     {
         lastActiveTime = timeSinceIgnited;
-        if (_ctx.isRemote)
+        if (_level.isRemote)
         {
             int state = getCreeperState();
             if (state > 0 && timeSinceIgnited == 0)
             {
-                _ctx.playSound(this, "random.fuse", 1.0F, 0.5F);
+                _level.playSound(this, "random.fuse", 1.0F, 0.5F);
             }
 
             timeSinceIgnited += state;
@@ -114,14 +114,14 @@ public class EntityCreeper : EntityMonster
 
     protected override void attackEntity(Entity entity, float distance)
     {
-        if (!_ctx.isRemote)
+        if (!_level.isRemote)
         {
             int state = getCreeperState();
             if (state <= 0 && distance < 3.0F || state > 0 && distance < 7.0F)
             {
                 if (timeSinceIgnited == 0)
                 {
-                    _ctx.playSound(this, "random.fuse", 1.0F, 0.5F);
+                    _level.playSound(this, "random.fuse", 1.0F, 0.5F);
                 }
 
                 setCreeperState(1);
@@ -130,11 +130,11 @@ public class EntityCreeper : EntityMonster
                 {
                     if (getPowered())
                     {
-                        _ctx.createExplosion(this, x, y, z, 6.0F);
+                        _level.createExplosion(this, x, y, z, 6.0F);
                     }
                     else
                     {
-                        _ctx.createExplosion(this, x, y, z, 3.0F);
+                        _level.createExplosion(this, x, y, z, 3.0F);
                     }
 
                     markDead();

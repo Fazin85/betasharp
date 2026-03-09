@@ -47,7 +47,7 @@ public class EntityPig : EntityAnimal
 
     public override bool interact(EntityPlayer player)
     {
-        if (!getSaddled() || _ctx.isRemote || passenger != null && passenger != player)
+        if (!getSaddled() || _level.isRemote || passenger != null && passenger != player)
         {
             return false;
         }
@@ -83,11 +83,11 @@ public class EntityPig : EntityAnimal
 
     public override void onStruckByLightning(EntityLightningBolt bolt)
     {
-        if (!_ctx.isRemote)
+        if (!_level.isRemote)
         {
-            EntityPigZombie pigZombie = new EntityPigZombie(_ctx);
+            EntityPigZombie pigZombie = new EntityPigZombie(_level);
             pigZombie.setPositionAndAnglesKeepPrevAngles(x, y, z, yaw, pitch);
-            _ctx.SpawnEntity(pigZombie);
+            _level.SpawnEntity(pigZombie);
             markDead();
         }
     }

@@ -30,7 +30,7 @@ public class EntityCreature : EntityLiving
             playerToAttack = findPlayerToAttack();
             if (playerToAttack != null)
             {
-                pathToEntity = _ctx.findPath(this, playerToAttack, range);
+                pathToEntity = _level.findPath(this, playerToAttack, range);
             }
         }
         else if (!playerToAttack.isAlive())
@@ -59,7 +59,7 @@ public class EntityCreature : EntityLiving
         }
         else
         {
-            pathToEntity = _ctx.findPath(this, playerToAttack, range);
+            pathToEntity = _level.findPath(this, playerToAttack, range);
         }
 
         int floorY = MathHelper.Floor(boundingBox.MinY + 0.5D);
@@ -180,7 +180,7 @@ public class EntityCreature : EntityLiving
 
         if (foundWanderTarget)
         {
-            pathToEntity = _ctx.findPath(this, bestX, bestY, bestZ, 10.0F);
+            pathToEntity = _level.findPath(this, bestX, bestY, bestZ, 10.0F);
         }
     }
 

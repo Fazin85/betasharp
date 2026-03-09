@@ -17,6 +17,6 @@ public class EntityGiantZombie : EntityMonster
 
     protected override float getBlockPathWeight(int x, int y, int z)
     {
-        return _ctx.getLuminance(x, y, z) - 0.5F;
+        return _level.getLuminance(x, y, z) - 0.5F;
     }
 }

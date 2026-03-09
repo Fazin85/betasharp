@@ -17,11 +17,11 @@ public class EntitySpider : EntityMonster
 
     public override void PostSpawn()
     {
-        if (_ctx.random.NextInt(100) == 0)
+        if (_level.random.NextInt(100) == 0)
         {
-            EntitySkeleton skeleton = new EntitySkeleton(_ctx);
+            EntitySkeleton skeleton = new EntitySkeleton(_level);
             skeleton.setPositionAndAnglesKeepPrevAngles(x, y, z, yaw, 0.0F);
-            _ctx.SpawnEntity(skeleton);
+            _level.SpawnEntity(skeleton);
             skeleton.setVehicle(this);
         }
     }
@@ -42,7 +42,7 @@ public class EntitySpider : EntityMonster
         if (brightness < 0.5F)
         {
             double distance = 16.0D;
-            return _ctx.getClosestPlayer(this, distance);
+            return _level.getClosestPlayer(this, distance);
         }
         else
         {

@@ -68,12 +68,12 @@ public class EntitySlime : EntityLiving, Monster
                 float spread = random.NextFloat() * 0.5F + 0.5F;
                 float offsetX = MathHelper.Sin(angle) * (float)size * 0.5F * spread;
                 float offsetY = MathHelper.Cos(angle) * (float)size * 0.5F * spread;
-                _ctx.addParticle("slime", base.x + (double)offsetX, boundingBox.MinY, z + (double)offsetY, 0.0D, 0.0D, 0.0D);
+                _level.addParticle("slime", base.x + (double)offsetX, boundingBox.MinY, z + (double)offsetY, 0.0D, 0.0D, 0.0D);
             }
 
             if (size > 2)
             {
-                _ctx.playSound(this, "mob.slime", getSoundVolume(), ((random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F) / 0.8F);
+                _level.playSound(this, "mob.slime", getSoundVolume(), ((random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F) / 0.8F);
             }
 
             squishAmount = -0.5F;
@@ -85,7 +85,7 @@ public class EntitySlime : EntityLiving, Monster
     public override void tickLiving()
     {
         func_27021_X();
-        EntityPlayer player = _ctx.getClosestPlayer(this, 16.0D);
+        EntityPlayer player = _level.getClosestPlayer(this, 16.0D);
         if (player != null)
         {
             faceEntity(player, 10.0F, 20.0F);
@@ -102,7 +102,7 @@ public class EntitySlime : EntityLiving, Monster
             jumping = true;
             if (getSlimeSize() > 1)
             {
-                _ctx.playSound(this, "mob.slime", getSoundVolume(), ((random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F) * 0.8F);
+                _level.playSound(this, "mob.slime", getSoundVolume(), ((random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F) * 0.8F);
             }
 
             squishAmount = 1.0F;
@@ -123,16 +123,16 @@ public class EntitySlime : EntityLiving, Monster
     public override void markDead()
     {
         int size = getSlimeSize();
-        if (!_ctx.isRemote && size > 1 && health == 0)
+        if (!_level.isRemote && size > 1 && health == 0)
         {
             for (int i = 0; i < 4; ++i)
             {
                 float offsetX = ((float)(i % 2) - 0.5F) * (float)size / 4.0F;
                 float offsetY = ((float)(i / 2) - 0.5F) * (float)size / 4.0F;
-                EntitySlime slime = new EntitySlime(_ctx);
+                EntitySlime slime = new EntitySlime(_level);
                 slime.setSlimeSize(size / 2);
                 slime.setPositionAndAnglesKeepPrevAngles(x + (double)offsetX, y + 0.5D, z + (double)offsetY, random.NextFloat() * 360.0F, 0.0F);
-                _ctx.SpawnEntity(slime);
+                _level.SpawnEntity(slime);
             }
         }
 
@@ -144,7 +144,7 @@ public class EntitySlime : EntityLiving, Monster
         int size = getSlimeSize();
         if (size > 1 && canSee(player) && (double)getDistance(player) < 0.6D * (double)size && player.damage(this, size))
         {
-            _ctx.playSound(this, "mob.slimeattack", 1.0F, (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
+            _level.playSound(this, "mob.slimeattack", 1.0F, (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
         }
 
     }
@@ -166,8 +166,8 @@ public class EntitySlime : EntityLiving, Monster
 
     public override bool canSpawn()
     {
-        Chunk chunk = _ctx.GetChunkFromPos(MathHelper.Floor(x), MathHelper.Floor(z));
-        return (getSlimeSize() == 1 || _ctx.difficulty > 0) && random.NextInt(10) == 0 && chunk.GetSlimeRandom(987234911L).NextInt(10) == 0 && y < 16.0D;
+        Chunk chunk = _level.GetChunkFromPos(MathHelper.Floor(x), MathHelper.Floor(z));
+        return (getSlimeSize() == 1 || _level.difficulty > 0) && random.NextInt(10) == 0 && chunk.GetSlimeRandom(987234911L).NextInt(10) == 0 && y < 16.0D;
     }
 
     protected override float getSoundVolume()

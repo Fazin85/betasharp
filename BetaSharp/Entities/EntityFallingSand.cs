@@ -64,9 +64,9 @@ public class EntityFallingSand : Entity
             int floorX = MathHelper.Floor(x);
             int floorY = MathHelper.Floor(y);
             int floorZ = MathHelper.Floor(z);
-            if (_ctx.getBlockId(floorX, floorY, floorZ) == blockId)
+            if (_level.getBlockId(floorX, floorY, floorZ) == blockId)
             {
-                _ctx.setBlock(floorX, floorY, floorZ, 0);
+                _level.setBlock(floorX, floorY, floorZ, 0);
             }
 
             if (onGround)
@@ -75,12 +75,12 @@ public class EntityFallingSand : Entity
                 velocityZ *= (double)0.7F;
                 velocityY *= -0.5D;
                 markDead();
-                if ((!_ctx.canPlace(blockId, floorX, floorY, floorZ, true, 1) || BlockSand.canFallThrough(_ctx, floorX, floorY - 1, floorZ) || !_ctx.setBlock(floorX, floorY, floorZ, blockId)) && !_ctx.isRemote)
+                if ((!_level.canPlace(blockId, floorX, floorY, floorZ, true, 1) || BlockSand.canFallThrough(_level, floorX, floorY - 1, floorZ) || !_level.setBlock(floorX, floorY, floorZ, blockId)) && !_level.isRemote)
                 {
                     dropItem(blockId, 1);
                 }
             }
-            else if (fallTime > 100 && !_ctx.isRemote)
+            else if (fallTime > 100 && !_level.isRemote)
             {
                 dropItem(blockId, 1);
                 markDead();
@@ -106,6 +106,6 @@ public class EntityFallingSand : Entity
 
     public World getWorld()
     {
-        return _ctx;
+        return _level;
     }
 }

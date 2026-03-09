@@ -38,7 +38,7 @@ public class EntityGhast : EntityFlying, Monster
 
     public override void tickLiving()
     {
-        if (!_ctx.isRemote && _ctx.difficulty == 0)
+        if (!_level.isRemote && _level.difficulty == 0)
         {
             markDead();
         }
@@ -80,7 +80,7 @@ public class EntityGhast : EntityFlying, Monster
 
         if (targetedEntity == null || aggroCooldown-- <= 0)
         {
-            targetedEntity = _ctx.getClosestPlayer(this, 100.0D);
+            targetedEntity = _level.getClosestPlayer(this, 100.0D);
             if (targetedEntity != null)
             {
                 aggroCooldown = 20;
@@ -98,20 +98,20 @@ public class EntityGhast : EntityFlying, Monster
             {
                 if (attackCounter == 10)
                 {
-                    _ctx.playSound(this, "mob.ghast.charge", getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
+                    _level.playSound(this, "mob.ghast.charge", getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
                 }
 
                 ++attackCounter;
                 if (attackCounter == 20)
                 {
-                    _ctx.playSound(this, "mob.ghast.fireball", getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
-                    EntityFireball fireball = new EntityFireball(_ctx, this, dx2, dy2, dz2);
+                    _level.playSound(this, "mob.ghast.fireball", getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
+                    EntityFireball fireball = new EntityFireball(_level, this, dx2, dy2, dz2);
                     double spawnOffset = 4.0D;
                     Vec3D lookDir = getLook(1.0F);
                     fireball.x = x + lookDir.x * spawnOffset;
                     fireball.y = y + (double)(height / 2.0F) + 0.5D;
                     fireball.z = z + lookDir.z * spawnOffset;
-                    _ctx.SpawnEntity(fireball);
+                    _level.SpawnEntity(fireball);
                     attackCounter = -40;
                 }
             }
@@ -129,7 +129,7 @@ public class EntityGhast : EntityFlying, Monster
             }
         }
 
-        if (!_ctx.isRemote)
+        if (!_level.isRemote)
         {
             sbyte data = dataWatcher.getWatchableObjectByte(16);
             byte isCharging = (byte)(attackCounter > 10 ? 1 : 0);
@@ -151,7 +151,7 @@ public class EntityGhast : EntityFlying, Monster
         for (int i = 1; (double)i < distance; ++i)
         {
             box.Translate(stepX, stepY, stepZ);
-            if (_ctx.getEntityCollisionsScratch(this, box).Count > 0)
+            if (_level.getEntityCollisionsScratch(this, box).Count > 0)
             {
                 return false;
             }
@@ -187,7 +187,7 @@ public class EntityGhast : EntityFlying, Monster
 
     public override bool canSpawn()
     {
-        return random.NextInt(20) == 0 && base.canSpawn() && _ctx.difficulty > 0;
+        return random.NextInt(20) == 0 && base.canSpawn() && _level.difficulty > 0;
     }
 
     public override int getMaxSpawnedInChunk()

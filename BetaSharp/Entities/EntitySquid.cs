@@ -84,7 +84,7 @@ public class EntitySquid : EntityWaterMob
 
     public override bool isInWater()
     {
-        return _ctx.updateMovementInFluid(boundingBox.Expand(0.0D, (double)-0.6F, 0.0D), Material.Water, this);
+        return _level.updateMovementInFluid(boundingBox.Expand(0.0D, (double)-0.6F, 0.0D), Material.Water, this);
     }
 
     public override void tickMovement()

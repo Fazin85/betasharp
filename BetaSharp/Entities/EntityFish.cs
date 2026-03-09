@@ -159,7 +159,7 @@ public class EntityFish : Entity
         }
         else
         {
-            if (!_ctx.isRemote)
+            if (!_level.isRemote)
             {
                 ItemStack var1 = angler.getHand();
                 if (angler.dead || !angler.isAlive() || var1 == null || var1.getItem() != Item.FishingRod || getSquaredDistance(angler) > 1024.0D)
@@ -190,7 +190,7 @@ public class EntityFish : Entity
 
             if (inGround)
             {
-                int var19 = _ctx.getBlockId(xTile, yTile, zTile);
+                int var19 = _level.getBlockId(xTile, yTile, zTile);
                 if (var19 == inTile)
                 {
                     ++ticksInGround;
@@ -216,7 +216,7 @@ public class EntityFish : Entity
 
             Vec3D var20 = new Vec3D(x, y, z);
             Vec3D var2 = new Vec3D(x + base.velocityX, y + base.velocityY, z + base.velocityZ);
-            HitResult var3 = _ctx.raycast(var20, var2);
+            HitResult var3 = _level.raycast(var20, var2);
             var20 = new Vec3D(x, y, z);
             var2 = new Vec3D(x + base.velocityX, y + base.velocityY, z + base.velocityZ);
             if (var3.Type != HitResultType.MISS)
@@ -225,7 +225,7 @@ public class EntityFish : Entity
             }
 
             Entity var4 = null;
-            var var5 = _ctx.getEntities(this, boundingBox.Stretch(base.velocityX, base.velocityY, base.velocityZ).Expand(1.0D, 1.0D, 1.0D));
+            var var5 = _level.getEntities(this, boundingBox.Stretch(base.velocityX, base.velocityY, base.velocityZ).Expand(1.0D, 1.0D, 1.0D));
             double var6 = 0.0D;
 
             double var13;
@@ -310,7 +310,7 @@ public class EntityFish : Entity
                     double var14 = boundingBox.MinY + (boundingBox.MaxY - boundingBox.MinY) * (double)(var28 + 0) / (double)var26 - 0.125D + 0.125D;
                     double var16 = boundingBox.MinY + (boundingBox.MaxY - boundingBox.MinY) * (double)(var28 + 1) / (double)var26 - 0.125D + 0.125D;
                     Box var18 = new Box(boundingBox.MinX, var14, boundingBox.MinZ, boundingBox.MaxX, var16, boundingBox.MaxZ);
-                    if (_ctx.isFluidInBox(var18, Material.Water))
+                    if (_level.isFluidInBox(var18, Material.Water))
                     {
                         var27 += 1.0D / (double)var26;
                     }
@@ -325,7 +325,7 @@ public class EntityFish : Entity
                     else
                     {
                         short var29 = 500;
-                        if (_ctx.isRaining(MathHelper.Floor(x), MathHelper.Floor(y) + 1, MathHelper.Floor(z)))
+                        if (_level.isRaining(MathHelper.Floor(x), MathHelper.Floor(y) + 1, MathHelper.Floor(z)))
                         {
                             var29 = 300;
                         }
@@ -334,7 +334,7 @@ public class EntityFish : Entity
                         {
                             ticksCatchable = random.NextInt(30) + 10;
                             base.velocityY -= (double)0.2F;
-                            _ctx.playSound(this, "random.splash", 0.25F, 1.0F + (random.NextFloat() - random.NextFloat()) * 0.4F);
+                            _level.playSound(this, "random.splash", 0.25F, 1.0F + (random.NextFloat() - random.NextFloat()) * 0.4F);
                             float var30 = (float)MathHelper.Floor(boundingBox.MinY);
 
                             int var15;
@@ -344,14 +344,14 @@ public class EntityFish : Entity
                             {
                                 var31 = (random.NextFloat() * 2.0F - 1.0F) * width;
                                 var17 = (random.NextFloat() * 2.0F - 1.0F) * width;
-                                _ctx.addParticle("bubble", x + (double)var31, (double)(var30 + 1.0F), z + (double)var17, base.velocityX, base.velocityY - (double)(random.NextFloat() * 0.2F), base.velocityZ);
+                                _level.addParticle("bubble", x + (double)var31, (double)(var30 + 1.0F), z + (double)var17, base.velocityX, base.velocityY - (double)(random.NextFloat() * 0.2F), base.velocityZ);
                             }
 
                             for (var15 = 0; (float)var15 < 1.0F + width * 20.0F; ++var15)
                             {
                                 var31 = (random.NextFloat() * 2.0F - 1.0F) * width;
                                 var17 = (random.NextFloat() * 2.0F - 1.0F) * width;
-                                _ctx.addParticle("splash", x + (double)var31, (double)(var30 + 1.0F), z + (double)var17, base.velocityX, base.velocityY, base.velocityZ);
+                                _level.addParticle("splash", x + (double)var31, (double)(var30 + 1.0F), z + (double)var17, base.velocityX, base.velocityY, base.velocityZ);
                             }
                         }
                     }
@@ -420,7 +420,7 @@ public class EntityFish : Entity
         }
         else if (ticksCatchable > 0)
         {
-            EntityItem var13 = new EntityItem(_ctx, x, y, z, new ItemStack(Item.RawFish));
+            EntityItem var13 = new EntityItem(_level, x, y, z, new ItemStack(Item.RawFish));
             double var3 = angler.x - x;
             double var5 = angler.y - y;
             double var7 = angler.z - z;
@@ -429,7 +429,7 @@ public class EntityFish : Entity
             var13.velocityX = var3 * var11;
             var13.velocityY = var5 * var11 + (double)MathHelper.Sqrt(var9) * 0.08D;
             var13.velocityZ = var7 * var11;
-            _ctx.SpawnEntity(var13);
+            _level.SpawnEntity(var13);
             angler.increaseStat(Stats.Stats.FishCaughtStat, 1);
             var1 = 1;
         }

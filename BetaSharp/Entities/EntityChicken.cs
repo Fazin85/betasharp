@@ -26,7 +26,7 @@ public class EntityChicken : EntityAnimal
     public override void tickMovement()
     {
         base.tickMovement();
-        if (_ctx.isRemote)
+        if (_level.isRemote)
         {
             onGround = System.Math.Abs(y - prevY) < 0.02D;
         }
@@ -55,9 +55,9 @@ public class EntityChicken : EntityAnimal
         }
 
         field_752_b += field_755_h * 2.0F;
-        if (!_ctx.isRemote && --timeUntilNextEgg <= 0)
+        if (!_level.isRemote && --timeUntilNextEgg <= 0)
         {
-            _ctx.playSound(this, "mob.chickenplop", 1.0F, (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
+            _level.playSound(this, "mob.chickenplop", 1.0F, (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
             dropItem(Item.Egg.id, 1);
             timeUntilNextEgg = random.NextInt(6000) + 6000;
         }

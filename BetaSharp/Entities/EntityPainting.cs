@@ -128,7 +128,7 @@ public class EntityPainting : Entity
 
     public override void tick()
     {
-        if (_tickCounter++ == 100 && !_ctx.isRemote)
+        if (_tickCounter++ == 100 && !_level.isRemote)
         {
             _tickCounter = 0;
             if (!CanHangOnWall())
@@ -140,7 +140,7 @@ public class EntityPainting : Entity
 
     public bool CanHangOnWall()
     {
-        if (_ctx.getEntityCollisionsScratch(this, boundingBox).Count > 0)
+        if (_level.getEntityCollisionsScratch(this, boundingBox).Count > 0)
         {
             return false;
         }
@@ -171,11 +171,11 @@ public class EntityPainting : Entity
                 Material material;
                 if (Direction != 0 && Direction != 2)
                 {
-                    material = _ctx.getMaterial(XPosition, startY + dy, startZ + dx);
+                    material = _level.getMaterial(XPosition, startY + dy, startZ + dx);
                 }
                 else
                 {
-                    material = _ctx.getMaterial(startX + dx, startY + dy, ZPosition);
+                    material = _level.getMaterial(startX + dx, startY + dy, ZPosition);
                 }
 
                 if (!material.IsSolid)
@@ -185,7 +185,7 @@ public class EntityPainting : Entity
             }
         }
 
-        var entitiesInBox = _ctx.getEntities(this, boundingBox);
+        var entitiesInBox = _level.getEntities(this, boundingBox);
 
         foreach (var entity in entitiesInBox)
         {
@@ -202,7 +202,7 @@ public class EntityPainting : Entity
 
     public override bool damage(Entity entity, int amount)
     {
-        if (!dead && !_ctx.isRemote)
+        if (!dead && !_level.isRemote)
         {
             scheduleVelocityUpdate();
             DropAsItem();
@@ -234,7 +234,7 @@ public class EntityPainting : Entity
 
     public override void move(double dx, double dy, double dz)
     {
-        if (!_ctx.isRemote && dx * dx + dy * dy + dz * dz > 0.0D)
+        if (!_level.isRemote && dx * dx + dy * dy + dz * dz > 0.0D)
         {
             DropAsItem();
         }
@@ -242,7 +242,7 @@ public class EntityPainting : Entity
 
     public override void addVelocity(double dx, double dy, double dz)
     {
-        if (!_ctx.isRemote && dx * dx + dy * dy + dz * dz > 0.0D)
+        if (!_level.isRemote && dx * dx + dy * dy + dz * dz > 0.0D)
         {
             DropAsItem();
         }
@@ -250,9 +250,9 @@ public class EntityPainting : Entity
 
     private void DropAsItem()
     {
-        if (dead || _ctx.isRemote) return;
+        if (dead || _level.isRemote) return;
 
         markDead();
-        _ctx.SpawnEntity(new EntityItem(_ctx, x, y, z, new ItemStack(Item.Painting)));
+        _level.SpawnEntity(new EntityItem(_level, x, y, z, new ItemStack(Item.Painting)));
     }
 }
