@@ -23,19 +23,19 @@ internal class BlockRedstoneOre : Block
 
     public override void onBlockBreakStart(OnBlockBreakStartEvt evt)
     {
-        light(evt.WorldWrite, evt.WorldRead, evt.Broadcaster, evt.X, evt.Y, evt.Z);
+        light(evt.Level.BlockWriter, evt.Level.BlocksReader, evt.Level.Broadcaster, evt.X, evt.Y, evt.Z);
         base.onBlockBreakStart(evt);
     }
 
     public override void onSteppedOn(OnEntityStepEvt evt)
     {
-        light(evt.WorldWrite, evt.WorldRead, evt.Broadcaster, evt.X, evt.Y, evt.Z);
+        light(evt.Level.BlockWriter, evt.Level.BlocksReader, evt.Level.Broadcaster, evt.X, evt.Y, evt.Z);
         base.onSteppedOn(evt);
     }
 
     public override bool onUse(OnUseEvt evt)
     {
-        light(evt.WorldWrite, evt.WorldRead, evt.Broadcaster, evt.X, evt.Y, evt.Z);
+        light(evt.Level.BlockWriter, evt.Level.BlocksReader, evt.Level.Broadcaster, evt.X, evt.Y, evt.Z);
         return base.onUse(evt);
     }
 
@@ -52,7 +52,7 @@ internal class BlockRedstoneOre : Block
     {
         if (id == LitRedstoneOre.id)
         {
-            evt.WorldWrite.SetBlock(evt.X, evt.Y, evt.Z, RedstoneOre.id);
+            evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, RedstoneOre.id);
         }
     }
 
@@ -64,7 +64,7 @@ internal class BlockRedstoneOre : Block
     {
         if (lit)
         {
-            spawnParticles(ctx.WorldRead, ctx.Broadcaster, ctx.X, ctx.Y, ctx.Z);
+            spawnParticles(ctx.Level.BlocksReader, ctx.Level.Broadcaster, ctx.X, ctx.Y, ctx.Z);
         }
     }
 

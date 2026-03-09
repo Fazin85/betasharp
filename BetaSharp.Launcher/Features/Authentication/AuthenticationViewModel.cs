@@ -32,6 +32,6 @@ internal sealed partial class AuthenticationViewModel(
         navigationService.Navigate<HomeViewModel>();
         WeakReferenceMessenger.Default.Send(new SessionMessage(session));
 
-        await storageService.SetAsync(session, SessionsSerializerContext.Default.Session);
+        await storageService.SetAsync(session, SessionSerializerContext.Default.Session);
     }
 }

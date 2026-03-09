@@ -18,7 +18,7 @@ public class BlockTallGrass : BlockPlant
 
     public override int getColorMultiplier(IBlockReader iBlockReader, int x, int y, int z)
     {
-        int meta = iBlockReader.getBlockMeta(x, y, z);
+        int meta = iBlockReader.GetMeta(x, y, z);
         if (meta == 0)
         {
             return 0xFFFFFF;
@@ -35,5 +35,5 @@ public class BlockTallGrass : BlockPlant
         return GrassColors.getColor(temperature, downfall);
     }
 
-    public override int getDroppedItemId(int blockMeta) => random.NextInt(8) == 0 ? Item.Seeds.id : -1;
+    public override int getDroppedItemId(int blockMeta) => Random.Shared.Next(8) == 0 ? Item.Seeds.id : -1;
 }

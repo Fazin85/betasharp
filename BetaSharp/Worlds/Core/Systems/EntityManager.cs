@@ -14,8 +14,12 @@ public class EntityManager
     [ThreadStatic] private static List<Box>? _tempCollisionBoxes;
     [ThreadStatic] private static List<Entity>? _tempCollisionEntitiesResult;
     private readonly List<BlockEntity> _blockEntityUpdateQueue = [];
+
+    private readonly WorldBlockReader _blocks;
     private readonly Dictionary<int, Entity> _entitiesById = new();
     private readonly List<Entity> _entitiesToUnload = [];
+    private readonly BlockHost _host;
+    private readonly RuleSet _rules;
     private bool _processingDeferred;
 
     public List<BlockEntity> BlockEntities = [];
@@ -24,22 +28,20 @@ public class EntityManager
 
     public List<EntityPlayer> Players = [];
 
-    private readonly WorldBlockView _blocks;
-    private readonly BlockHost _host;
-    private readonly RuleSet _rules;
+    public EntityManager(WorldBlockReader blocks, RuleSet rules, BlockHost host)
+    {
+        _blocks = blocks;
+        _rules = rules;
+        _host = host;
+    }
+
+    public bool AllPlayersSleeping { get; private set; }
 
     public event Action<Entity>? OnEntityAdded;
     public event Action<Entity>? OnEntityRemoved;
     public event Action<Entity>? OnGlobalEntityAdded;
     public event Func<Entity, bool>? OnEntityUpdating;
     public event Action<int, int, int>? OnBlockUpdateRequired;
-
-    public EntityManager(WorldBlockView blocks, RuleSet rules, BlockHost host)
-    {
-        _blocks = blocks;
-        _rules = rules;
-        _host = host;
-    }
 
     public bool SpawnGlobalEntity(Entity entity)
     {
@@ -113,11 +115,15 @@ public class EntityManager
         bool isPlayer = entity is EntityPlayer;
 
         if (!isPlayer && !_host.ChunkSource.IsChunkLoaded(chunkX, chunkZ))
+        {
             return false;
+        }
 
 
         if (entity is EntityPlayer player)
+        {
             Players.Add(player);
+        }
 
 
         _host.GetChunk(chunkX, chunkZ).AddEntity(entity);
@@ -142,14 +148,18 @@ public class EntityManager
 
         entity.markDead();
         if (entity is EntityPlayer player)
+        {
             Players.Remove(player);
+        }
     }
 
     public void ServerRemove(Entity entity)
     {
         entity.markDead();
         if (entity is EntityPlayer player)
+        {
             Players.Remove(player);
+        }
 
 
         int chunkX = entity.chunkX;
@@ -166,13 +176,17 @@ public class EntityManager
 
     public bool AreAllPlayersAsleep()
     {
-        if (Players.Count == 0) return false;
+        if (Players.Count == 0)
+        {
+            return false;
+        }
+
         return Players.All(p => p.isPlayerFullyAsleep());
     }
 
     public void WakeAllPlayers()
     {
-        foreach (var player in Players.Where(p => p.isSleeping()))
+        foreach (EntityPlayer player in Players.Where(p => p.isSleeping()))
         {
             player.wakeUp(false, false, true);
         }
@@ -181,6 +195,22 @@ public class EntityManager
     private void NotifyEntityAdded(Entity entity) => OnEntityAdded?.Invoke(entity);
 
     private void NotifyEntityRemoved(Entity entity) => OnEntityRemoved?.Invoke(entity);
+
+    public List<BlockEntity> GetBlockEntities(int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
+    {
+        List<BlockEntity> blockEntInArea = [];
+
+        for (int var8 = 0; var8 < BlockEntities.Count; var8++)
+        {
+            BlockEntity blockEnt = BlockEntities[var8];
+            if (blockEnt.X >= minX && blockEnt.Y >= minY && blockEnt.Z >= minZ && blockEnt.X < maxX && blockEnt.Y < maxY && blockEnt.Z < maxZ)
+            {
+                blockEntInArea.Add(blockEnt);
+            }
+        }
+
+        return blockEntInArea;
+    }
 
     public void TickEntities()
     {
@@ -573,14 +603,21 @@ public class EntityManager
 
     public EntityPlayer? GetPlayer(string name) => Players.FirstOrDefault(p => p.name == name);
 
-    public Entity? GetEntityByID(int id) // unused
-        =>
-            _entitiesById.TryGetValue(id, out Entity? entity) ? entity : null;
+    public Entity? GetEntityByID(int id) => _entitiesById.TryGetValue(id, out Entity? entity) ? entity : null;
 
-    /// <summary>
-    ///     Like <see cref="getEntities(Entity?,Box)" /> but writes into a reused thread-static
-    ///     scratch list. The returned list is only valid until the next call on the same thread.
-    /// </summary>
+    public void UpdateSleepingPlayers()
+    {
+        AllPlayersSleeping = Players.Count > 0;
+        foreach (EntityPlayer player in Players)
+        {
+            if (!player.isSleeping())
+            {
+                AllPlayersSleeping = false;
+                break;
+            }
+        }
+    }
+
     public bool CanSpawnEntity(Box spawnArea)
     {
         List<Entity> nearbyEntities = GetEntitiesScratch(null, spawnArea);

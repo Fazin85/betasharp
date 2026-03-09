@@ -1,21 +1,18 @@
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Client.Entities.FX;
 
 public class EntitySplashFX : EntityRainFX
 {
-
-    public EntitySplashFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) : base(world, x, y, z)
+    public EntitySplashFX(IBlockWorldContext world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) : base(world, x, y, z)
     {
         particleGravity = 0.04F;
         ++particleTextureIndex;
-        if (velocityY == 0.0D && (velocityX != 0.0D || velocityZ != 0.0D))
+        if (velocityY == 0.0 && (velocityX != 0.0 || velocityZ != 0.0))
         {
-            base.velocityX = velocityX;
-            base.velocityY = velocityY + 0.1D;
-            base.velocityZ = velocityZ;
+            this.velocityX = velocityX;
+            this.velocityY = velocityY + 0.1;
+            this.velocityZ = velocityZ;
         }
-
     }
 }

@@ -27,7 +27,7 @@ internal struct LightUpdate
         MaxZ = maxZ;
     }
 
-    public void UpdateLight(IBlockReader reader,BlockHost host, LightingEngine lighting)
+    public void UpdateLight(IBlockReader reader, BlockHost host, LightingEngine lighting)
     {
         int sizeX = MaxX - MinX + 1;
         int sizeY = MaxY - MinY + 1;
@@ -71,6 +71,7 @@ internal struct LightUpdate
                             isChunkLoaded = false;
                         }
                     }
+
                     isCachedChunkLoaded = isChunkLoaded;
                     cachedChunkX = chunkX;
                     cachedChunkZ = chunkZ;
@@ -85,12 +86,18 @@ internal struct LightUpdate
                         int blockId = reader.GetBlockId(x, y, z);
 
                         int opacity = Block.BlockLightOpacity[blockId];
-                        if (opacity == 0) opacity = 1;
+                        if (opacity == 0)
+                        {
+                            opacity = 1;
+                        }
 
                         int emittedLight = 0;
                         if (LightType == LightType.Sky)
                         {
-                            if (reader.IsTopY(x, y, z)) emittedLight = 15;
+                            if (reader.IsTopY(x, y, z))
+                            {
+                                emittedLight = 15;
+                            }
                         }
                         else if (LightType == LightType.Block)
                         {
@@ -112,15 +119,41 @@ internal struct LightUpdate
                             int l6 = lighting.GetBrightness(LightType, x, y, z + 1);
 
                             targetLight = l1;
-                            if (l2 > targetLight) targetLight = l2;
-                            if (l3 > targetLight) targetLight = l3;
-                            if (l4 > targetLight) targetLight = l4;
-                            if (l5 > targetLight) targetLight = l5;
-                            if (l6 > targetLight) targetLight = l6;
+                            if (l2 > targetLight)
+                            {
+                                targetLight = l2;
+                            }
+
+                            if (l3 > targetLight)
+                            {
+                                targetLight = l3;
+                            }
+
+                            if (l4 > targetLight)
+                            {
+                                targetLight = l4;
+                            }
+
+                            if (l5 > targetLight)
+                            {
+                                targetLight = l5;
+                            }
+
+                            if (l6 > targetLight)
+                            {
+                                targetLight = l6;
+                            }
 
                             targetLight -= opacity;
-                            if (targetLight < 0) targetLight = 0;
-                            if (emittedLight > targetLight) targetLight = emittedLight;
+                            if (targetLight < 0)
+                            {
+                                targetLight = 0;
+                            }
+
+                            if (emittedLight > targetLight)
+                            {
+                                targetLight = emittedLight;
+                            }
                         }
 
                         if (currentLight != targetLight)
@@ -128,15 +161,29 @@ internal struct LightUpdate
                             lighting.SetLight(LightType, x, y, z, targetLight);
 
                             int prop = targetLight - 1;
-                            if (prop < 0) prop = 0;
+                            if (prop < 0)
+                            {
+                                prop = 0;
+                            }
 
                             lighting.UpdateLight(LightType, x - 1, y, z, prop);
                             lighting.UpdateLight(LightType, x, y - 1, z, prop);
                             lighting.UpdateLight(LightType, x, y, z - 1, prop);
 
-                            if (x + 1 >= MaxX) lighting.UpdateLight(LightType, x + 1, y, z, prop);
-                            if (y + 1 >= MaxY) lighting.UpdateLight(LightType, x, y + 1, z, prop);
-                            if (z + 1 >= MaxZ) lighting.UpdateLight(LightType, x, y, z + 1, prop);
+                            if (x + 1 >= MaxX)
+                            {
+                                lighting.UpdateLight(LightType, x + 1, y, z, prop);
+                            }
+
+                            if (y + 1 >= MaxY)
+                            {
+                                lighting.UpdateLight(LightType, x, y + 1, z, prop);
+                            }
+
+                            if (z + 1 >= MaxZ)
+                            {
+                                lighting.UpdateLight(LightType, x, y, z + 1, prop);
+                            }
                         }
                     }
                 }

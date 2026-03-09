@@ -29,7 +29,10 @@ public sealed class BlockHost(IChunkSource chunkSource)
             {
                 for (int z = minZ; z <= maxZ; ++z)
                 {
-                    if (!HasChunk(x, z)) return false;
+                    if (!HasChunk(x, z))
+                    {
+                        return false;
+                    }
                 }
             }
 
@@ -37,5 +40,39 @@ public sealed class BlockHost(IChunkSource chunkSource)
         }
 
         return false;
+    }
+
+    public byte[] GetChunkData(int x, int y, int z, int sizeX, int sizeY, int sizeZ)
+    {
+        byte[] chunkData = new byte[sizeX * sizeY * sizeZ * 5 / 2];
+
+        int startChunkX = x >> 4;
+        int startChunkZ = z >> 4;
+        int endChunkX = (x + sizeX - 1) >> 4;
+        int endChunkZ = (z + sizeZ - 1) >> 4;
+
+        int currentBufferOffset = 0;
+        int minY = Math.Max(0, y);
+        int maxY = Math.Min(128, y + sizeY);
+
+        for (int chunkX = startChunkX; chunkX <= endChunkX; chunkX++)
+        {
+            int localStartX = Math.Max(0, x - chunkX * 16);
+            int localEndX = Math.Min(16, x + sizeX - chunkX * 16);
+
+            for (int chunkZ = startChunkZ; chunkZ <= endChunkZ; chunkZ++)
+            {
+                int localStartZ = Math.Max(0, z - chunkZ * 16);
+                int localEndZ = Math.Min(16, z + sizeZ - chunkZ * 16);
+
+                currentBufferOffset = GetChunk(chunkX, chunkZ).ToPacket(
+                    chunkData,
+                    localStartX, minY, localStartZ,
+                    localEndX, maxY, localEndZ,
+                    currentBufferOffset);
+            }
+        }
+
+        return chunkData;
     }
 }

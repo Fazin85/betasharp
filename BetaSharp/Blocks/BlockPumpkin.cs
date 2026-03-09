@@ -1,7 +1,5 @@
 using BetaSharp.Blocks.Materials;
-using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Blocks;
 
@@ -44,13 +42,13 @@ internal class BlockPumpkin : Block
 
     public override bool canPlaceAt(CanPlaceAtCtx evt)
     {
-        int blockId = evt.WorldRead.GetBlockId(evt.X, evt.Y, evt.Z);
-        return (blockId == 0 || Blocks[blockId].material.IsReplaceable) && evt.WorldRead.ShouldSuffocate(evt.X, evt.Y - 1, evt.Z);
+        int blockId = evt.Level.BlocksReader.GetBlockId(evt.X, evt.Y, evt.Z);
+        return (blockId == 0 || Blocks[blockId].material.IsReplaceable) && evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y - 1, evt.Z);
     }
 
     public override void onPlaced(OnPlacedEvt evt)
     {
         int direction = MathHelper.Floor(evt.Placer.yaw * 4.0F / 360.0F + 2.5D) & 3;
-        evt.WorldWrite.SetBlockMeta(evt.X, evt.Y, evt.Z, direction);
+        evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, direction);
     }
 }

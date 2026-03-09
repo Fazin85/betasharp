@@ -10,7 +10,7 @@ internal class BlockCake : Block
 
     public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
     {
-        int slicesEaten = iBlockReader.GetBlockMeta(x, y, z);
+        int slicesEaten = iBlockReader.GetMeta(x, y, z);
         float edgeInset = 1.0F / 16.0F;
         float minX = (1 + slicesEaten * 2) / 16.0F;
         float height = 0.5F;
@@ -26,7 +26,7 @@ internal class BlockCake : Block
 
     public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
     {
-        int slicesEaten = world.GetBlockMeta(x, y, z);
+        int slicesEaten = world.GetMeta(x, y, z);
         float edgeInset = 1.0F / 16.0F;
         float minX = (1 + slicesEaten * 2) / 16.0F;
         float height = 0.5F;
@@ -35,7 +35,7 @@ internal class BlockCake : Block
 
     public override Box getBoundingBox(IBlockReader world, int x, int y, int z)
     {
-        int slicesEaten = world.GetBlockMeta(x, y, z);
+        int slicesEaten = world.GetMeta(x, y, z);
         float edgeInset = 1.0F / 16.0F;
         float minX = (1 + slicesEaten * 2) / 16.0F;
         float height = 0.5F;
@@ -50,65 +50,60 @@ internal class BlockCake : Block
 
     public override bool isOpaque() => false;
 
-    public override bool onUse(OnUseEvt ctx)
+    public override bool onUse(OnUseEvt evt)
     {
-        if (ctx.Player.health < 20)
+        if (evt.Player.health < 20)
         {
-            ctx.Player.heal(3);
-            int slicesEaten = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z) + 1;
+            evt.Player.heal(3);
+            int slicesEaten = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z) + 1;
             if (slicesEaten >= 6)
             {
-                ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
+                evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, 0);
             }
             else
             {
-                ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, slicesEaten);
-                ctx.WorldWrite.SetBlocksDirty(ctx.X, ctx.Y, ctx.Z);
+                evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, slicesEaten);
+                evt.Level.Broadcaster.SetBlocksDirty(evt.X, evt.Y, evt.Z);
             }
         }
 
         return true;
     }
 
-    public override void onBlockBreakStart(OnBlockBreakStartEvt ctx)
+    public override void onBlockBreakStart(OnBlockBreakStartEvt evt)
     {
-        if (ctx.Player.health < 20)
+        if (evt.Player.health >= 20)
         {
-            ctx.Player.heal(3);
-            int slicesEaten = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z) + 1;
-            if (slicesEaten >= 6)
-            {
-                ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
-            }
-            else
-            {
-                ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, slicesEaten);
-                ctx.WorldWrite.SetBlocksDirty(ctx.X, ctx.Y, ctx.Z);
-            }
+            return;
+        }
+
+        evt.Player.heal(3);
+        int slicesEaten = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z) + 1;
+        if (slicesEaten >= 6)
+        {
+            evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, 0);
+        }
+        else
+        {
+            evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, slicesEaten);
+            evt.Level.Broadcaster.SetBlocksDirty(evt.X, evt.Y, evt.Z);
         }
     }
 
-    public override bool canPlaceAt(CanPlaceAtCtx ctx) => !base.canPlaceAt(ctx) ? false : canGrow(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z);
+    public override bool canPlaceAt(CanPlaceAtCtx evt) => !base.canPlaceAt(evt) ? false : canGrow(evt.Level.BlocksReader, evt.X, evt.Y, evt.Z);
 
-    public override void neighborUpdate(OnTickEvt ctx)
+    public override void neighborUpdate(OnTickEvt evt)
     {
-        if (!canGrow(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z))
+        if (canGrow(evt.Level.BlocksReader, evt.X, evt.Y, evt.Z))
         {
-            // Implement this
-            // dropStacks(new OnDropEvt(
-            //     ctx.WorldRead,
-            //     ctx.Rules,
-            //     ctx.IsRemote,
-            //     ctx.X,
-            //     ctx.Y,
-            //     ctx.Z,
-            //     ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z)
-            // ));
-            ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
+            return;
         }
+
+        dropStacks(new OnDropEvt(evt.Level, evt.X, evt.Y, evt.Z, evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z)));
+        evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, 0);
     }
 
-    public override bool canGrow(OnTickEvt ctx) => canGrow(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z);
+    public override bool canGrow(OnTickEvt evt) => canGrow(evt.Level.BlocksReader, evt.X, evt.Y, evt.Z);
 
     private static bool canGrow(IBlockReader world, int x, int y, int z) => world.GetMaterial(x, y - 1, z).IsSolid;
 

@@ -26,9 +26,9 @@ internal sealed class SessionService(XboxClient xboxClient, MojangClient mojangC
         return new Session
         {
             Name = profile.Name,
-            Skin = profile.Skins.Last().Url,
+            Face = $"https://mc-heads.net/avatar/{profile.Name}/8.png",
             Token = mojang.Value,
-            Expiration = DateTimeOffset.UtcNow.Add(TimeSpan.FromSeconds(mojang.Expiration))
+            Expiration = DateTimeOffset.UtcNow.Add(TimeSpan.FromSeconds(mojang.Expiration)),
         };
     }
 }

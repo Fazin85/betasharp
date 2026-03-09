@@ -19,7 +19,7 @@ internal class RailLogic
         _trackPos = pos;
 
         int blockId = level.BlocksReader.GetBlockId(pos.X, pos.Y, pos.Z);
-        int meta = level.BlocksReader.GetBlockMeta(pos.X, pos.Y, pos.Z);
+        int meta = level.BlocksReader.GetMeta(pos.X, pos.Y, pos.Z);
 
         if (Block.Blocks[blockId] is BlockRail rail && rail.isAlwaysStraight())
         {
@@ -79,14 +79,14 @@ internal class RailLogic
 
         if (meta == 0)
         {
-            if (BlockRail.isRail(_level, _trackPos.X, _trackPos.Y + 1, _trackPos.Z - 1)) meta = 4;
-            if (BlockRail.isRail(_level, _trackPos.X, _trackPos.Y + 1, _trackPos.Z + 1)) meta = 5;
+            if (BlockRail.IsRail(_level, _trackPos.X, _trackPos.Y + 1, _trackPos.Z - 1)) meta = 4;
+            if (BlockRail.IsRail(_level, _trackPos.X, _trackPos.Y + 1, _trackPos.Z + 1)) meta = 5;
         }
 
         if (meta == 1)
         {
-            if (BlockRail.isRail(_level, _trackPos.X + 1, _trackPos.Y + 1, _trackPos.Z)) meta = 2;
-            if (BlockRail.isRail(_level, _trackPos.X - 1, _trackPos.Y + 1, _trackPos.Z)) meta = 3;
+            if (BlockRail.IsRail(_level, _trackPos.X + 1, _trackPos.Y + 1, _trackPos.Z)) meta = 2;
+            if (BlockRail.IsRail(_level, _trackPos.X - 1, _trackPos.Y + 1, _trackPos.Z)) meta = 3;
         }
 
         if (meta < 0) meta = 0;
@@ -96,10 +96,10 @@ internal class RailLogic
         int finalMeta = meta;
         if (_isPoweredRail)
         {
-            finalMeta = _level.BlocksReader.GetBlockMeta(_trackPos.X, _trackPos.Y, _trackPos.Z) & 8 | meta;
+            finalMeta = _level.BlocksReader.GetMeta(_trackPos.X, _trackPos.Y, _trackPos.Z) & 8 | meta;
         }
 
-        if (forceUpdate || _level.BlocksReader.GetBlockMeta(_trackPos.X, _trackPos.Y, _trackPos.Z) != finalMeta)
+        if (forceUpdate || _level.BlocksReader.GetMeta(_trackPos.X, _trackPos.Y, _trackPos.Z) != finalMeta)
         {
             _level.BlockWriter.SetBlockMeta(_trackPos.X, _trackPos.Y, _trackPos.Z, finalMeta);
 
@@ -164,20 +164,20 @@ internal class RailLogic
 
     private bool IsMinecartTrack(Vec3i pos)
     {
-        return BlockRail.isRail(_level, pos.X, pos.Y, pos.Z) ||
-               BlockRail.isRail(_level, pos.X, pos.Y + 1, pos.Z) ||
-               BlockRail.isRail(_level, pos.X, pos.Y - 1, pos.Z);
+        return BlockRail.IsRail(_level, pos.X, pos.Y, pos.Z) ||
+               BlockRail.IsRail(_level, pos.X, pos.Y + 1, pos.Z) ||
+               BlockRail.IsRail(_level, pos.X, pos.Y - 1, pos.Z);
     }
 
     private RailLogic? GetMinecartTrackLogic(Vec3i pos)
     {
-        if (BlockRail.isRail(_level, pos.X, pos.Y, pos.Z))
+        if (BlockRail.IsRail(_level, pos.X, pos.Y, pos.Z))
             return new RailLogic(_rail, _level, pos);
 
-        if (BlockRail.isRail(_level, pos.X, pos.Y + 1, pos.Z))
+        if (BlockRail.IsRail(_level, pos.X, pos.Y + 1, pos.Z))
             return new RailLogic(_rail, _level, new Vec3i(pos.X, pos.Y + 1, pos.Z));
 
-        if (BlockRail.isRail(_level, pos.X, pos.Y - 1, pos.Z))
+        if (BlockRail.IsRail(_level, pos.X, pos.Y - 1, pos.Z))
             return new RailLogic(_rail, _level, new Vec3i(pos.X, pos.Y - 1, pos.Z));
 
         return null;
@@ -247,14 +247,14 @@ internal class RailLogic
 
         if (meta == 0)
         {
-            if (BlockRail.isRail(_level, _trackPos.X, _trackPos.Y + 1, _trackPos.Z - 1)) meta = 4;
-            if (BlockRail.isRail(_level, _trackPos.X, _trackPos.Y + 1, _trackPos.Z + 1)) meta = 5;
+            if (BlockRail.IsRail(_level, _trackPos.X, _trackPos.Y + 1, _trackPos.Z - 1)) meta = 4;
+            if (BlockRail.IsRail(_level, _trackPos.X, _trackPos.Y + 1, _trackPos.Z + 1)) meta = 5;
         }
 
         if (meta == 1)
         {
-            if (BlockRail.isRail(_level, _trackPos.X + 1, _trackPos.Y + 1, _trackPos.Z)) meta = 2;
-            if (BlockRail.isRail(_level, _trackPos.X - 1, _trackPos.Y + 1, _trackPos.Z)) meta = 3;
+            if (BlockRail.IsRail(_level, _trackPos.X + 1, _trackPos.Y + 1, _trackPos.Z)) meta = 2;
+            if (BlockRail.IsRail(_level, _trackPos.X - 1, _trackPos.Y + 1, _trackPos.Z)) meta = 3;
         }
 
         if (meta < 0) meta = 0;
@@ -262,7 +262,7 @@ internal class RailLogic
         int finalMeta = meta;
         if (_isPoweredRail)
         {
-            finalMeta = _level.BlocksReader.GetBlockMeta(_trackPos.X, _trackPos.Y, _trackPos.Z) & 8 | meta;
+            finalMeta = _level.BlocksReader.GetMeta(_trackPos.X, _trackPos.Y, _trackPos.Z) & 8 | meta;
         }
 
         _level.BlockWriter.SetBlockMeta(_trackPos.X, _trackPos.Y, _trackPos.Z, finalMeta);

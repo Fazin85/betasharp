@@ -1,4 +1,3 @@
-
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
@@ -284,7 +283,7 @@ public class Block
 
     public virtual bool isSolidFace(IBlockReader iBlockReader, int x, int y, int z, int face) => iBlockReader.GetMaterial(x, y, z).IsSolid;
 
-    public virtual int getTextureId(IBlockReader iBlockReader, int x, int y, int z, int side) => getTexture(side, iBlockReader.GetBlockMeta(x, y, z));
+    public virtual int getTextureId(IBlockReader iBlockReader, int x, int y, int z, int side) => getTexture(side, iBlockReader.GetMeta(x, y, z));
 
     public virtual int getTexture(int side, int meta) => getTexture(side);
 
@@ -343,7 +342,7 @@ public class Block
 
     public virtual void dropStacks(OnDropEvt ctx)
     {
-        if (!ctx.IsRemote && ctx.Rules.GetBool(DefaultRules.DoTileDrops))
+        if (!ctx.Level.IsRemote && ctx.Level.Rules.GetBool(DefaultRules.DoTileDrops))
         {
             int dropCount = getDroppedItemCount();
 
@@ -354,16 +353,7 @@ public class Block
                     int itemId = getDroppedItemId(ctx.Meta);
                     if (itemId > 0)
                     {
-                        // TODO: Implement this
-                        // dropStack(new OnDropEvt(
-                        //     ctx.WorldRead,
-                        //     ctx.Rules,
-                        //     ctx.IsRemote,
-                        //     ctx.X,
-                        //     ctx.Y,
-                        //     ctx.Z,
-                        //     ctx.Meta
-                        // ));
+                        dropStack(ctx.Level, ctx.X, ctx.Y, ctx.Z, new ItemStack(itemId, 1, getDroppedItemMeta(ctx.Meta)));
                     }
                 }
             }
@@ -372,12 +362,12 @@ public class Block
 
     protected void dropStack(IBlockWorldContext world, int x, int y, int z, ItemStack itemStack)
     {
-        if (!world.isRemote && world.Rules.GetBool(DefaultRules.DoTileDrops))
+        if (!world.IsRemote && world.Rules.GetBool(DefaultRules.DoTileDrops))
         {
             float spreadFactor = 0.7F;
-            double offsetX = world.random.NextFloat() * spreadFactor + (1.0F - spreadFactor) * 0.5D;
-            double offsetY = world.random.NextFloat() * spreadFactor + (1.0F - spreadFactor) * 0.5D;
-            double offsetZ = world.random.NextFloat() * spreadFactor + (1.0F - spreadFactor) * 0.5D;
+            double offsetX = Random.Shared.NextSingle() * spreadFactor + (1.0F - spreadFactor) * 0.5D;
+            double offsetY = Random.Shared.NextSingle() * spreadFactor + (1.0F - spreadFactor) * 0.5D;
+            double offsetZ = Random.Shared.NextSingle() * spreadFactor + (1.0F - spreadFactor) * 0.5D;
             world.SpawnItemDrop(x + offsetX, y + offsetY, z + offsetZ, itemStack);
         }
     }
@@ -403,29 +393,29 @@ public class Block
         return res;
     }
 
-    public virtual void onDestroyedByExplosion(OnDestroyedByExplosionEvt ctx)
+    public virtual void onDestroyedByExplosion(OnDestroyedByExplosionEvt evt)
     {
     }
 
     public virtual int getRenderLayer() => 0;
 
-    public virtual bool canPlaceAt(CanPlaceAtCtx ctx)
+    public virtual bool canPlaceAt(CanPlaceAtCtx evt)
     {
-        int blockId = ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z);
+        int blockId = evt.Level.BlocksReader.GetBlockId(evt.X, evt.Y, evt.Z);
         return blockId == 0 || Blocks[blockId].material.IsReplaceable;
     }
 
-    public virtual bool onUse(OnUseEvt ctx) => false;
+    public virtual bool onUse(OnUseEvt _) => false;
 
-    public virtual void onSteppedOn(OnEntityStepEvt ctx)
+    public virtual void onSteppedOn(OnEntityStepEvt evt)
     {
     }
 
-    public virtual void onBlockBreakStart(OnBlockBreakStartEvt ctx)
+    public virtual void onBlockBreakStart(OnBlockBreakStartEvt evt)
     {
     }
 
-    public virtual void applyVelocity(OnApplyVelocityEvt ctx)
+    public virtual void applyVelocity(OnApplyVelocityEvt evt)
     {
     }
 
@@ -445,7 +435,7 @@ public class Block
 
     public virtual bool isFlammable(IBlockReader iBlockReader, int x, int y, int z) => false;
 
-    public virtual void onEntityCollision(OnEntityCollisionEvt ctx)
+    public virtual void onEntityCollision(OnEntityCollisionEvt evt)
     {
     }
 
@@ -455,29 +445,23 @@ public class Block
     {
     }
 
-    public virtual void afterBreak(OnAfterBreakEvt ctx) => ctx.Player.increaseStat(Stats.Stats.MineBlockStatArray[id], 1);
+    public virtual void onAfterBreak(OnAfterBreakEvt ctx)
+    {
+        ctx.Player.increaseStat(Stats.Stats.MineBlockStatArray[id], 1);
+        dropStacks(new OnDropEvt(ctx.Level, ctx.X, ctx.Y, ctx.Z, ctx.Meta));
+    }
 
-    // TODO: Implement this
-    // dropStacks(new OnDropEvt(
-    //     ctx.WorldRead,
-    //     ctx.Rules,
-    //     ctx.IsRemote,
-    //     ctx.X,
-    //     ctx.Y,
-    //     ctx.Z,
-    //     ctx.Meta
-    // ));
     public virtual bool canGrow(OnTickEvt ctx) => true;
 
     public Block setBlockName(string name)
     {
-        blockName = "tile." + name;
+        blockName = $"tile.{name}";
         return this;
     }
 
-    public string translateBlockName() => StatCollector.TranslateToLocal(getBlockName() + ".name");
+    public string translateBlockName() => StatCollector.TranslateToLocal($"{getBlockName()}.name");
 
-    public string getBlockName() => blockName;
+    public string? getBlockName() => blockName;
 
     public virtual void onBlockAction(OnBlockActionEvt ctx)
     {

@@ -11,7 +11,7 @@ internal class BlockOre : Block
 
     public override int getDroppedItemId(int blockMeta) => id == CoalOre.id ? Item.Coal.id : id == DiamondOre.id ? Item.Diamond.id : id == LapisOre.id ? Item.Dye.id : id;
 
-    public override int getDroppedItemCount() => id == LapisOre.id ? 4 + random.NextInt(5) : 1;
+    public override int getDroppedItemCount() => id == LapisOre.id ? 4 + Random.Shared.Next(5) : 1;
 
     protected override int getDroppedItemMeta(int blockMeta) => id == LapisOre.id ? 4 : 0;
 }

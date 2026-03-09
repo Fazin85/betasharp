@@ -2,28 +2,52 @@ using BetaSharp.NBT;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Entities;
 
 public class EntityFireball : Entity
 {
+    private int blockId;
     private int blockX = -1;
     private int blockY = -1;
     private int blockZ = -1;
-    private int blockId;
-    private bool inGround;
-    public int shake;
-    public EntityLiving owner;
-    private int removalTimer;
     private int inAirTime;
+    private bool inGround;
+    public EntityLiving owner;
     public double powerX;
     public double powerY;
     public double powerZ;
+    private int removalTimer;
+    public int shake;
 
-    public EntityFireball(World world) : base(world)
+    public EntityFireball(IBlockWorldContext world) : base(world) => setBoundingBoxSpacing(1.0F, 1.0F);
+
+    public EntityFireball(IBlockWorldContext world, double x, double y, double z, double var8, double var10, double var12) : base(world)
     {
         setBoundingBoxSpacing(1.0F, 1.0F);
+        setPositionAndAnglesKeepPrevAngles(x, y, z, yaw, pitch);
+        setPosition(x, y, z);
+        double var14 = MathHelper.Sqrt(var8 * var8 + var10 * var10 + var12 * var12);
+        powerX = var8 / var14 * 0.1D;
+        powerY = var10 / var14 * 0.1D;
+        powerZ = var12 / var14 * 0.1D;
+    }
+
+    public EntityFireball(IBlockWorldContext world, EntityLiving var2, double var3, double var5, double var7) : base(world)
+    {
+        owner = var2;
+        setBoundingBoxSpacing(1.0F, 1.0F);
+        setPositionAndAnglesKeepPrevAngles(var2.x, var2.y, var2.z, var2.yaw, var2.pitch);
+        setPosition(x, y, z);
+        standingEyeHeight = 0.0F;
+        velocityX = velocityY = velocityZ = 0.0D;
+        var3 += random.NextGaussian() * 0.4D;
+        var5 += random.NextGaussian() * 0.4D;
+        var7 += random.NextGaussian() * 0.4D;
+        double var9 = MathHelper.Sqrt(var3 * var3 + var5 * var5 + var7 * var7);
+        powerX = var3 / var9 * 0.1D;
+        powerY = var5 / var9 * 0.1D;
+        powerZ = var7 / var9 * 0.1D;
     }
 
     protected override void initDataTracker()
@@ -37,34 +61,6 @@ public class EntityFireball : Entity
         return var1 < var3 * var3;
     }
 
-    public EntityFireball(World world, double x, double y, double z, double var8, double var10, double var12) : base(world)
-    {
-        setBoundingBoxSpacing(1.0F, 1.0F);
-        setPositionAndAnglesKeepPrevAngles(x, y, z, yaw, pitch);
-        setPosition(x, y, z);
-        double var14 = (double)MathHelper.Sqrt(var8 * var8 + var10 * var10 + var12 * var12);
-        powerX = var8 / var14 * 0.1D;
-        powerY = var10 / var14 * 0.1D;
-        powerZ = var12 / var14 * 0.1D;
-    }
-
-    public EntityFireball(World world, EntityLiving var2, double var3, double var5, double var7) : base(world)
-    {
-        owner = var2;
-        setBoundingBoxSpacing(1.0F, 1.0F);
-        setPositionAndAnglesKeepPrevAngles(var2.x, var2.y, var2.z, var2.yaw, var2.pitch);
-        setPosition(x, y, z);
-        standingEyeHeight = 0.0F;
-        velocityX = velocityY = velocityZ = 0.0D;
-        var3 += random.NextGaussian() * 0.4D;
-        var5 += random.NextGaussian() * 0.4D;
-        var7 += random.NextGaussian() * 0.4D;
-        double var9 = (double)MathHelper.Sqrt(var3 * var3 + var5 * var5 + var7 * var7);
-        powerX = var3 / var9 * 0.1D;
-        powerY = var5 / var9 * 0.1D;
-        powerZ = var7 / var9 * 0.1D;
-    }
-
     public override void tick()
     {
         base.tick();
@@ -76,7 +72,7 @@ public class EntityFireball : Entity
 
         if (inGround)
         {
-            int var1 = _level.getBlockId(blockX, blockY, blockZ);
+            int var1 = _level.BlocksReader.GetBlockId(blockX, blockY, blockZ);
             if (var1 == blockId)
             {
                 ++removalTimer;
@@ -89,9 +85,9 @@ public class EntityFireball : Entity
             }
 
             inGround = false;
-            velocityX *= (double)(random.NextFloat() * 0.2F);
-            velocityY *= (double)(random.NextFloat() * 0.2F);
-            velocityZ *= (double)(random.NextFloat() * 0.2F);
+            velocityX *= random.NextFloat() * 0.2F;
+            velocityY *= random.NextFloat() * 0.2F;
+            velocityZ *= random.NextFloat() * 0.2F;
             removalTimer = 0;
             inAirTime = 0;
         }
@@ -100,9 +96,9 @@ public class EntityFireball : Entity
             ++inAirTime;
         }
 
-        Vec3D var15 = new Vec3D(x, y, z);
-        Vec3D var2 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
-        HitResult var3 = _level.raycast(var15, var2);
+        Vec3D var15 = new(x, y, z);
+        Vec3D var2 = new(x + velocityX, y + velocityY, z + velocityZ);
+        HitResult var3 = _level.BlocksReader.Raycast(var15, var2);
         var15 = new Vec3D(x, y, z);
         var2 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
         if (var3.Type != HitResultType.MISS)
@@ -111,7 +107,7 @@ public class EntityFireball : Entity
         }
 
         Entity var4 = null;
-        var var5 = _level.getEntities(this, boundingBox.Stretch(velocityX, velocityY, velocityZ).Expand(1.0D, 1.0D, 1.0D));
+        List<Entity> var5 = _level.Entities.GetEntities(this, boundingBox.Stretch(velocityX, velocityY, velocityZ).Expand(1.0D, 1.0D, 1.0D));
         double var6 = 0.0D;
 
         for (int var8 = 0; var8 < var5.Count; ++var8)
@@ -120,7 +116,7 @@ public class EntityFireball : Entity
             if (var9.isCollidable() && (var9 != owner || inAirTime >= 25))
             {
                 float var10 = 0.3F;
-                Box var11 = var9.boundingBox.Expand((double)var10, (double)var10, (double)var10);
+                Box var11 = var9.boundingBox.Expand(var10, var10, var10);
                 HitResult var12 = var11.Raycast(var15, var2);
                 if (var12.Type != HitResultType.MISS)
                 {
@@ -141,13 +137,13 @@ public class EntityFireball : Entity
 
         if (var3.Type != HitResultType.MISS)
         {
-            if (!_level.isRemote)
+            if (!_level.IsRemote)
             {
                 if (var3.Entity != null && var3.Entity.damage(owner, 0))
                 {
                 }
 
-                _level.createExplosion((Entity)null, x, y, z, 1.0F, true);
+                _level.CreateExplosion(null, x, y, z, 1.0F, true);
             }
 
             markDead();
@@ -157,9 +153,9 @@ public class EntityFireball : Entity
         y += velocityY;
         z += velocityZ;
         float var16 = MathHelper.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
-        yaw = (float)(System.Math.Atan2(velocityX, velocityZ) * 180.0D / (double)((float)Math.PI));
+        yaw = (float)(Math.Atan2(velocityX, velocityZ) * 180.0D / (float)Math.PI);
 
-        for (pitch = (float)(System.Math.Atan2(velocityY, (double)var16) * 180.0D / (double)((float)Math.PI)); pitch - prevPitch < -180.0F; prevPitch -= 360.0F)
+        for (pitch = (float)(Math.Atan2(velocityY, var16) * 180.0D / (float)Math.PI); pitch - prevPitch < -180.0F; prevPitch -= 360.0F)
         {
         }
 
@@ -186,7 +182,7 @@ public class EntityFireball : Entity
             for (int var18 = 0; var18 < 4; ++var18)
             {
                 float var19 = 0.25F;
-                _level.addParticle("bubble", x - velocityX * (double)var19, y - velocityY * (double)var19, z - velocityZ * (double)var19, velocityX, velocityY, velocityZ);
+                _level.Broadcaster.AddParticle("bubble", x - velocityX * var19, y - velocityY * var19, z - velocityZ * var19, velocityX, velocityY, velocityZ);
             }
 
             var17 = 0.8F;
@@ -195,10 +191,10 @@ public class EntityFireball : Entity
         velocityX += powerX;
         velocityY += powerY;
         velocityZ += powerZ;
-        velocityX *= (double)var17;
-        velocityY *= (double)var17;
-        velocityZ *= (double)var17;
-        _level.addParticle("smoke", x, y + 0.5D, z, 0.0D, 0.0D, 0.0D);
+        velocityX *= var17;
+        velocityY *= var17;
+        velocityZ *= var17;
+        _level.Broadcaster.AddParticle("smoke", x, y + 0.5D, z, 0.0D, 0.0D, 0.0D);
         setPosition(x, y, z);
     }
 
@@ -222,15 +218,9 @@ public class EntityFireball : Entity
         inGround = nbt.GetByte("inGround") == 1;
     }
 
-    public override bool isCollidable()
-    {
-        return true;
-    }
+    public override bool isCollidable() => true;
 
-    public override float getTargetingMargin()
-    {
-        return 1.0F;
-    }
+    public override float getTargetingMargin() => 1.0F;
 
     public override bool damage(Entity entity, int amount)
     {
@@ -250,14 +240,9 @@ public class EntityFireball : Entity
 
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
-    public override float getShadowRadius()
-    {
-        return 0.0F;
-    }
+    public override float getShadowRadius() => 0.0F;
 }

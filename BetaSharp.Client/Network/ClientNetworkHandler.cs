@@ -5,6 +5,7 @@ using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Entities;
 using BetaSharp.Client.Entities.FX;
 using BetaSharp.Client.Guis;
+using BetaSharp.Client.Rendering.Entities;
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Worlds;
 using BetaSharp.Entities;
@@ -73,11 +74,10 @@ public class ClientNetworkHandler : NetHandler
 
             if (ticks++ - lastKeepAliveTime > 200)
             {
-                SendPacket(new KeepAlivePacket());
+                SendPacket(KeepAlivePacket.Get());
             }
         }
 
-        netManager.interrupt();
     }
 
     public void SendPacket(Packet packet)
@@ -534,7 +534,6 @@ public class ClientNetworkHandler : NetHandler
     public void disconnect()
     {
         disconnected = true;
-        netManager.interrupt();
         netManager.disconnect("disconnect.closed");
     }
 
@@ -711,7 +710,7 @@ public class ClientNetworkHandler : NetHandler
             else
             {
                 screenHandler.onAcknowledgementDenied(packet.actionType);
-                addToSendQueue(new ScreenHandlerAcknowledgementPacket(packet.syncId, packet.actionType, true));
+                addToSendQueue(ScreenHandlerAcknowledgementPacket.Get(packet.syncId, packet.actionType, true));
             }
         }
 
@@ -838,6 +837,15 @@ public class ClientNetworkHandler : NetHandler
         catch (KeyNotFoundException ex)
         {
             _logger.LogWarning(ex, "Unknown stat id in IncreaseStatS2CPacket: {StatId}", packet.statId);
+        }
+    }
+
+    public override void onPlayerConnectionUpdate(PlayerConnectionUpdateS2CPacket packet)
+    {
+        if (packet.type == PlayerConnectionUpdateS2CPacket.ConnectionUpdateType.Leave)
+        {
+            Entity ent = worldClient.GetEntity(packet.entityId);
+            EntityRenderDispatcher.instance.skinManager?.Release(packet.name);
         }
     }
 

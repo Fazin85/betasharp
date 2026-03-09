@@ -1,13 +1,12 @@
 using BetaSharp.Blocks;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Entities;
 
 public class EntityFlying : EntityLiving
 {
-    public EntityFlying(World world) : base(world)
+    public EntityFlying(IBlockWorldContext world) : base(world)
     {
     }
 
@@ -21,9 +20,9 @@ public class EntityFlying : EntityLiving
         {
             moveNonSolid(strafe, forward, 0.02F);
             move(velocityX, velocityY, velocityZ);
-            velocityX *= (double)0.8F;
-            velocityY *= (double)0.8F;
-            velocityZ *= (double)0.8F;
+            velocityX *= 0.8F;
+            velocityY *= 0.8F;
+            velocityZ *= 0.8F;
         }
         else if (isTouchingLava())
         {
@@ -39,7 +38,7 @@ public class EntityFlying : EntityLiving
             if (onGround)
             {
                 friction = 546.0F * 0.1F * 0.1F * 0.1F;
-                int groundBlockId = _level.getBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.MinY) - 1, MathHelper.Floor(z));
+                int groundBlockId = _level.BlocksReader.GetBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.MinY) - 1, MathHelper.Floor(z));
                 if (groundBlockId > 0)
                 {
                     friction = Block.Blocks[groundBlockId].slipperiness * 0.91F;
@@ -52,7 +51,7 @@ public class EntityFlying : EntityLiving
             if (onGround)
             {
                 friction = 546.0F * 0.1F * 0.1F * 0.1F;
-                int groundBlockId = _level.getBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.MinY) - 1, MathHelper.Floor(z));
+                int groundBlockId = _level.BlocksReader.GetBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.MinY) - 1, MathHelper.Floor(z));
                 if (groundBlockId > 0)
                 {
                     friction = Block.Blocks[groundBlockId].slipperiness * 0.91F;
@@ -60,9 +59,9 @@ public class EntityFlying : EntityLiving
             }
 
             move(velocityX, velocityY, velocityZ);
-            velocityX *= (double)friction;
-            velocityY *= (double)friction;
-            velocityZ *= (double)friction;
+            velocityX *= friction;
+            velocityY *= friction;
+            velocityZ *= friction;
         }
 
         lastWalkAnimationSpeed = walkAnimationSpeed;
@@ -78,8 +77,5 @@ public class EntityFlying : EntityLiving
         animationPhase += walkAnimationSpeed;
     }
 
-    public override bool isOnLadder()
-    {
-        return false;
-    }
+    public override bool isOnLadder() => false;
 }

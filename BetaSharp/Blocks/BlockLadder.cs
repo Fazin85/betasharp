@@ -12,7 +12,7 @@ internal class BlockLadder : Block
 
     public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
     {
-        int meta = world.GetBlockMeta(x, y, z);
+        int meta = world.GetMeta(x, y, z);
         float thickness = 2.0F / 16.0F;
         if (meta == 2)
         {
@@ -39,7 +39,7 @@ internal class BlockLadder : Block
 
     public override Box getBoundingBox(IBlockReader world, int x, int y, int z)
     {
-        int meta = world.GetBlockMeta(x, y, z);
+        int meta = world.GetMeta(x, y, z);
         float thickness = 2.0F / 16.0F;
         if (meta == 2)
         {
@@ -71,63 +71,64 @@ internal class BlockLadder : Block
     public override BlockRendererType getRenderType() => BlockRendererType.Ladder;
 
     public override bool canPlaceAt(CanPlaceAtCtx ctx) =>
-        ctx.WorldRead.ShouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z) ? true : ctx.WorldRead.ShouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z) ? true : ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1) ? true : ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1);
+        ctx.Level.BlocksReader.ShouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z) ? true :
+        ctx.Level.BlocksReader.ShouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z) ? true :
+        ctx.Level.BlocksReader.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1) ? true : ctx.Level.BlocksReader.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1);
 
     public override void onPlaced(OnPlacedEvt ctx)
     {
-        int meta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
-        if ((meta == 0 || ctx.Direction == 2) && ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1))
+        int meta = ctx.Level.BlocksReader.GetMeta(ctx.X, ctx.Y, ctx.Z);
+        if ((meta == 0 || ctx.Direction == 2) && ctx.Level.BlocksReader.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1))
         {
             meta = 2;
         }
 
-        if ((meta == 0 || ctx.Direction == 3) && ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1))
+        if ((meta == 0 || ctx.Direction == 3) && ctx.Level.BlocksReader.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1))
         {
             meta = 3;
         }
 
-        if ((meta == 0 || ctx.Direction == 4) && ctx.WorldRead.ShouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z))
+        if ((meta == 0 || ctx.Direction == 4) && ctx.Level.BlocksReader.ShouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z))
         {
             meta = 4;
         }
 
-        if ((meta == 0 || ctx.Direction == 5) && ctx.WorldRead.ShouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z))
+        if ((meta == 0 || ctx.Direction == 5) && ctx.Level.BlocksReader.ShouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z))
         {
             meta = 5;
         }
 
-        ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, meta);
+        ctx.Level.BlockWriter.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, meta);
     }
 
     public override void neighborUpdate(OnTickEvt ctx)
     {
-        int meta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+        int meta = ctx.Level.BlocksReader.GetMeta(ctx.X, ctx.Y, ctx.Z);
         bool hasSupport = false;
-        if (meta == 2 && ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1))
+        if (meta == 2 && ctx.Level.BlocksReader.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1))
         {
             hasSupport = true;
         }
 
-        if (meta == 3 && ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1))
+        if (meta == 3 && ctx.Level.BlocksReader.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1))
         {
             hasSupport = true;
         }
 
-        if (meta == 4 && ctx.WorldRead.ShouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z))
+        if (meta == 4 && ctx.Level.BlocksReader.ShouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z))
         {
             hasSupport = true;
         }
 
-        if (meta == 5 && ctx.WorldRead.ShouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z))
+        if (meta == 5 && ctx.Level.BlocksReader.ShouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z))
         {
             hasSupport = true;
         }
 
         if (!hasSupport)
         {
-            // TODO: Implement this
-            // dropStacks(world, x, y, z, meta);
-            ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
+            dropStacks(new OnDropEvt(ctx.Level, ctx.X, ctx.Y, ctx.Z, meta));
+            ctx.Level.BlockWriter.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
         }
 
         base.neighborUpdate(ctx);

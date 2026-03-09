@@ -1,6 +1,5 @@
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Blocks;
 
@@ -15,43 +14,41 @@ internal class BlockStationary : BlockFluid
         }
     }
 
-    public override void neighborUpdate(OnTickEvt ctx)
+    public override void neighborUpdate(OnTickEvt evt)
     {
-        base.neighborUpdate(ctx);
-        if (ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z) == id)
+        base.neighborUpdate(evt);
+        if (evt.Level.BlocksReader.GetBlockId(evt.X, evt.Y, evt.Z) == id)
         {
-            convertToFlowing(ctx);
+            convertToFlowing(evt);
         }
     }
 
-    private void convertToFlowing(OnTickEvt ctx)
+    private void convertToFlowing(OnTickEvt evt)
     {
-        int meta = ctx.WorldRead.getBlockMeta(ctx.X, ctx.Y, ctx.Z);
-        ctx.WorldRead.PauseTicking = true;
-        ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, id - 1, meta);
-        ctx.WorldWrite.SetBlocksDirty(ctx.X, ctx.Y, ctx.Z, ctx.X, ctx.Y, ctx.Z);
-        ctx.WorldRead.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, id - 1, getTickRate());
-        ctx.WorldRead.PauseTicking = false;
+        int meta = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
+        evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, id - 1, meta);
+        evt.Level.Broadcaster.SetBlocksDirty(evt.X, evt.Y, evt.Z, evt.X, evt.Y, evt.Z);
+        evt.Level.TickScheduler.ScheduleBlockUpdate(evt.X, evt.Y, evt.Z, id - 1, getTickRate(), true);
     }
 
-    public override void onTick(OnTickEvt ctx)
+    public override void onTick(OnTickEvt evt)
     {
         if (material == Material.Lava)
         {
-            int attempts = ctx.WorldRead.random.NextInt(3);
+            int attempts = evt.Level.random.NextInt(3);
 
             for (int attempt = 0; attempt < attempts; ++attempt)
             {
-                ctx.X += ctx.WorldRead.random.NextInt(3) - 1;
-                ++ctx.Y;
-                ctx.Z += ctx.WorldRead.random.NextInt(3) - 1;
-                int neighborBlockId = ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z);
+                evt.X += evt.Level.random.NextInt(3) - 1;
+                ++evt.Y;
+                evt.Z += evt.Level.random.NextInt(3) - 1;
+                int neighborBlockId = evt.Level.BlocksReader.GetBlockId(evt.X, evt.Y, evt.Z);
                 if (neighborBlockId == 0)
                 {
-                    if (isFlammable(ctx.WorldRead, ctx.X - 1, ctx.Y, ctx.Z) || isFlammable(ctx.WorldRead, ctx.X + 1, ctx.Y, ctx.Z) || isFlammable(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z - 1) ||
-                        isFlammable(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z + 1) || isFlammable(ctx.WorldRead, ctx.X, ctx.Y - 1, ctx.Z) || isFlammable(ctx.WorldRead, ctx.X, ctx.Y + 1, ctx.Z))
+                    if (isFlammable(evt.Level.BlocksReader, evt.X - 1, evt.Y, evt.Z) || isFlammable(evt.Level.BlocksReader, evt.X + 1, evt.Y, evt.Z) || isFlammable(evt.Level.BlocksReader, evt.X, evt.Y, evt.Z - 1) ||
+                        isFlammable(evt.Level.BlocksReader, evt.X, evt.Y, evt.Z + 1) || isFlammable(evt.Level.BlocksReader, evt.X, evt.Y - 1, evt.Z) || isFlammable(evt.Level.BlocksReader, evt.X, evt.Y + 1, evt.Z))
                     {
-                        ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, Fire.id);
+                        evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, Fire.id);
                         return;
                     }
                 }
@@ -63,5 +60,5 @@ internal class BlockStationary : BlockFluid
         }
     }
 
-    private bool isFlammable(World world, int x, int y, int z) => world.getMaterial(x, y, z).IsBurnable;
+    private bool isFlammable(IBlockReader world, int x, int y, int z) => world.GetMaterial(x, y, z).IsBurnable;
 }

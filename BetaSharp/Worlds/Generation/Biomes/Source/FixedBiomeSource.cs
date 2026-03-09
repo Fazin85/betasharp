@@ -1,4 +1,5 @@
 using BetaSharp.Util.Maths;
+using BetaSharp.Worlds.Core;
 using java.util;
 
 namespace BetaSharp.Worlds.Generation.Biomes.Source;
@@ -9,7 +10,7 @@ internal class FixedBiomeSource : BiomeSource
     private readonly double _downfall;
     private readonly double _temperature;
 
-    public FixedBiomeSource(Biome biome, double temperature, double downfall)
+    public FixedBiomeSource(IBlockWorldContext level, Biome biome, double temperature, double downfall): base(level)
     {
         _biome = biome;
         _temperature = temperature;

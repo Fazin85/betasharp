@@ -35,7 +35,7 @@ public class ServerIChunkCache : IChunkSource
 
     public void isLoaded(int chunkX, int chunkZ)
     {
-        Vec3i var3 = _world.GetSpawnPos();
+        Vec3i var3 = _world.Properties.GetSpawnPos();
         int var4 = chunkX * 16 + 8 - var3.X;
         int var5 = chunkZ * 16 + 8 - var3.Z;
         short var6 = 128;

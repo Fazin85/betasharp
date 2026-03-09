@@ -9,7 +9,7 @@ internal class BlockGlowstone : Block
     {
     }
 
-    public override int getDroppedItemCount() => 2 + random.NextInt(3);
+    public override int getDroppedItemCount() => 2 + Random.Shared.Next(3);
 
     public override int getDroppedItemId(int blockMeta) => Item.GlowstoneDust.id;
 }

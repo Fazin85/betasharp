@@ -6,10 +6,7 @@ public class RedstoneEngine
 {
     private readonly IBlockReader _world;
 
-    public RedstoneEngine(IBlockReader world)
-    {
-        _world = world;
-    }
+    public RedstoneEngine(IBlockReader world) => _world = world;
 
     public bool IsStrongPoweringSide(int x, int y, int z, int side)
     {
@@ -19,11 +16,31 @@ public class RedstoneEngine
 
     public bool IsStrongPowered(int x, int y, int z)
     {
-        if (IsStrongPoweringSide(x, y - 1, z, 0)) return true; // Down
-        if (IsStrongPoweringSide(x, y + 1, z, 1)) return true; // Up
-        if (IsStrongPoweringSide(x, y, z - 1, 2)) return true; // North
-        if (IsStrongPoweringSide(x, y, z + 1, 3)) return true; // South
-        if (IsStrongPoweringSide(x - 1, y, z, 4)) return true; // West
+        if (IsStrongPoweringSide(x, y - 1, z, 0))
+        {
+            return true; // Down
+        }
+
+        if (IsStrongPoweringSide(x, y + 1, z, 1))
+        {
+            return true; // Up
+        }
+
+        if (IsStrongPoweringSide(x, y, z - 1, 2))
+        {
+            return true; // North
+        }
+
+        if (IsStrongPoweringSide(x, y, z + 1, 3))
+        {
+            return true; // South
+        }
+
+        if (IsStrongPoweringSide(x - 1, y, z, 4))
+        {
+            return true; // West
+        }
+
         return IsStrongPoweringSide(x + 1, y, z, 5); // East
     }
 
@@ -40,11 +57,31 @@ public class RedstoneEngine
 
     public bool IsPowered(int x, int y, int z)
     {
-        if (IsPoweringSide(x, y - 1, z, 0)) return true; // Down
-        if (IsPoweringSide(x, y + 1, z, 1)) return true; // Up
-        if (IsPoweringSide(x, y, z - 1, 2)) return true; // North
-        if (IsPoweringSide(x, y, z + 1, 3)) return true; // South
-        if (IsPoweringSide(x - 1, y, z, 4)) return true; // West
+        if (IsPoweringSide(x, y - 1, z, 0))
+        {
+            return true; // Down
+        }
+
+        if (IsPoweringSide(x, y + 1, z, 1))
+        {
+            return true; // Up
+        }
+
+        if (IsPoweringSide(x, y, z - 1, 2))
+        {
+            return true; // North
+        }
+
+        if (IsPoweringSide(x, y, z + 1, 3))
+        {
+            return true; // South
+        }
+
+        if (IsPoweringSide(x - 1, y, z, 4))
+        {
+            return true; // West
+        }
+
         return IsPoweringSide(x + 1, y, z, 5); // East
     }
 }

@@ -1,8 +1,10 @@
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Blocks.Materials;
+using BetaSharp.Entities;
+using BetaSharp.Util.Hit;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Chunks;
-using BetaSharp.Worlds.Core.Systems;
 using BetaSharp.Worlds.Generation.Biomes.Source;
 
 namespace BetaSharp.Worlds.Core;
@@ -12,11 +14,11 @@ internal class WorldRegion : IBlockReader
     private readonly Chunk[][] _chunks;
     private readonly int _chunkX;
     private readonly int _chunkZ;
-    private readonly World _world;
+    private readonly IBlockWorldContext _level;
 
-    public WorldRegion(World world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
+    public WorldRegion(IBlockWorldContext level, int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
     {
-        _world = world;
+        _level = level;
         _chunkX = minX >> 4;
         _chunkZ = minZ >> 4;
         int endX = maxX >> 4;
@@ -35,7 +37,7 @@ internal class WorldRegion : IBlockReader
         {
             for (int cz = _chunkZ; cz <= endZ; ++cz)
             {
-                _chunks[cx - _chunkX][cz - _chunkZ] = world.GetChunk(cx, cz);
+                _chunks[cx - _chunkX][cz - _chunkZ] = level.BlockHost.GetChunk(cx, cz);
             }
         }
     }
@@ -72,13 +74,46 @@ internal class WorldRegion : IBlockReader
         return _chunks[cx][cz]?.GetBlockEntity(x & 15, y, z & 15);
     }
 
+    public BiomeSource GetBiomeSource() => _level.BlocksReader.GetBiomeSource();
+
+    public bool IsOpaque(int x, int y, int z)
+    {
+        Block block = Block.Blocks[GetBlockId(x, y, z)];
+        return block != null && block.isOpaque();
+    }
+
+    public bool ShouldSuffocate(int x, int y, int z)
+    {
+        Block block = Block.Blocks[GetBlockId(x, y, z)];
+        return block != null && block.material.BlocksMovement && block.isFullCube();
+    }
+
+    public int GetMeta(int x, int y, int z) => throw new NotImplementedException();
+    public Material GetMaterial(int x, int y, int z) => throw new NotImplementedException();
+    public bool IsAir(int x, int y, int z) => throw new NotImplementedException();
+    public int GetBrightness(int x, int y, int z) => throw new NotImplementedException();
+    public bool IsTopY(int x, int y, int z) => throw new NotImplementedException();
+    public int GetTopY(int x, int z) => throw new NotImplementedException();
+    public int GetTopSolidBlockY(int x, int z) => throw new NotImplementedException();
+    public int GetSpawnPositionValidityY(int x, int z) => throw new NotImplementedException();
+    public float GetVisibilityRatio(Vec3D sourcePosition, Box targetBox) => throw new NotImplementedException();
+    public HitResult Raycast(Vec3D start, Vec3D end) => throw new NotImplementedException();
+    public HitResult Raycast(Vec3D start, Vec3D end, bool includeFluids) => throw new NotImplementedException();
+    public HitResult Raycast(Vec3D start, Vec3D target, bool includeFluids, bool ignoreNonSolid) => throw new NotImplementedException();
+    public bool IsAnyBlockInBox(Box area) => throw new NotImplementedException();
+    public bool IsBoxSubmergedInFluid(Box area) => throw new NotImplementedException();
+    public bool IsFireOrLavaInBox(Box area) => throw new NotImplementedException();
+    public bool IsMaterialInBox(Box area, Material material) => throw new NotImplementedException();
+    public bool IsFluidInBox(Box area, Material fluid) => throw new NotImplementedException();
+    public bool UpdateMovementInFluid(Box entityBox, Material fluidMaterial, Entity entity) => throw new NotImplementedException();
+
     public float GetNaturalBrightness(int x, int y, int z, int blockLight)
     {
         int finalLight = Math.Max(getRawBrightness(x, y, z), blockLight);
-        return _world.dimension.LightLevelToLuminance[finalLight];
+        return _level.dimension.LightLevelToLuminance[finalLight];
     }
 
-    public float GetLuminance(int x, int y, int z) => _world.dimension.LightLevelToLuminance[getRawBrightness(x, y, z)];
+    public float GetLuminance(int x, int y, int z) => _level.dimension.LightLevelToLuminance[getRawBrightness(x, y, z)];
 
     public int getBlockMeta(int x, int y, int z)
     {
@@ -96,20 +131,6 @@ internal class WorldRegion : IBlockReader
     {
         int var4 = GetBlockId(x, y, z);
         return var4 == 0 ? Material.Air : Block.Blocks[var4].material;
-    }
-
-    public BiomeSource GetBiomeSource() => _world.GetBiomeSource();
-
-    public bool IsOpaque(int x, int y, int z)
-    {
-        Block block = Block.Blocks[GetBlockId(x, y, z)];
-        return block != null && block.isOpaque();
-    }
-
-    public bool ShouldSuffocate(int x, int y, int z)
-    {
-        Block block = Block.Blocks[GetBlockId(x, y, z)];
-        return block != null && block.material.BlocksMovement && block.isFullCube();
     }
 
     public int getRawBrightness(int x, int y, int z) => getRawBrightness(x, y, z, true);
@@ -143,21 +164,14 @@ internal class WorldRegion : IBlockReader
 
         if (y >= 128)
         {
-            return Math.Max(0, 15 - _world.Environment.AmbientDarkness);
+            return Math.Max(0, 15 - _level.Environment.AmbientDarkness);
         }
 
         int cIdxX = (x >> 4) - _chunkX;
         int cIdxZ = (z >> 4) - _chunkZ;
 
-        return _chunks[cIdxX][cIdxZ].GetLight(x & 15, y, z & 15, _world.Environment.AmbientDarkness);
+        return _chunks[cIdxX][cIdxZ].GetLight(x & 15, y, z & 15, _level.Environment.AmbientDarkness);
     }
 
-    public int GetBlockMeta(int x, int y, int z) => throw new NotImplementedException();
-    public Material GetMaterial(int x, int y, int z) => throw new NotImplementedException();
-    public bool IsAir(int x, int y, int z) => throw new NotImplementedException();
-    public int GetBrightness(int x, int y, int z) => throw new NotImplementedException();
-    public bool IsTopY(int x, int y, int z) => throw new NotImplementedException();
-    public int GetTopY(int x, int z) => throw new NotImplementedException();
-    public int GetTopSolidBlockY(int x, int z) => throw new NotImplementedException();
-    public int GetSpawnPositionValidityY(int x, int z) => throw new NotImplementedException();
+    public bool IsPosLoaded(int x, int y, int z) => throw new NotImplementedException();
 }

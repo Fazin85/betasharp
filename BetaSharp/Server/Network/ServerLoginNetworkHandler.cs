@@ -30,7 +30,6 @@ public class ServerLoginNetworkHandler : NetHandler
     {
         this.server = server;
         connection = new Connection(socket, name, this);
-        connection.lag = 0;
     }
 
     public ServerLoginNetworkHandler(BetaSharpServer server, Connection connection)
@@ -38,7 +37,6 @@ public class ServerLoginNetworkHandler : NetHandler
         this.server = server;
         this.connection = connection;
         connection.setNetworkHandler(this);
-        connection.lag = 0;
     }
 
     public void tick()
@@ -64,7 +62,7 @@ public class ServerLoginNetworkHandler : NetHandler
         try
         {
             _logger.LogInformation($"Disconnecting {getConnectionInfo()}: {reason}");
-            connection.sendPacket(new DisconnectPacket(reason));
+            connection.sendPacket(DisconnectPacket.Get(reason));
             connection.disconnect();
             closed = true;
         }
@@ -95,7 +93,7 @@ public class ServerLoginNetworkHandler : NetHandler
         }
         if (packet.worldSeed == LoginHelloPacket.BETASHARP_CLIENT_SIGNATURE)
         {
-            // This is a BetaSharp client. We can use this for future protocol extensions.
+            connection.betaSharpClient = true;
         }
 
         username = packet.username;
@@ -134,16 +132,17 @@ public class ServerLoginNetworkHandler : NetHandler
             ent.setWorld(server.getWorld(ent.dimensionId));
             _logger.LogInformation($"{getConnectionInfo()} logged in with entity id {ent.id} at ({ent.x}, {ent.y}, {ent.z})");
             ServerWorld var3 = server.getWorld(ent.dimensionId);
-            Vec3i var4 = var3.GetSpawnPos();
+            Vec3i var4 = var3.Properties.GetSpawnPos();
             ServerPlayNetworkHandler handler = new ServerPlayNetworkHandler(server, connection, ent);
             handler.sendPacket(new LoginHelloPacket("", ent.id, var3.GetSeed(), (sbyte)var3.dimension.Id));
-            handler.sendPacket(new PlayerSpawnPositionS2CPacket(var4.X, var4.Y, var4.Z));
+            handler.sendPacket(PlayerSpawnPositionS2CPacket.Get(var4.X, var4.Y, var4.Z));
             server.playerManager.sendWorldInfo(ent, var3);
-            server.playerManager.sendToAll(new ChatMessagePacket("§e" + ent.name + " joined the game."));
+            server.playerManager.sendToAll(PlayerConnectionUpdateS2CPacket.Get(ent.id, PlayerConnectionUpdateS2CPacket.ConnectionUpdateType.Join, ent.name));
+            server.playerManager.sendToAll(ChatMessagePacket.Get("§e" + ent.name + " joined the game."));
             server.playerManager.addPlayer(ent);
             handler.teleport(ent.x, ent.y, ent.z, ent.yaw, ent.pitch);
             server.connections.AddConnection(handler);
-            handler.sendPacket(new WorldTimeUpdateS2CPacket(var3.GetTime()));
+            handler.sendPacket(WorldTimeUpdateS2CPacket.Get(var3.GetTime()));
             ent.initScreenHandler();
         }
 

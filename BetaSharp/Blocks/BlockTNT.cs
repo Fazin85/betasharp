@@ -1,7 +1,6 @@
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
 using BetaSharp.Items;
-using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Blocks;
 
@@ -13,52 +12,47 @@ internal class BlockTNT : Block
 
     public override int getTexture(int side) => side == 0 ? textureId + 2 : side == 1 ? textureId + 1 : textureId;
 
-    public override void onPlaced(OnPlacedEvt ctx)
+    public override void onPlaced(OnPlacedEvt evt)
     {
-        base.onPlaced(ctx);
-        if (ctx.Redstone.IsPowered(ctx.X, ctx.Y, ctx.Z))
+        base.onPlaced(evt);
+        if (evt.Level.Redstone.IsPowered(evt.X, evt.Y, evt.Z))
         {
-            // TODO: Implement this
-            // onMetadataChange(new OnMetadataChangeEvt(ctx.WorldRead, ctx.WorldWrite, ctx.Redstone, ctx.Entities, ctx.Broadcaster, ctx.IsRemote, ctx.X, ctx.Y, ctx.Z));
-            // ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
+            onMetadataChange(new OnMetadataChangeEvt(evt.Level, evt.X, evt.Y, evt.Z, 1));
+            evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, 0);
         }
     }
 
-    public override void neighborUpdate(OnTickEvt ctx)
+    public override void neighborUpdate(OnTickEvt evt)
     {
-        if (ctx.BlockId > 0 && Blocks[ctx.BlockId].canEmitRedstonePower() && ctx.Redstone.IsPowered(ctx.X, ctx.Y, ctx.Z))
+        if (evt.BlockId > 0 && Blocks[evt.BlockId].canEmitRedstonePower() && evt.Level.Redstone.IsPowered(evt.X, evt.Y, evt.Z))
         {
-            // TODO: Implement this
-            // onMetadataChange(ctx);
-            ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
+            onMetadataChange(new OnMetadataChangeEvt(evt.Level, evt.X, evt.Y, evt.Z, 1));
+            evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, 0);
         }
     }
 
     public override int getDroppedItemCount() => 0;
 
-    public override void onDestroyedByExplosion(OnDestroyedByExplosionEvt ctx)
+    public override void onDestroyedByExplosion(OnDestroyedByExplosionEvt evt)
     {
-        // TODO: Implement this
-        // EntityTNTPrimed entityTNTPrimed = new(ctx.World, ctx.X + 0.5F, ctx.Y + 0.5F, ctx.Z + 0.5F);
-        // entityTNTPrimed.fuse = ctx.Random.NextInt(entityTNTPrimed.fuse / 4) + entityTNTPrimed.fuse / 8;
-        // ctx.Entities.SpawnEntity(entityTNTPrimed);
+        EntityTNTPrimed entityTNTPrimed = new(evt.Level, evt.X + 0.5F, evt.Y + 0.5F, evt.Z + 0.5F);
+        entityTNTPrimed.fuse = evt.Level.random.NextInt(entityTNTPrimed.fuse / 4) + entityTNTPrimed.fuse / 8;
+        evt.Level.Entities.SpawnEntity(entityTNTPrimed);
     }
 
-    public override void onMetadataChange(OnMetadataChangeEvt ctx)
+    public override void onMetadataChange(OnMetadataChangeEvt evt)
     {
-        if (!ctx.IsRemote)
+        if (!evt.Level.IsRemote)
         {
-            if ((ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z) & 1) == 0)
+            if ((evt.Meta & 1) == 0)
             {
-                // TODO: Implement this
-                // dropStack(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z, new ItemStack(TNT.id, 1, 0));
+                dropStack(evt.Level, evt.X, evt.Y, evt.Z, new ItemStack(TNT.id, 1, 0));
             }
             else
             {
-                // TODO: Implement this
-                // EntityTNTPrimed entityTNTPrimed = new EntityTNTPrimed(ctx.WorldRead, (double)(ctx.X + 0.5F), (double)(ctx.Y + 0.5F), (double)(ctx.Z + 0.5F));
-                // ctx.Entities.SpawnEntity(entityTNTPrimed);
-                // ctx.Broadcaster.PlaySoundAtPos(ctx.X + 0.5F, ctx.Y + 0.5F, ctx.Z + 0.5F, "random.fuse", 1.0F, 1.0F);
+                EntityTNTPrimed entityTNTPrimed = new EntityTNTPrimed(evt.Level, evt.X + 0.5F, evt.Y + 0.5F, evt.Z + 0.5F);
+                evt.Level.Entities.SpawnEntity(entityTNTPrimed);
+                evt.Level.Broadcaster.PlaySoundAtPos(evt.X + 0.5F, evt.Y + 0.5F, evt.Z + 0.5F, "random.fuse", 1.0F, 1.0F);
             }
         }
     }
@@ -67,7 +61,7 @@ internal class BlockTNT : Block
     {
         if (ctx.Player.getHand() != null && ctx.Player.getHand().itemId == Item.FlintAndSteel.id)
         {
-            ctx.WorldWrite.SetBlockMetaWithoutNotifyingNeighbors(ctx.X, ctx.Y, ctx.Z, 1);
+            ctx.Level.BlockWriter.SetBlockMetaWithoutNotifyingNeighbors(ctx.X, ctx.Y, ctx.Z, 1);
         }
 
         base.onBlockBreakStart(ctx);

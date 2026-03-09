@@ -12,11 +12,11 @@ internal class ItemBow : Item
         maxCount = 1;
     }
 
-    public override ItemStack use(ItemStack itemStack, World world, EntityPlayer entityPlayer)
+    public override ItemStack use(ItemStack itemStack, IBlockWorldContext world, EntityPlayer entityPlayer)
     {
         if (entityPlayer.inventory.consumeInventoryItem(Item.ARROW.id))
         {
-            world.playSound(entityPlayer, "random.bow", 1.0F, 1.0F / (itemRand.NextFloat() * 0.4F + 0.8F));
+            world.Broadcaster.PlaySoundAtEntity(entityPlayer, "random.bow", 1.0F, 1.0F / (itemRand.NextFloat() * 0.4F + 0.8F));
             if (!world.IsRemote)
             {
                 world.SpawnEntity(new EntityArrow(world, entityPlayer));

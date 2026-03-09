@@ -55,26 +55,26 @@ public class BlockGrass : Block
 
     public override void onTick(OnTickEvt ctx)
     {
-        if (!ctx.IsRemote)
+        if (!ctx.Level.IsRemote)
         {
-            if (ctx.Lighting.GetLightLevel(ctx.X, ctx.Y + 1, ctx.Z) < 4 && BlockLightOpacity[ctx.WorldRead.GetBlockId(ctx.X, ctx.Y + 1, ctx.Z)] > 2)
+            if (ctx.Level.Lighting.GetLightLevel(ctx.X, ctx.Y + 1, ctx.Z) < 4 && BlockLightOpacity[ctx.Level.BlocksReader.GetBlockId(ctx.X, ctx.Y + 1, ctx.Z)] > 2)
             {
-                if (ctx.Random.NextInt(4) != 0)
+                if (Random.Shared.Next(4) != 0)
                 {
                     return;
                 }
 
-                ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, Dirt.id);
+                ctx.Level.BlockWriter.SetBlock(ctx.X, ctx.Y, ctx.Z, Dirt.id);
             }
-            else if (ctx.Lighting.GetLightLevel(ctx.X, ctx.Y + 1, ctx.Z) >= 9)
+            else if (ctx.Level.Lighting.GetLightLevel(ctx.X, ctx.Y + 1, ctx.Z) >= 9)
             {
-                int spreadX = ctx.X + ctx.Random.NextInt(3) - 1;
-                int spreadY = ctx.Y + ctx.Random.NextInt(5) - 3;
-                int spreadZ = ctx.Z + ctx.Random.NextInt(3) - 1;
-                int blockAboveId = ctx.WorldRead.GetBlockId(spreadX, spreadY + 1, spreadZ);
-                if (ctx.WorldRead.GetBlockId(spreadX, spreadY, spreadZ) == Dirt.id && ctx.Lighting.GetLightLevel(spreadX, spreadY + 1, spreadZ) >= 4 && BlockLightOpacity[blockAboveId] <= 2)
+                int spreadX = ctx.X + Random.Shared.Next(3) - 1;
+                int spreadY = ctx.Y + Random.Shared.Next(5) - 3;
+                int spreadZ = ctx.Z + Random.Shared.Next(3) - 1;
+                int blockAboveId = ctx.Level.BlocksReader.GetBlockId(spreadX, spreadY + 1, spreadZ);
+                if (ctx.Level.BlocksReader.GetBlockId(spreadX, spreadY, spreadZ) == Dirt.id && ctx.Level.Lighting.GetLightLevel(spreadX, spreadY + 1, spreadZ) >= 4 && BlockLightOpacity[blockAboveId] <= 2)
                 {
-                    ctx.WorldWrite.SetBlock(spreadX, spreadY, spreadZ, GrassBlock.id);
+                    ctx.Level.BlockWriter.SetBlock(spreadX, spreadY, spreadZ, GrassBlock.id);
                 }
             }
         }

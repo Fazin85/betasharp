@@ -8,8 +8,8 @@ namespace BetaSharp.Inventorys;
 public class InventoryPlayer : IInventory
 {
 
-    public ItemStack[] main = new ItemStack[36];
-    public ItemStack[] armor = new ItemStack[4];
+    public ItemStack?[] main = new ItemStack[36];
+    public ItemStack?[] armor = new ItemStack[4];
     public int selectedSlot;
     public EntityPlayer player;
     private ItemStack? cursorStack;
@@ -153,7 +153,7 @@ public class InventoryPlayer : IInventory
         {
             if (main[slotIndex] != null)
             {
-                main[slotIndex].inventoryTick(player._ctx, player, slotIndex, selectedSlot == slotIndex);
+                main[slotIndex].inventoryTick(player._level, player, slotIndex, selectedSlot == slotIndex);
             }
         }
 

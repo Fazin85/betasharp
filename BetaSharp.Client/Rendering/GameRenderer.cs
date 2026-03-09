@@ -5,6 +5,7 @@ using BetaSharp.Client.Entities.FX;
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Items;
 using BetaSharp.Entities;
 using BetaSharp.Profiling;
@@ -92,7 +93,7 @@ public class GameRenderer
                 Vec3D var8 = var6 + var2 * var7;
                 _targetedEntity = null;
                 float var9 = 1.0F;
-                var var10 = _client.world.Entities.GetEntities(_client.camera, _client.camera.boundingBox.Stretch(var7.x * var2, var7.y * var2, var7.z * var2).Expand(var9, var9, var9));
+                List<Entity> var10 = _client.world.Entities.GetEntities(_client.camera, _client.camera.boundingBox.Stretch(var7.x * var2, var7.y * var2, var7.z * var2).Expand((double)var9, (double)var9, (double)var9));
                 double var11 = 0.0D;
 
                 for (int var13 = 0; var13 < var10.Count; ++var13)
@@ -233,6 +234,20 @@ public class GameRenderer
             float var3 = var2 * var2 * var2 * 8.0F;
             float var4 = _client.mouseHelper.DeltaX * var3;
             float var5 = _client.mouseHelper.DeltaY * var3;
+
+            if (_client.isControllerMode)
+            {
+                float rx = Controller.RightStickX;
+                float ry = Controller.RightStickY;
+                float deadzone = Controller.RightStickDeadzone;
+
+                // quadratic curve
+                float activeRx = (Math.Abs(rx) - deadzone) / (1.0f - deadzone);
+                var4 += activeRx * activeRx * Math.Sign(rx) * 10f * var3;
+
+                float activeRy = (Math.Abs(ry) - deadzone) / (1.0f - deadzone);
+                var5 += activeRy * activeRy * Math.Sign(ry) * 10f * var3;
+            }
             int var6 = -1;
             if (_client.options.InvertMouse)
             {
@@ -253,8 +268,18 @@ public class GameRenderer
             ScaledResolution var13 = new(_client.options, _client.displayWidth, _client.displayHeight);
             int scaledWidth = var13.ScaledWidth;
             int scaledHeight = var13.ScaledHeight;
-            int scaledMouseX = Mouse.getX() * scaledWidth / _client.displayWidth;
-            int scaledMouseY = scaledHeight - Mouse.getY() * scaledHeight / _client.displayHeight - 1;
+            int scaledMouseX;
+            int scaledMouseY;
+            if (_client.isControllerMode)
+            {
+                scaledMouseX = (int)(_client.virtualCursorX * scaledWidth / _client.displayWidth);
+                scaledMouseY = (int)(_client.virtualCursorY * scaledHeight / _client.displayHeight);
+            }
+            else
+            {
+                scaledMouseX = Mouse.getX() * scaledWidth / _client.displayWidth;
+                scaledMouseY = scaledHeight - Mouse.getY() * scaledHeight / _client.displayHeight - 1;
+            }
             int var7 = 30 + (int)(_client.options.LimitFramerate * 210.0f);
 
             if (var7 < 240)
@@ -292,6 +317,11 @@ public class GameRenderer
                 if (_client.currentScreen != null && _client.currentScreen.ParticlesGui != null)
                 {
                     _client.currentScreen.ParticlesGui.render(tickDelta);
+                }
+
+                if (_client.isControllerMode)
+                {
+                    DrawVirtualCursor(scaledMouseX, scaledMouseY);
                 }
             }
 
@@ -337,7 +367,7 @@ public class GameRenderer
         double var7 = var4.lastTickX + (var4.x - var4.lastTickX) * (double)tickDelta;
         double var9 = var4.lastTickY + (var4.y - var4.lastTickY) * (double)tickDelta;
         double var11 = var4.lastTickZ + (var4.z - var4.lastTickZ) * (double)tickDelta;
-        IChunkSource var13 = _client.world.getChunkSource();
+        IChunkSource var13 = _client.world._blockHost.ChunkSource;
 
         Profiler.Start("updateFog");
         GLManager.GL.Viewport(0, 0, (uint)_client.displayWidth, (uint)_client.displayHeight);
@@ -462,8 +492,8 @@ public class GameRenderer
             {
                 int var16 = var4 + _random.NextInt(var7) - _random.NextInt(var7);
                 int var17 = var6 + _random.NextInt(var7) - _random.NextInt(var7);
-                int var18 = var3.getTopSolidBlockY(var16, var17);
-                int var19 = var3.getBlockId(var16, var18 - 1, var17);
+                int var18 = var3.BlocksReader.GetTopSolidBlockY(var16, var17);
+                int var19 = var3.BlocksReader.GetBlockId(var16, var18 - 1, var17);
                 if (var18 <= var5 + var7 && var18 >= var5 - var7 && var3.GetBiomeSource().GetBiome(var16, var17).CanSpawnLightningBolt())
                 {
                     float var20 = _random.NextFloat();
@@ -493,13 +523,13 @@ public class GameRenderer
             if (var14 > 0 && _random.NextInt(3) < _rainSoundCounter++)
             {
                 _rainSoundCounter = 0;
-                if (var10 > var2.y + 1.0D && var3.getTopSolidBlockY(MathHelper.Floor(var2.x), MathHelper.Floor(var2.z)) > MathHelper.Floor(var2.y))
+                if (var10 > var2.y + 1.0D && var3.BlocksReader.GetTopSolidBlockY(MathHelper.Floor(var2.x), MathHelper.Floor(var2.z)) > MathHelper.Floor(var2.y))
                 {
-                    _client.world.playSound(var8, var10, var12, "ambient.weather.rain", 0.1F, 0.5F);
+                    _client.world.Broadcaster.PlaySoundAtPos(var8, var10, var12, "ambient.weather.rain", 0.1F, 0.5F);
                 }
                 else
                 {
-                    _client.world.playSound(var8, var10, var12, "ambient.weather.rain", 0.2F, 1.0F);
+                    _client.world.Broadcaster.PlaySoundAtPos(var8, var10, var12, "ambient.weather.rain", 0.2F, 1.0F);
                 }
             }
         }
@@ -545,7 +575,7 @@ public class GameRenderer
                     var21 = var17[var18++];
                     if (var21.GetEnableSnow())
                     {
-                        var22 = var4.getTopSolidBlockY(var19, var20);
+                        var22 = var4.BlocksReader.GetTopSolidBlockY(var19, var20);
                         if (var22 < 0)
                         {
                             var22 = 0;
@@ -611,7 +641,7 @@ public class GameRenderer
                     var21 = var17[var18++];
                     if (var21.CanSpawnLightningBolt())
                     {
-                        var22 = var4.getTopSolidBlockY(var19, var20);
+                        var22 = var4.BlocksReader.GetTopSolidBlockY(var19, var20);
                         var23 = var6 - var16;
                         var24 = var6 + var16;
                         if (var23 < var22)
@@ -667,6 +697,39 @@ public class GameRenderer
         GLManager.GL.MatrixMode(GLEnum.Modelview);
         GLManager.GL.LoadIdentity();
         GLManager.GL.Translate(0.0F, 0.0F, -2000.0F);
+    }
+
+    public void DrawVirtualCursor(int x, int y)
+    {
+        if (_client.isControllerMode)
+        {
+            GLManager.GL.Disable(GLEnum.Lighting);
+            GLManager.GL.Disable(GLEnum.DepthTest);
+            GLManager.GL.Enable(GLEnum.Blend);
+            GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
+            GLManager.GL.Color4(1.0f, 1.0f, 1.0f, 1.0f);
+
+            TextureHandle textureId = _client.textureManager.GetTextureId("/gui/Pointer.png");
+            _client.textureManager.BindTexture(textureId);
+
+            const int width = 32;
+            const int height = 32;
+
+            x -= width / 2;
+            y -= height / 2;
+
+            const float zLevel = 10.0f;
+            Tessellator tess = Tessellator.instance;
+            tess.startDrawingQuads();
+            tess.addVertexWithUV(x, y + height, zLevel, 0.0, 1.0);
+            tess.addVertexWithUV(x + width, y + height, zLevel, 1.0, 1.0);
+            tess.addVertexWithUV(x + width, y, zLevel, 1.0, 0.0);
+            tess.addVertexWithUV(x, y, zLevel, 0.0, 0.0);
+            tess.draw();
+
+            GLManager.GL.Disable(GLEnum.Blend);
+            GLManager.GL.Enable(GLEnum.DepthTest);
+        }
     }
 
     private void updateSkyAndFogColors(float tickDelta)

@@ -2,8 +2,6 @@ using BetaSharp.Blocks;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Items;
 
@@ -14,7 +12,7 @@ internal class ItemBed : Item
     {
     }
 
-    public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int meta)
+    public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, IBlockWorldContext world, int x, int y, int z, int meta)
     {
         if (meta != 1)
         {
@@ -47,10 +45,10 @@ internal class ItemBed : Item
                 headOffsetX = 1;
             }
 
-            if (world.isAir(x, y, z) && world.isAir(x + headOffsetX, y, z + headOffsetZ) && world.shouldSuffocate(x, y - 1, z) && world.shouldSuffocate(x + headOffsetX, y - 1, z + headOffsetZ))
+            if (world.BlocksReader.IsAir(x, y, z) && world.BlocksReader.IsAir(x + headOffsetX, y, z + headOffsetZ) && world.BlocksReader.ShouldSuffocate(x, y - 1, z) && world.BlocksReader.ShouldSuffocate(x + headOffsetX, y - 1, z + headOffsetZ))
             {
-                world.setBlock(x, y, z, blockBed.id, direction);
-                world.setBlock(x + headOffsetX, y, z + headOffsetZ, blockBed.id, direction + 8);
+                world.BlockWriter.SetBlock(x, y, z, blockBed.id, direction);
+                world.BlockWriter.SetBlock(x + headOffsetX, y, z + headOffsetZ, blockBed.id, direction + 8);
                 --itemStack.count;
                 return true;
             }

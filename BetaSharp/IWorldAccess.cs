@@ -3,7 +3,7 @@ using BetaSharp.Entities;
 
 namespace BetaSharp;
 
-public interface IWorldAccess
+public interface IWorldEventListener
 {
     void blockUpdate(int var1, int var2, int var3);
 
@@ -19,9 +19,13 @@ public interface IWorldAccess
 
     void notifyAmbientDarknessChanged();
 
+    void playNote(int x, int y, int z, int soundType, int pitch);
+
     void playStreaming(string var1, int var2, int var3, int var4);
 
     void updateBlockEntity(int var1, int var2, int var3, BlockEntity var4);
 
     void worldEvent(EntityPlayer? player, int @event, int x, int y, int z, int data);
+
+    void broadcastEntityEvent(Entity entity, byte @event);
 }

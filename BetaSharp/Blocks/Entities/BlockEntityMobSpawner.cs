@@ -19,7 +19,7 @@ public class BlockEntityMobSpawner : BlockEntity
 
     public void SetSpawnedEntityId(string spawnedEntityId) => _spawnedEntityId = spawnedEntityId;
 
-    public bool IsPlayerInRange() => Level.getClosestPlayer(X + 0.5D, Y + 0.5D, Z + 0.5D, 16.0D) != null;
+    public bool IsPlayerInRange() => Level.Entities.GetClosestPlayer(X + 0.5D, Y + 0.5D, Z + 0.5D, 16.0D) != null;
 
     public override void tick()
     {
@@ -29,8 +29,8 @@ public class BlockEntityMobSpawner : BlockEntity
             double particleX = X + Level.random.NextFloat();
             double particleY = Y + Level.random.NextFloat();
             double particleZ = Z + Level.random.NextFloat();
-            Level.addParticle("smoke", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
-            Level.addParticle("flame", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
+            Level.Broadcaster.AddParticle("smoke", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
+            Level.Broadcaster.AddParticle("flame", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
 
             for (Rotation += 1000.0F / (SpawnDelay + 200.0F); Rotation > 360.0D; LastRotation -= 360.0D)
             {
@@ -54,13 +54,13 @@ public class BlockEntityMobSpawner : BlockEntity
 
                 for (int spawnAttempt = 0; spawnAttempt < max; ++spawnAttempt)
                 {
-                    EntityLiving entityLiving = (EntityLiving)EntityRegistry.Create(_spawnedEntityId, Level);
+                    EntityLiving? entityLiving = (EntityLiving?)EntityRegistry.Create(_spawnedEntityId, Level);
                     if (entityLiving == null)
                     {
                         return;
                     }
 
-                    int count = Level.CollectEntitiesOfType<EntityLiving>(new Box(X, Y, Z, X + 1, Y + 1, Z + 1).Expand(8.0D, 4.0D, 8.0D)).Where(e => e.GetType() == entityLiving.GetType()).Count();
+                    int count = Level.Entities.CollectEntitiesOfType<EntityLiving>(new Box(X, Y, Z, X + 1, Y + 1, Z + 1).Expand(8.0D, 4.0D, 8.0D)).Where(e => e.GetType() == entityLiving.GetType()).Count();
                     if (count >= 6)
                     {
                         ResetDelay();
@@ -82,8 +82,8 @@ public class BlockEntityMobSpawner : BlockEntity
                                 particleX = X + 0.5D + (Level.random.NextFloat() - 0.5D) * 2.0D;
                                 particleY = Y + 0.5D + (Level.random.NextFloat() - 0.5D) * 2.0D;
                                 particleZ = Z + 0.5D + (Level.random.NextFloat() - 0.5D) * 2.0D;
-                                Level.addParticle("smoke", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
-                                Level.addParticle("flame", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
+                                Level.Broadcaster.AddParticle("smoke", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
+                                Level.Broadcaster.AddParticle("flame", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
                             }
 
                             entityLiving.animateSpawn();

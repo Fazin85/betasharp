@@ -1,11 +1,11 @@
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Network.Packets.S2CPlay;
-using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core; // Kept your new Core namespace!
 
 namespace BetaSharp.Server.Worlds;
 
-internal class ServerWorldEventListener : IWorldAccess
+internal class ServerWorldEventListener : IWorldEventListener
 {
     private readonly BetaSharpServer server;
     private readonly ServerWorld world;
@@ -14,10 +14,6 @@ internal class ServerWorldEventListener : IWorldAccess
     {
         this.server = server;
         this.world = world;
-    }
-
-    public void addParticle(string particle, double x, double y, double z, double velocityX, double velocityY, double velocityZ)
-    {
     }
 
     public void notifyEntityAdded(Entity entity)
@@ -30,25 +26,9 @@ internal class ServerWorldEventListener : IWorldAccess
         server.getEntityTracker(world.dimension.Id).onEntityRemoved(entity);
     }
 
-    public void playSound(string sound, double x, double y, double z, float volume, float pitch)
-    {
-    }
-
-    public void setBlocksDirty(int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
-    {
-    }
-
-    public void notifyAmbientDarknessChanged()
-    {
-    }
-
     public void blockUpdate(int x, int y, int z)
     {
         server.playerManager.markDirty(x, y, z, world.dimension.Id);
-    }
-
-    public void playStreaming(String stream, int x, int y, int z)
-    {
     }
 
     public void updateBlockEntity(int x, int y, int z, BlockEntity blockEntity)
@@ -56,12 +36,35 @@ internal class ServerWorldEventListener : IWorldAccess
         server.playerManager.updateBlockEntity(x, y, z, blockEntity);
     }
 
-    public void worldEvent(EntityPlayer player, int @event, int x, int y, int z, int data)
+    public void worldEvent(EntityPlayer? player, int @event, int x, int y, int z, int data)
     {
-        server.playerManager.sendToAround(player, x, y, z, 64.0, world.dimension.Id, new WorldEventS2CPacket(@event, x, y, z, data));
+        server.playerManager.sendToAround(player, x, y, z, 64.0, world.dimension.Id, WorldEventS2CPacket.Get(@event, x, y, z, data));
     }
 
-    public void spawnParticle(string var1, double var2, double var4, double var6, double var8, double var10, double var12)
+    public void broadcastEntityEvent(Entity entity, byte @event)
     {
+        EntityStatusS2CPacket packet = EntityStatusS2CPacket.Get(entity.id, @event);
+        server.getEntityTracker(world.dimension.Id).sendToAround(entity, packet);
     }
+
+    public void playNote(int x, int y, int z, int soundType, int pitch)
+    {
+        server.playerManager.sendToAround(x, y, z, 64.0, world.dimension.Id, PlayNoteSoundS2CPacket.Get(x, y, z, soundType, pitch));
+    }
+
+    // ====================================================================================
+    // TODO: Move to Client ???? INTENTIONALLY EMPTY METHODS: Headless server methods (No graphics/audio/particles on the server side)
+    // ====================================================================================
+
+    public void addParticle(string particle, double x, double y, double z, double velocityX, double velocityY, double velocityZ) { }
+    
+    public void spawnParticle(string particle, double x, double y, double z, double velocityX, double velocityY, double velocityZ) { }
+    
+    public void playSound(string sound, double x, double y, double z, float volume, float pitch) { }
+
+    public void playStreaming(string stream, int x, int y, int z) { }
+    
+    public void setBlocksDirty(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) { }
+    
+    public void notifyAmbientDarknessChanged() { }
 }

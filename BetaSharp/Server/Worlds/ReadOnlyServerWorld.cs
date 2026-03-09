@@ -7,7 +7,7 @@ internal class ReadOnlyServerWorld : ServerWorld
 {
     public ReadOnlyServerWorld(BetaSharpServer server, IWorldStorage storage, string saveName, int dimension, long seed, ServerWorld del) : base(server, storage, saveName, dimension, seed)
     {
-        PersistentStateManager = del.PersistentStateManager;
+        StateManager = del.StateManager;
         Properties = new DerivingWorldProperties(del.Properties);
         Rules = del.Rules;
     }

@@ -1,7 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Worlds.Generation.Generators.Carvers;
 
@@ -195,7 +194,7 @@ internal class CaveCarver : Carver
         }
     }
 
-    protected override void CarveCaves(World world, int chunkX, int chunkZ, int centerChunkX, int centerChunkZ, byte[] blocks)
+    protected override void CarveCaves(IBlockWorldContext world, int chunkX, int chunkZ, int centerChunkX, int centerChunkZ, byte[] blocks)
     {
         int numCaves = Rand.NextInt(Rand.NextInt(Rand.NextInt(40) + 1) + 1);
         if (Rand.NextInt(15) != 0)

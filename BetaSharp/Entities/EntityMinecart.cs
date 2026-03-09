@@ -4,7 +4,6 @@ using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Entities;
@@ -12,15 +11,6 @@ namespace BetaSharp.Entities;
 //TODO: BREAKING MINECART CRASHES THE GAME!!
 public class EntityMinecart : Entity, IInventory
 {
-    private ItemStack[] cargoItems;
-    public int minecartCurrentDamage;
-    public int minecartTimeSinceHit;
-    public int minecartRockDirection;
-    private bool yawFlipped;
-    public int type;
-    public int fuel;
-    public double pushX;
-    public double pushZ;
     private static readonly int[][][] field_855_j =
     [
         [[0, 0, -1], [0, 0, 1]],
@@ -36,18 +26,27 @@ public class EntityMinecart : Entity, IInventory
     ];
 
     private readonly ILogger<EntityMinecart> _logger = Log.Instance.For<EntityMinecart>();
-
-    private int field_9415_k;
-    private double field_9414_l;
-    private double field_9413_m;
-    private double field_9412_n;
-    private double field_9411_o;
-    private double field_9410_p;
+    private ItemStack[] cargoItems;
     private double cartVelocityX;
     private double cartVelocityY;
     private double cartVelocityZ;
+    private double field_9410_p;
+    private double field_9411_o;
+    private double field_9412_n;
+    private double field_9413_m;
+    private double field_9414_l;
 
-    public EntityMinecart(World world) : base(world)
+    private int field_9415_k;
+    public int fuel;
+    public int minecartCurrentDamage;
+    public int minecartRockDirection;
+    public int minecartTimeSinceHit;
+    public double pushX;
+    public double pushZ;
+    public int type;
+    private bool yawFlipped;
+
+    public EntityMinecart(IBlockWorldContext world) : base(world)
     {
         cargoItems = new ItemStack[36];
         minecartCurrentDamage = 0;
@@ -59,33 +58,9 @@ public class EntityMinecart : Entity, IInventory
         standingEyeHeight = height / 2.0F;
     }
 
-    protected override bool bypassesSteppingEffects()
+    public EntityMinecart(IBlockWorldContext world, double x, double y, double z, int type) : this(world)
     {
-        return false;
-    }
-
-    protected override void initDataTracker()
-    {
-    }
-
-    public override Box? getCollisionAgainstShape(Entity entity)
-    {
-        return entity.boundingBox;
-    }
-
-    public override Box? getBoundingBox()
-    {
-        return null;
-    }
-
-    public override bool isPushable()
-    {
-        return true;
-    }
-
-    public EntityMinecart(World world, double x, double y, double z, int type) : this(world)
-    {
-        setPosition(x, y + (double)standingEyeHeight, z);
+        setPosition(x, y + standingEyeHeight, z);
         velocityX = 0.0D;
         velocityY = 0.0D;
         velocityZ = 0.0D;
@@ -95,14 +70,70 @@ public class EntityMinecart : Entity, IInventory
         this.type = type;
     }
 
-    public override double getPassengerRidingHeight()
+    public int size() => 27;
+
+    public ItemStack getStack(int slotIndex) => cargoItems[slotIndex];
+
+    public ItemStack removeStack(int slotIndex, int amount)
     {
-        return (double)height * 0.0D - (double)0.3F;
+        if (cargoItems[slotIndex] != null)
+        {
+            ItemStack itemStack;
+            if (cargoItems[slotIndex].count <= amount)
+            {
+                itemStack = cargoItems[slotIndex];
+                cargoItems[slotIndex] = null;
+                return itemStack;
+            }
+
+            itemStack = cargoItems[slotIndex].split(amount);
+            if (cargoItems[slotIndex].count == 0)
+            {
+                cargoItems[slotIndex] = null;
+            }
+
+            return itemStack;
+        }
+
+        return null;
     }
+
+    public void setStack(int slotIndex, ItemStack? itemStack)
+    {
+        cargoItems[slotIndex] = itemStack;
+        if (itemStack != null && itemStack.count > getMaxCountPerStack())
+        {
+            itemStack.count = getMaxCountPerStack();
+        }
+    }
+
+    public string getName() => "Minecart";
+
+    public int getMaxCountPerStack() => 64;
+
+    public void markDirty()
+    {
+    }
+
+    public bool canPlayerUse(EntityPlayer player) => dead ? false : player.getSquaredDistance(this) <= 64.0D;
+
+    protected override bool bypassesSteppingEffects() => false;
+
+    protected override void initDataTracker()
+    {
+    }
+
+    public override Box? getCollisionAgainstShape(Entity entity) => entity.boundingBox;
+
+    public override Box? getBoundingBox() => null;
+
+    public override bool isPushable() => true;
+
+    public override double getPassengerRidingHeight() => height * 0.0D - 0.3F;
 
     public override bool damage(Entity entity, int amount)
     {
-        if (!_level.isRemote && !dead)
+        if (!_level.IsRemote && !dead)
         {
             minecartRockDirection = -minecartRockDirection;
             minecartTimeSinceHit = 10;
@@ -139,11 +170,11 @@ public class EntityMinecart : Entity, IInventory
                                 }
 
                                 itemStack.count -= dropCount;
-                                EntityItem entityItem = new EntityItem(_level, x + (double)offsetX, y + (double)offsetY, z + (double)offsetZ, new ItemStack(itemStack.itemId, dropCount, itemStack.getDamage()));
+                                EntityItem entityItem = new(_level, x + offsetX, y + offsetY, z + offsetZ, new ItemStack(itemStack.itemId, dropCount, itemStack.getDamage()));
                                 float scatterSpeed = 0.05F;
-                                entityItem.velocityX = (double)((float)random.NextGaussian() * scatterSpeed);
-                                entityItem.velocityY = (double)((float)random.NextGaussian() * scatterSpeed + 0.2F);
-                                entityItem.velocityZ = (double)((float)random.NextGaussian() * scatterSpeed);
+                                entityItem.velocityX = (float)random.NextGaussian() * scatterSpeed;
+                                entityItem.velocityY = (float)random.NextGaussian() * scatterSpeed + 0.2F;
+                                entityItem.velocityZ = (float)random.NextGaussian() * scatterSpeed;
                                 _level.SpawnEntity(entityItem);
                             }
                         }
@@ -159,10 +190,8 @@ public class EntityMinecart : Entity, IInventory
 
             return true;
         }
-        else
-        {
-            return true;
-        }
+
+        return true;
     }
 
     public override void animateHurt()
@@ -173,10 +202,7 @@ public class EntityMinecart : Entity, IInventory
         minecartCurrentDamage += minecartCurrentDamage * 10;
     }
 
-    public override bool isCollidable()
-    {
-        return !dead;
-    }
+    public override bool isCollidable() => !dead;
 
     public override void markDead()
     {
@@ -198,11 +224,11 @@ public class EntityMinecart : Entity, IInventory
                     }
 
                     itemStack.count -= dropCount;
-                    EntityItem entityItem = new EntityItem(_level, x + (double)offsetX, y + (double)offsetY, z + (double)offsetZ, new ItemStack(itemStack.itemId, dropCount, itemStack.getDamage()));
+                    EntityItem entityItem = new(_level, x + offsetX, y + offsetY, z + offsetZ, new ItemStack(itemStack.itemId, dropCount, itemStack.getDamage()));
                     float scatterSpeed = 0.05F;
-                    entityItem.velocityX = (double)((float)random.NextGaussian() * scatterSpeed);
-                    entityItem.velocityY = (double)((float)random.NextGaussian() * scatterSpeed + 0.2F);
-                    entityItem.velocityZ = (double)((float)random.NextGaussian() * scatterSpeed);
+                    entityItem.velocityX = (float)random.NextGaussian() * scatterSpeed;
+                    entityItem.velocityY = (float)random.NextGaussian() * scatterSpeed + 0.2F;
+                    entityItem.velocityZ = (float)random.NextGaussian() * scatterSpeed;
                     _level.SpawnEntity(entityItem);
                 }
             }
@@ -224,15 +250,15 @@ public class EntityMinecart : Entity, IInventory
         }
 
         double var7;
-        if (_level.isRemote && field_9415_k > 0)
+        if (_level.IsRemote && field_9415_k > 0)
         {
             if (field_9415_k > 0)
             {
-                double var46 = x + (field_9414_l - x) / (double)field_9415_k;
-                double var47 = y + (field_9413_m - y) / (double)field_9415_k;
-                double var5 = z + (field_9412_n - z) / (double)field_9415_k;
+                double var46 = x + (field_9414_l - x) / field_9415_k;
+                double var47 = y + (field_9413_m - y) / field_9415_k;
+                double var5 = z + (field_9412_n - z) / field_9415_k;
 
-                for (var7 = field_9411_o - (double)yaw; var7 < -180.0D; var7 += 360.0D)
+                for (var7 = field_9411_o - yaw; var7 < -180.0D; var7 += 360.0D)
                 {
                 }
 
@@ -241,8 +267,8 @@ public class EntityMinecart : Entity, IInventory
                     var7 -= 360.0D;
                 }
 
-                yaw = (float)((double)yaw + var7 / (double)field_9415_k);
-                pitch = (float)((double)pitch + (field_9410_p - (double)pitch) / (double)field_9415_k);
+                yaw = (float)(yaw + var7 / field_9415_k);
+                pitch = (float)(pitch + (field_9410_p - pitch) / field_9415_k);
                 --field_9415_k;
                 setPosition(var46, var47, var5);
                 setRotation(yaw, pitch);
@@ -252,18 +278,17 @@ public class EntityMinecart : Entity, IInventory
                 setPosition(x, y, z);
                 setRotation(yaw, pitch);
             }
-
         }
         else
         {
             prevX = x;
             prevY = y;
             prevZ = z;
-            velocityY -= (double)0.04F;
+            velocityY -= 0.04F;
             int floorX = MathHelper.Floor(x);
             int floorY = MathHelper.Floor(y);
             int floorZ = MathHelper.Floor(z);
-            if (BlockRail.isRail(_level, floorX, floorY - 1, floorZ))
+            if (BlockRail.IsRail(_level, floorX, floorY - 1, floorZ))
             {
                 --floorY;
             }
@@ -271,12 +296,12 @@ public class EntityMinecart : Entity, IInventory
             double var4 = 0.4D;
             bool var6 = false;
             var7 = 1.0D / 128.0D;
-            int var9 = _level.getBlockId(floorX, floorY, floorZ);
-            if (BlockRail.isRail(var9))
+            int var9 = _level.BlocksReader.GetBlockId(floorX, floorY, floorZ);
+            if (BlockRail.IsRail(var9))
             {
                 Vec3D? var10 = func_514_g(x, y, z);
-                int var11 = _level.getBlockMeta(floorX, floorY, floorZ);
-                y = (double)floorY;
+                int var11 = _level.BlocksReader.GetMeta(floorX, floorY, floorZ);
+                y = floorY;
                 bool var12 = false;
                 bool var13 = false;
                 if (var9 == Block.PoweredRail.id)
@@ -292,7 +317,7 @@ public class EntityMinecart : Entity, IInventory
 
                 if (var11 >= 2 && var11 <= 5)
                 {
-                    y = (double)(floorY + 1);
+                    y = floorY + 1;
                 }
 
                 if (var11 == 2)
@@ -316,9 +341,9 @@ public class EntityMinecart : Entity, IInventory
                 }
 
                 int[][] var14 = field_855_j[var11];
-                double var15 = (double)(var14[1][0] - var14[0][0]);
-                double var17 = (double)(var14[1][2] - var14[0][2]);
-                double var19 = System.Math.Sqrt(var15 * var15 + var17 * var17);
+                double var15 = var14[1][0] - var14[0][0];
+                double var17 = var14[1][2] - var14[0][2];
+                double var19 = Math.Sqrt(var15 * var15 + var17 * var17);
                 double var21 = velocityX * var15 + velocityZ * var17;
                 if (var21 < 0.0D)
                 {
@@ -326,13 +351,13 @@ public class EntityMinecart : Entity, IInventory
                     var17 = -var17;
                 }
 
-                double var23 = System.Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
+                double var23 = Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
                 velocityX = var23 * var15 / var19;
                 velocityZ = var23 * var17 / var19;
                 double var25;
                 if (var13)
                 {
-                    var25 = System.Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
+                    var25 = Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
                     if (var25 < 0.03D)
                     {
                         velocityX *= 0.0D;
@@ -348,10 +373,10 @@ public class EntityMinecart : Entity, IInventory
                 }
 
                 var25 = 0.0D;
-                double var27 = (double)floorX + 0.5D + (double)var14[0][0] * 0.5D;
-                double var29 = (double)floorZ + 0.5D + (double)var14[0][2] * 0.5D;
-                double var31 = (double)floorX + 0.5D + (double)var14[1][0] * 0.5D;
-                double var33 = (double)floorZ + 0.5D + (double)var14[1][2] * 0.5D;
+                double var27 = floorX + 0.5D + var14[0][0] * 0.5D;
+                double var29 = floorZ + 0.5D + var14[0][2] * 0.5D;
+                double var31 = floorX + 0.5D + var14[1][0] * 0.5D;
+                double var33 = floorZ + 0.5D + var14[1][2] * 0.5D;
                 var15 = var31 - var27;
                 var17 = var33 - var29;
                 double var35;
@@ -359,13 +384,13 @@ public class EntityMinecart : Entity, IInventory
                 double var39;
                 if (var15 == 0.0D)
                 {
-                    x = (double)floorX + 0.5D;
-                    var25 = z - (double)floorZ;
+                    x = floorX + 0.5D;
+                    var25 = z - floorZ;
                 }
                 else if (var17 == 0.0D)
                 {
-                    z = (double)floorZ + 0.5D;
-                    var25 = x - (double)floorX;
+                    z = floorZ + 0.5D;
+                    var25 = x - floorX;
                 }
                 else
                 {
@@ -377,7 +402,7 @@ public class EntityMinecart : Entity, IInventory
 
                 x = var27 + var15 * var25;
                 z = var29 + var17 * var25;
-                setPosition(x, y + (double)standingEyeHeight, z);
+                setPosition(x, y + standingEyeHeight, z);
                 var35 = velocityX;
                 var37 = velocityZ;
                 if (passenger != null)
@@ -409,54 +434,54 @@ public class EntityMinecart : Entity, IInventory
                 move(var35, 0.0D, var37);
                 if (var14[0][1] != 0 && MathHelper.Floor(x) - floorX == var14[0][0] && MathHelper.Floor(z) - floorZ == var14[0][2])
                 {
-                    setPosition(x, y + (double)var14[0][1], z);
+                    setPosition(x, y + var14[0][1], z);
                 }
                 else if (var14[1][1] != 0 && MathHelper.Floor(x) - floorX == var14[1][0] && MathHelper.Floor(z) - floorZ == var14[1][2])
                 {
-                    setPosition(x, y + (double)var14[1][1], z);
+                    setPosition(x, y + var14[1][1], z);
                 }
 
                 if (passenger != null)
                 {
-                    velocityX *= (double)0.997F;
+                    velocityX *= 0.997F;
                     velocityY *= 0.0D;
-                    velocityZ *= (double)0.997F;
+                    velocityZ *= 0.997F;
                 }
                 else
                 {
                     if (type == 2)
                     {
-                        var39 = (double)MathHelper.Sqrt(pushX * pushX + pushZ * pushZ);
+                        var39 = MathHelper.Sqrt(pushX * pushX + pushZ * pushZ);
                         if (var39 > 0.01D)
                         {
                             var6 = true;
                             pushX /= var39;
                             pushZ /= var39;
                             double var41 = 0.04D;
-                            velocityX *= (double)0.8F;
+                            velocityX *= 0.8F;
                             velocityY *= 0.0D;
-                            velocityZ *= (double)0.8F;
+                            velocityZ *= 0.8F;
                             velocityX += pushX * var41;
                             velocityZ += pushZ * var41;
                         }
                         else
                         {
-                            velocityX *= (double)0.9F;
+                            velocityX *= 0.9F;
                             velocityY *= 0.0D;
-                            velocityZ *= (double)0.9F;
+                            velocityZ *= 0.9F;
                         }
                     }
 
-                    velocityX *= (double)0.96F;
+                    velocityX *= 0.96F;
                     velocityY *= 0.0D;
-                    velocityZ *= (double)0.96F;
+                    velocityZ *= 0.96F;
                 }
 
                 Vec3D? var52 = func_514_g(x, y, z);
                 if (var52 != null && var10 != null)
                 {
                     double var40 = (var10.Value.y - var52.Value.y) * 0.05D;
-                    var23 = System.Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
+                    var23 = Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
                     if (var23 > 0.0D)
                     {
                         velocityX = velocityX / var23 * (var23 + var40);
@@ -470,15 +495,15 @@ public class EntityMinecart : Entity, IInventory
                 int var54 = MathHelper.Floor(z);
                 if (var53 != floorX || var54 != floorZ)
                 {
-                    var23 = System.Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
-                    velocityX = var23 * (double)(var53 - floorX);
-                    velocityZ = var23 * (double)(var54 - floorZ);
+                    var23 = Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
+                    velocityX = var23 * (var53 - floorX);
+                    velocityZ = var23 * (var54 - floorZ);
                 }
 
                 double var42;
                 if (type == 2)
                 {
-                    var42 = (double)MathHelper.Sqrt(pushX * pushX + pushZ * pushZ);
+                    var42 = MathHelper.Sqrt(pushX * pushX + pushZ * pushZ);
                     if (var42 > 0.01D && velocityX * velocityX + velocityZ * velocityZ > 0.001D)
                     {
                         pushX /= var42;
@@ -498,7 +523,7 @@ public class EntityMinecart : Entity, IInventory
 
                 if (var12)
                 {
-                    var42 = System.Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
+                    var42 = Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
                     if (var42 > 0.01D)
                     {
                         double var44 = 0.06D;
@@ -507,22 +532,22 @@ public class EntityMinecart : Entity, IInventory
                     }
                     else if (var11 == 1)
                     {
-                        if (_level.shouldSuffocate(floorX - 1, floorY, floorZ))
+                        if (_level.BlocksReader.ShouldSuffocate(floorX - 1, floorY, floorZ))
                         {
                             velocityX = 0.02D;
                         }
-                        else if (_level.shouldSuffocate(floorX + 1, floorY, floorZ))
+                        else if (_level.BlocksReader.ShouldSuffocate(floorX + 1, floorY, floorZ))
                         {
                             velocityX = -0.02D;
                         }
                     }
                     else if (var11 == 0)
                     {
-                        if (_level.shouldSuffocate(floorX, floorY, floorZ - 1))
+                        if (_level.BlocksReader.ShouldSuffocate(floorX, floorY, floorZ - 1))
                         {
                             velocityZ = 0.02D;
                         }
-                        else if (_level.shouldSuffocate(floorX, floorY, floorZ + 1))
+                        else if (_level.BlocksReader.ShouldSuffocate(floorX, floorY, floorZ + 1))
                         {
                             velocityZ = -0.02D;
                         }
@@ -561,9 +586,9 @@ public class EntityMinecart : Entity, IInventory
                 move(velocityX, velocityY, velocityZ);
                 if (!onGround)
                 {
-                    velocityX *= (double)0.95F;
-                    velocityY *= (double)0.95F;
-                    velocityZ *= (double)0.95F;
+                    velocityX *= 0.95F;
+                    velocityY *= 0.95F;
+                    velocityZ *= 0.95F;
                 }
             }
 
@@ -572,7 +597,7 @@ public class EntityMinecart : Entity, IInventory
             double var49 = prevZ - z;
             if (var48 * var48 + var49 * var49 > 0.001D)
             {
-                yaw = (float)(System.Math.Atan2(var49, var48) * 180.0D / System.Math.PI);
+                yaw = (float)(Math.Atan2(var49, var48) * 180.0D / Math.PI);
                 if (yawFlipped)
                 {
                     yaw += 180.0F;
@@ -580,7 +605,7 @@ public class EntityMinecart : Entity, IInventory
             }
 
             double var50;
-            for (var50 = (double)(yaw - prevYaw); var50 >= 180.0D; var50 -= 360.0D)
+            for (var50 = yaw - prevYaw; var50 >= 180.0D; var50 -= 360.0D)
             {
             }
 
@@ -596,7 +621,7 @@ public class EntityMinecart : Entity, IInventory
             }
 
             setRotation(yaw, pitch);
-            var var16 = _level.getEntities(this, boundingBox.Expand((double)0.2F, 0.0D, (double)0.2F));
+            var var16 = _level.Entities.GetEntities(this, boundingBox.Expand(0.2F, 0.0D, 0.2F));
             if (var16 != null && var16.Count > 0)
             {
                 for (int var51 = 0; var51 < var16.Count; ++var51)
@@ -622,9 +647,8 @@ public class EntityMinecart : Entity, IInventory
                     pushX = pushZ = 0.0D;
                 }
 
-                _level.addParticle("largesmoke", x, y + 0.8D, z, 0.0D, 0.0D, 0.0D);
+                _level.Broadcaster.AddParticle("largesmoke", x, y + 0.8D, z, 0.0D, 0.0D, 0.0D);
             }
-
         }
     }
 
@@ -633,49 +657,47 @@ public class EntityMinecart : Entity, IInventory
         int var9 = MathHelper.Floor(x);
         int var10 = MathHelper.Floor(y);
         int var11 = MathHelper.Floor(z);
-        if (BlockRail.isRail(_level, var9, var10 - 1, var11))
+        if (BlockRail.IsRail(_level, var9, var10 - 1, var11))
         {
             --var10;
         }
 
-        int var12 = _level.getBlockId(var9, var10, var11);
-        if (!BlockRail.isRail(var12))
+        int var12 = _level.BlocksReader.GetBlockId(var9, var10, var11);
+        if (!BlockRail.IsRail(var12))
         {
             return null;
         }
-        else
+
+        int var13 = _level.BlocksReader.GetMeta(var9, var10, var11);
+        if (((BlockRail)Block.Blocks[var12]).isAlwaysStraight())
         {
-            int var13 = _level.getBlockMeta(var9, var10, var11);
-            if (((BlockRail)Block.Blocks[var12]).isAlwaysStraight())
-            {
-                var13 &= 7;
-            }
-
-            y = (double)var10;
-            if (var13 >= 2 && var13 <= 5)
-            {
-                y = (double)(var10 + 1);
-            }
-
-            int[][] var14 = field_855_j[var13];
-            double var15 = (double)(var14[1][0] - var14[0][0]);
-            double var17 = (double)(var14[1][2] - var14[0][2]);
-            double var19 = System.Math.Sqrt(var15 * var15 + var17 * var17);
-            var15 /= var19;
-            var17 /= var19;
-            x += var15 * var7;
-            z += var17 * var7;
-            if (var14[0][1] != 0 && MathHelper.Floor(x) - var9 == var14[0][0] && MathHelper.Floor(z) - var11 == var14[0][2])
-            {
-                y += (double)var14[0][1];
-            }
-            else if (var14[1][1] != 0 && MathHelper.Floor(x) - var9 == var14[1][0] && MathHelper.Floor(z) - var11 == var14[1][2])
-            {
-                y += (double)var14[1][1];
-            }
-
-            return func_514_g(x, y, z);
+            var13 &= 7;
         }
+
+        y = var10;
+        if (var13 >= 2 && var13 <= 5)
+        {
+            y = var10 + 1;
+        }
+
+        int[][] var14 = field_855_j[var13];
+        double var15 = var14[1][0] - var14[0][0];
+        double var17 = var14[1][2] - var14[0][2];
+        double var19 = Math.Sqrt(var15 * var15 + var17 * var17);
+        var15 /= var19;
+        var17 /= var19;
+        x += var15 * var7;
+        z += var17 * var7;
+        if (var14[0][1] != 0 && MathHelper.Floor(x) - var9 == var14[0][0] && MathHelper.Floor(z) - var11 == var14[0][2])
+        {
+            y += var14[0][1];
+        }
+        else if (var14[1][1] != 0 && MathHelper.Floor(x) - var9 == var14[1][0] && MathHelper.Floor(z) - var11 == var14[1][2])
+        {
+            y += var14[1][1];
+        }
+
+        return func_514_g(x, y, z);
     }
 
     public Vec3D? func_514_g(double x, double y, double z)
@@ -683,16 +705,16 @@ public class EntityMinecart : Entity, IInventory
         int floorX = MathHelper.Floor(x);
         int floorY = MathHelper.Floor(y);
         int floorZ = MathHelper.Floor(z);
-        if (BlockRail.isRail(_level, floorX, floorY - 1, floorZ))
+        if (BlockRail.IsRail(_level, floorX, floorY - 1, floorZ))
         {
             --floorY;
         }
 
-        int blockId = _level.getBlockId(floorX, floorY, floorZ);
-        if (BlockRail.isRail(blockId))
+        int blockId = _level.BlocksReader.GetBlockId(floorX, floorY, floorZ);
+        if (BlockRail.IsRail(blockId))
         {
-            int meta = _level.getBlockMeta(floorX, floorY, floorZ);
-            y = (double)floorY;
+            int meta = _level.BlocksReader.GetMeta(floorX, floorY, floorZ);
+            y = floorY;
             if (((BlockRail)Block.Blocks[blockId]).isAlwaysStraight())
             {
                 meta &= 7;
@@ -700,29 +722,29 @@ public class EntityMinecart : Entity, IInventory
 
             if (meta >= 2 && meta <= 5)
             {
-                y = (double)(floorY + 1);
+                y = floorY + 1;
             }
 
             int[][] var12 = field_855_j[meta];
             double var13 = 0.0D;
-            double var15 = (double)floorX + 0.5D + (double)var12[0][0] * 0.5D;
-            double var17 = (double)floorY + 0.5D + (double)var12[0][1] * 0.5D;
-            double var19 = (double)floorZ + 0.5D + (double)var12[0][2] * 0.5D;
-            double var21 = (double)floorX + 0.5D + (double)var12[1][0] * 0.5D;
-            double var23 = (double)floorY + 0.5D + (double)var12[1][1] * 0.5D;
-            double var25 = (double)floorZ + 0.5D + (double)var12[1][2] * 0.5D;
+            double var15 = floorX + 0.5D + var12[0][0] * 0.5D;
+            double var17 = floorY + 0.5D + var12[0][1] * 0.5D;
+            double var19 = floorZ + 0.5D + var12[0][2] * 0.5D;
+            double var21 = floorX + 0.5D + var12[1][0] * 0.5D;
+            double var23 = floorY + 0.5D + var12[1][1] * 0.5D;
+            double var25 = floorZ + 0.5D + var12[1][2] * 0.5D;
             double var27 = var21 - var15;
             double var29 = (var23 - var17) * 2.0D;
             double var31 = var25 - var19;
             if (var27 == 0.0D)
             {
-                x = (double)floorX + 0.5D;
-                var13 = z - (double)floorZ;
+                x = floorX + 0.5D;
+                var13 = z - floorZ;
             }
             else if (var31 == 0.0D)
             {
-                z = (double)floorZ + 0.5D;
-                var13 = x - (double)floorX;
+                z = floorZ + 0.5D;
+                var13 = x - floorX;
             }
             else
             {
@@ -747,10 +769,8 @@ public class EntityMinecart : Entity, IInventory
 
             return new Vec3D(x, y, z);
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 
     public override void writeNbt(NBTTagCompound nbt)
@@ -764,13 +784,13 @@ public class EntityMinecart : Entity, IInventory
         }
         else if (type == 1)
         {
-            NBTTagList items = new NBTTagList();
+            NBTTagList items = new();
 
             for (int slotIndex = 0; slotIndex < cargoItems.Length; ++slotIndex)
             {
                 if (cargoItems[slotIndex] != null)
                 {
-                    NBTTagCompound itemTag = new NBTTagCompound();
+                    NBTTagCompound itemTag = new();
                     itemTag.SetByte("Slot", (sbyte)slotIndex);
                     cargoItems[slotIndex].writeToNBT(itemTag);
                     items.SetTag(itemTag);
@@ -779,7 +799,6 @@ public class EntityMinecart : Entity, IInventory
 
             nbt.SetTag("Items", items);
         }
-
     }
 
     public override void readNbt(NBTTagCompound nbt)
@@ -806,17 +825,13 @@ public class EntityMinecart : Entity, IInventory
                 }
             }
         }
-
     }
 
-    public override float getShadowRadius()
-    {
-        return 0.0F;
-    }
+    public override float getShadowRadius() => 0.0F;
 
     public override void onCollision(Entity entity)
     {
-        if (!_level.isRemote)
+        if (!_level.IsRemote)
         {
             if (entity != passenger)
             {
@@ -828,9 +843,9 @@ public class EntityMinecart : Entity, IInventory
                 double var2 = entity.x - x;
                 double var4 = entity.z - z;
                 double var6 = var2 * var2 + var4 * var4;
-                if (var6 >= (double)1.0E-4F)
+                if (var6 >= 1.0E-4F)
                 {
-                    var6 = (double)MathHelper.Sqrt(var6);
+                    var6 = MathHelper.Sqrt(var6);
                     var2 /= var6;
                     var4 /= var6;
                     double var8 = 1.0D / var6;
@@ -841,10 +856,10 @@ public class EntityMinecart : Entity, IInventory
 
                     var2 *= var8;
                     var4 *= var8;
-                    var2 *= (double)0.1F;
-                    var4 *= (double)0.1F;
-                    var2 *= (double)(1.0F - pushSpeedReduction);
-                    var4 *= (double)(1.0F - pushSpeedReduction);
+                    var2 *= 0.1F;
+                    var4 *= 0.1F;
+                    var2 *= 1.0F - pushSpeedReduction;
+                    var4 *= 1.0F - pushSpeedReduction;
                     var2 *= 0.5D;
                     var4 *= 0.5D;
                     if (entity is EntityMinecart)
@@ -862,29 +877,29 @@ public class EntityMinecart : Entity, IInventory
                         double var18 = entity.velocityZ + velocityZ;
                         if (((EntityMinecart)entity).type == 2 && type != 2)
                         {
-                            velocityX *= (double)0.2F;
-                            velocityZ *= (double)0.2F;
+                            velocityX *= 0.2F;
+                            velocityZ *= 0.2F;
                             addVelocity(entity.velocityX - var2, 0.0D, entity.velocityZ - var4);
-                            entity.velocityX *= (double)0.7F;
-                            entity.velocityZ *= (double)0.7F;
+                            entity.velocityX *= 0.7F;
+                            entity.velocityZ *= 0.7F;
                         }
                         else if (((EntityMinecart)entity).type != 2 && type == 2)
                         {
-                            entity.velocityX *= (double)0.2F;
-                            entity.velocityZ *= (double)0.2F;
+                            entity.velocityX *= 0.2F;
+                            entity.velocityZ *= 0.2F;
                             entity.addVelocity(velocityX + var2, 0.0D, velocityZ + var4);
-                            velocityX *= (double)0.7F;
-                            velocityZ *= (double)0.7F;
+                            velocityX *= 0.7F;
+                            velocityZ *= 0.7F;
                         }
                         else
                         {
                             var16 /= 2.0D;
                             var18 /= 2.0D;
-                            velocityX *= (double)0.2F;
-                            velocityZ *= (double)0.2F;
+                            velocityX *= 0.2F;
+                            velocityZ *= 0.2F;
                             addVelocity(var16 - var2, 0.0D, var18 - var4);
-                            entity.velocityX *= (double)0.2F;
-                            entity.velocityZ *= (double)0.2F;
+                            entity.velocityX *= 0.2F;
+                            entity.velocityZ *= 0.2F;
                             entity.addVelocity(var16 + var2, 0.0D, var18 + var4);
                         }
                     }
@@ -894,71 +909,8 @@ public class EntityMinecart : Entity, IInventory
                         entity.addVelocity(var2 / 4.0D, 0.0D, var4 / 4.0D);
                     }
                 }
-
             }
         }
-    }
-
-    public int size()
-    {
-        return 27;
-    }
-
-    public ItemStack getStack(int slotIndex)
-    {
-        return cargoItems[slotIndex];
-    }
-
-    public ItemStack removeStack(int slotIndex, int amount)
-    {
-        if (cargoItems[slotIndex] != null)
-        {
-            ItemStack itemStack;
-            if (cargoItems[slotIndex].count <= amount)
-            {
-                itemStack = cargoItems[slotIndex];
-                cargoItems[slotIndex] = null;
-                return itemStack;
-            }
-            else
-            {
-                itemStack = cargoItems[slotIndex].split(amount);
-                if (cargoItems[slotIndex].count == 0)
-                {
-                    cargoItems[slotIndex] = null;
-                }
-
-                return itemStack;
-            }
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    public void setStack(int slotIndex, ItemStack? itemStack)
-    {
-        cargoItems[slotIndex] = itemStack;
-        if (itemStack != null && itemStack.count > getMaxCountPerStack())
-        {
-            itemStack.count = getMaxCountPerStack();
-        }
-
-    }
-
-    public string getName()
-    {
-        return "Minecart";
-    }
-
-    public int getMaxCountPerStack()
-    {
-        return 64;
-    }
-
-    public void markDirty()
-    {
     }
 
     public override bool interact(EntityPlayer player)
@@ -970,14 +922,14 @@ public class EntityMinecart : Entity, IInventory
                 return true;
             }
 
-            if (!_level.isRemote)
+            if (!_level.IsRemote)
             {
                 player.setVehicle(this);
             }
         }
         else if (type == 1)
         {
-            if (!_level.isRemote)
+            if (!_level.IsRemote)
             {
                 player.openChestScreen(this);
             }
@@ -989,7 +941,7 @@ public class EntityMinecart : Entity, IInventory
             {
                 if (--heldItem.count == 0)
                 {
-                    player.inventory.setStack(player.inventory.selectedSlot, (ItemStack)null);
+                    player.inventory.setStack(player.inventory.selectedSlot, null);
                 }
 
                 fuel += 1200;
@@ -1007,8 +959,8 @@ public class EntityMinecart : Entity, IInventory
         field_9414_l = var1;
         field_9413_m = var3;
         field_9412_n = var5;
-        field_9411_o = (double)var7;
-        field_9410_p = (double)var8;
+        field_9411_o = var7;
+        field_9410_p = var8;
         field_9415_k = var9 + 2;
         velocityX = cartVelocityX;
         velocityY = cartVelocityY;
@@ -1017,13 +969,8 @@ public class EntityMinecart : Entity, IInventory
 
     public override void setVelocityClient(double velocityX, double velocityY, double velocityZ)
     {
-        cartVelocityX = base.velocityX = velocityX;
-        cartVelocityY = base.velocityY = velocityY;
-        cartVelocityZ = base.velocityZ = velocityZ;
-    }
-
-    public bool canPlayerUse(EntityPlayer player)
-    {
-        return dead ? false : player.getSquaredDistance(this) <= 64.0D;
+        cartVelocityX = this.velocityX = velocityX;
+        cartVelocityY = this.velocityY = velocityY;
+        cartVelocityZ = this.velocityZ = velocityZ;
     }
 }

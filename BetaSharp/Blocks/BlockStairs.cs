@@ -33,7 +33,7 @@ internal class BlockStairs : Block
     public override void addIntersectingBoundingBox(IBlockReader world, int x, int y, int z, Box box, List<Box> boxes)
     {
         // Fixed capitalization on GetBlockMeta
-        int meta = world.GetBlockMeta(x, y, z);
+        int meta = world.GetMeta(x, y, z);
         if (meta == 0)
         {
             setBoundingBox(0.0F, 0.0F, 0.0F, 0.5F, 0.5F, 1.0F);
@@ -67,12 +67,12 @@ internal class BlockStairs : Block
     }
 
     // Migrated to OnTickEvt
-    public override void randomDisplayTick(OnTickEvt ctx) => baseBlock.randomDisplayTick(ctx);
+    public override void randomDisplayTick(OnTickEvt evt) => baseBlock.randomDisplayTick(evt);
 
     // Migrated to OnBlockBreakStartEvt
-    public override void onBlockBreakStart(OnBlockBreakStartEvt ctx) => baseBlock.onBlockBreakStart(ctx);
+    public override void onBlockBreakStart(OnBlockBreakStartEvt evt) => baseBlock.onBlockBreakStart(evt);
 
-    public override void onMetadataChange(OnMetadataChangeEvt ctx) => baseBlock.onMetadataChange(ctx);
+    public override void onMetadataChange(OnMetadataChangeEvt evt) => baseBlock.onMetadataChange(evt);
 
     public override float getLuminance(LightingEngine lighting, int x, int y, int z) => baseBlock.getLuminance(lighting, x, y, z);
 
@@ -100,13 +100,13 @@ internal class BlockStairs : Block
 
     public override bool hasCollision(int meta, bool allowLiquids) => baseBlock.hasCollision(meta, allowLiquids);
 
-    public override bool canPlaceAt(CanPlaceAtCtx ctx) => baseBlock.canPlaceAt(ctx);
+    public override bool canPlaceAt(CanPlaceAtCtx evt) => baseBlock.canPlaceAt(evt);
 
     // Merged the two onPlaced methods into one solid context execution
-    public override void onPlaced(OnPlacedEvt ctx)
+    public override void onPlaced(OnPlacedEvt evt)
     {
         // 1. Calculate facing based on placer entity yaw
-        int facing = MathHelper.Floor(ctx.Placer.yaw * 4.0F / 360.0F + 0.5D) & 3;
+        int facing = MathHelper.Floor(evt.Placer.yaw * 4.0F / 360.0F + 0.5D) & 3;
         int meta = 0;
 
         if (facing == 0)
@@ -129,17 +129,13 @@ internal class BlockStairs : Block
             meta = 0;
         }
 
-        ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, meta);
+        evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, meta);
 
         // 2. Trigger Neighbor Update (Constructing a dummy OnTickEvt to satisfy the signature safely)
-        OnTickEvt dummyTickEvt = new(
-            ctx.WorldRead, ctx.WorldWrite, ctx.Broadcaster, ctx.Redstone, default!, default!, default!,
-            default!, default!, default!, ctx.IsRemote, 0, ctx.X, ctx.Y, ctx.Z, meta, id
-        );
-        neighborUpdate(dummyTickEvt);
+        evt.Level.Broadcaster.NotifyNeighbors(evt.X, evt.Y, evt.Z, id);
 
         // 3. Inform the base block
-        baseBlock.onPlaced(ctx);
+        baseBlock.onPlaced(evt);
     }
 
     // Migrated to OnBreakEvt

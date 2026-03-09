@@ -1,4 +1,3 @@
-
 namespace BetaSharp.Blocks;
 
 internal class BlockMushroom : BlockPlant
@@ -10,18 +9,18 @@ internal class BlockMushroom : BlockPlant
         setTickRandomly(true);
     }
 
-    public override void onTick(OnTickEvt ctx)
+    public override void onTick(OnTickEvt evt)
     {
         if (Random.Shared.Next(100) == 0)
         {
-            int tryX = ctx.X + Random.Shared.Next(3) - 1;
-            int tryY = ctx.Y + Random.Shared.Next(2) - Random.Shared.Next(2);
-            int tryZ = ctx.Z + Random.Shared.Next(3) - 1;
-            if (ctx.Level.BlocksReader.IsAir(tryX, tryY, tryZ) && canGrow(new OnTickEvt(ctx.Level, tryX, tryY, tryZ, ctx.Level.BlocksReader.GetBlockMeta(tryX, tryY, tryZ), ctx.Level.BlocksReader.GetBlockId(tryX, tryY, tryZ))))
+            int tryX = evt.X + Random.Shared.Next(3) - 1;
+            int tryY = evt.Y + Random.Shared.Next(2) - Random.Shared.Next(2);
+            int tryZ = evt.Z + Random.Shared.Next(3) - 1;
+            if (evt.Level.BlocksReader.IsAir(tryX, tryY, tryZ) && canGrow(new OnTickEvt(evt.Level, tryX, tryY, tryZ, evt.Level.BlocksReader.GetMeta(tryX, tryY, tryZ), evt.Level.BlocksReader.GetBlockId(tryX, tryY, tryZ))))
             {
-                if (ctx.Level.BlocksReader.IsAir(tryX, tryY, tryZ) && canGrow(new OnTickEvt(ctx.Level, tryX, tryY, tryZ, ctx.Level.BlocksReader.GetBlockMeta(tryX, tryY, tryZ), ctx.Level.BlocksReader.GetBlockId(tryX, tryY, tryZ))))
+                if (evt.Level.BlocksReader.IsAir(tryX, tryY, tryZ) && canGrow(new OnTickEvt(evt.Level, tryX, tryY, tryZ, evt.Level.BlocksReader.GetMeta(tryX, tryY, tryZ), evt.Level.BlocksReader.GetBlockId(tryX, tryY, tryZ))))
                 {
-                    ctx.Level.BlockWriter.SetBlock(tryX, tryY, tryZ, id);
+                    evt.Level.BlockWriter.SetBlock(tryX, tryY, tryZ, id);
                 }
             }
         }

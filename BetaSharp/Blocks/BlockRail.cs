@@ -2,7 +2,6 @@ using BetaSharp.Blocks.Materials;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Blocks;
 
@@ -16,11 +15,13 @@ public class BlockRail : Block
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 2.0F / 16.0F, 1.0F);
     }
 
-    public static bool isRail(IBlockWorldContext level, int x, int y, int z)
+    public static bool IsRail(IBlockWorldContext level, int x, int y, int z)
     {
         int blockId = level.BlocksReader.GetBlockId(x, y, z);
         return blockId == Rail.id || blockId == PoweredRail.id || blockId == DetectorRail.id;
     }
+
+    public static bool IsRail(int blockId) => blockId == Rail.id || blockId == PoweredRail.id || blockId == DetectorRail.id;
 
     public bool isAlwaysStraight() => alwaysStraight;
 
@@ -36,7 +37,7 @@ public class BlockRail : Block
 
     public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
     {
-        int meta = iBlockReader.GetBlockMeta(x, y, z);
+        int meta = iBlockReader.GetMeta(x, y, z);
         if (meta >= 2 && meta <= 5)
         {
             setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 10.0F / 16.0F, 1.0F);
@@ -68,7 +69,7 @@ public class BlockRail : Block
 
     public override BlockRendererType getRenderType() => BlockRendererType.MinecartTrack;
 
-    public override bool canPlaceAt(CanPlaceAtCtx ctx) => ctx.Level.BlocksReader.ShouldSuffocate(ctx.X, ctx.Y - 1, ctx.Z);
+    public override bool canPlaceAt(CanPlaceAtCtx evt) => evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y - 1, evt.Z);
 
     public override void onPlaced(OnPlacedEvt evt)
     {
@@ -82,7 +83,7 @@ public class BlockRail : Block
     {
         if (!evt.Level.IsRemote)
         {
-            int meta = evt.Level.BlocksReader.GetBlockMeta(evt.X, evt.Y, evt.Z);
+            int meta = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
             int railMeta = meta;
             if (alwaysStraight)
             {
@@ -117,10 +118,10 @@ public class BlockRail : Block
 
             if (shouldBreak)
             {
-                dropStacks(new OnDropEvt(evt.Level, evt.X, evt.Y, evt.Z, evt.Level.BlocksReader.GetBlockMeta(evt.X, evt.Y, evt.Z)));
+                dropStacks(new OnDropEvt(evt.Level, evt.X, evt.Y, evt.Z, evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z)));
                 evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, 0);
             }
-            else if (this.id == PoweredRail.id)
+            else if (id == PoweredRail.id)
             {
                 bool isPowered = evt.Level.Redstone.IsPowered(evt.X, evt.Y, evt.Z) || evt.Level.Redstone.IsPowered(evt.X, evt.Y + 1, evt.Z);
                 isPowered = isPowered || isPoweredByConnectedRails(evt.Level, evt.X, evt.Y, evt.Z, meta, true, 0) || isPoweredByConnectedRails(evt.Level, evt.X, evt.Y, evt.Z, meta, false, 0);
@@ -259,7 +260,7 @@ public class BlockRail : Block
         int blockId = level.BlocksReader.GetBlockId(x, y, z);
         if (blockId == PoweredRail.id)
         {
-            int meta = level.BlocksReader.GetBlockMeta(x, y, z);
+            int meta = level.BlocksReader.GetMeta(x, y, z);
             int railMeta = meta & 7;
             if (shape == 1 && (railMeta == 0 || railMeta == 4 || railMeta == 5))
             {

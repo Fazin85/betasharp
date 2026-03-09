@@ -1,22 +1,18 @@
 using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Entities;
 
 public class EntityPig : EntityAnimal
 {
-    public EntityPig(World world) : base(world)
+    public EntityPig(IBlockWorldContext world) : base(world)
     {
         texture = "/mob/pig.png";
         setBoundingBoxSpacing(0.9F, 0.9F);
     }
 
-    protected override void initDataTracker()
-    {
-        dataWatcher.AddObject(16, (byte)0);
-    }
+    protected override void initDataTracker() => dataWatcher.AddObject(16, (byte)0);
 
     public override void writeNbt(NBTTagCompound nbt)
     {
@@ -30,62 +26,44 @@ public class EntityPig : EntityAnimal
         setSaddled(nbt.GetBoolean("Saddle"));
     }
 
-    protected override string getLivingSound()
-    {
-        return "mob.pig";
-    }
+    protected override string getLivingSound() => "mob.pig";
 
-    protected override string getHurtSound()
-    {
-        return "mob.pig";
-    }
+    protected override string getHurtSound() => "mob.pig";
 
-    protected override string getDeathSound()
-    {
-        return "mob.pigdeath";
-    }
+    protected override string getDeathSound() => "mob.pigdeath";
 
     public override bool interact(EntityPlayer player)
     {
-        if (!getSaddled() || _level.isRemote || passenger != null && passenger != player)
+        if (!getSaddled() || _level.IsRemote || (passenger != null && passenger != player))
         {
             return false;
         }
-        else
-        {
-            player.setVehicle(this);
-            return true;
-        }
+
+        player.setVehicle(this);
+        return true;
     }
 
-    protected override int getDropItemId()
-    {
-        return fireTicks > 0 ? Item.CookedPorkchop.id : Item.RawPorkchop.id;
-    }
+    protected override int getDropItemId() => fireTicks > 0 ? Item.CookedPorkchop.id : Item.RawPorkchop.id;
 
-    public bool getSaddled()
-    {
-        return (dataWatcher.getWatchableObjectByte(16) & 1) != 0;
-    }
+    public bool getSaddled() => (dataWatcher.getWatchableObjectByte(16) & 1) != 0;
 
     public void setSaddled(bool isSaddled)
     {
         if (isSaddled)
         {
-            dataWatcher.UpdateObject(16, ((byte)1));
+            dataWatcher.UpdateObject(16, (byte)1);
         }
         else
         {
-            dataWatcher.UpdateObject(16, ((byte)0));
+            dataWatcher.UpdateObject(16, (byte)0);
         }
-
     }
 
     public override void onStruckByLightning(EntityLightningBolt bolt)
     {
-        if (!_level.isRemote)
+        if (!_level.IsRemote)
         {
-            EntityPigZombie pigZombie = new EntityPigZombie(_level);
+            EntityPigZombie pigZombie = new(_level);
             pigZombie.setPositionAndAnglesKeepPrevAngles(x, y, z, yaw, pitch);
             _level.SpawnEntity(pigZombie);
             markDead();

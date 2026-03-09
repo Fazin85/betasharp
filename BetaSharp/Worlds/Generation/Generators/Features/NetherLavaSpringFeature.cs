@@ -1,7 +1,5 @@
 using BetaSharp.Blocks;
-using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Worlds.Generation.Generators.Features;
 
@@ -82,7 +80,7 @@ internal class NetherLavaSpringFeature : Feature
 
             // TODO: Implement this
             //level.InstantBlockUpdateEnabled = true;
-            Block.Blocks[_lavaBlockId].onTick(new OnTickEvt(level, x, y, z, level.BlocksReader.GetBlockMeta(x, y, z), level.BlocksReader.GetBlockId(x, y, z)));
+            Block.Blocks[_lavaBlockId].onTick(new OnTickEvt(level, x, y, z, level.BlocksReader.GetMeta(x, y, z), level.BlocksReader.GetBlockId(x, y, z)));
             //level.InstantBlockUpdateEnabled = false;
         }
 

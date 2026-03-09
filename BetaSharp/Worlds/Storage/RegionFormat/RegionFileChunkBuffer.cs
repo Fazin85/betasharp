@@ -1,3 +1,5 @@
+using BetaSharp.Worlds.Chunks.Storage;
+
 namespace BetaSharp.Worlds.Storage.RegionFormat;
 
 internal sealed class RegionFileChunkBuffer(RegionFile region, int var2, int var3) : MemoryStream(8096)

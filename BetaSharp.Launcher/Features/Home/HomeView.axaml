@@ -1,6 +1,7 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:BetaSharp.Launcher.Features.Home"
+             xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
 
              x:Class="BetaSharp.Launcher.Features.Home.HomeView" x:DataType="local:HomeViewModel">
 
@@ -8,7 +9,25 @@
         <Grid ColumnDefinitions="* Auto" Grid.Row="0">
             <StackPanel Spacing="25" HorizontalAlignment="Stretch" Orientation="Horizontal" Grid.Row="0">
                 <Border Width="50" Height="50" ClipToBounds="True" CornerRadius="{StaticResource ControlCornerRadius}">
-                    <Image Source="{CompiledBinding Face}" RenderOptions.BitmapInterpolationMode="None" Stretch="UniformToFill" />
+                    <asyncImageLoader:AdvancedImage Source="{Binding Session.Face, FallbackValue='...'}" RenderOptions.BitmapInterpolationMode="None" Stretch="UniformToFill">
+                        <asyncImageLoader:AdvancedImage.Styles>
+                            <Style Selector="asyncImageLoader|AdvancedImage">
+                                <Setter Property="Transitions">
+                                    <Transitions>
+                                        <DoubleTransition Property="Opacity" Duration="0:0:0.5" />
+                                    </Transitions>
+                                </Setter>
+                            </Style>
+
+                            <Style Selector="asyncImageLoader|AdvancedImage[IsLoading=True]">
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+
+                            <Style Selector="asyncImageLoader|AdvancedImage[IsLoading=False]">
+                                <Setter Property="Opacity" Value="1" />
+                            </Style>
+                        </asyncImageLoader:AdvancedImage.Styles>
+                    </asyncImageLoader:AdvancedImage>
                 </Border>
 
                 <StackPanel VerticalAlignment="Center">

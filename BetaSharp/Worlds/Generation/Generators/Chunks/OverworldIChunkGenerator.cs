@@ -19,6 +19,7 @@ internal class OverworldIChunkGenerator : IChunkSource
     private readonly OctavePerlinNoiseSampler _floatingIslandNoise;
     private readonly OctavePerlinNoiseSampler _floatingIslandScale;
     private readonly OctavePerlinNoiseSampler _forestNoise;
+    private readonly IBlockWorldContext _level;
     private readonly OctavePerlinNoiseSampler _maxLimitPerlinNoise;
     private readonly OctavePerlinNoiseSampler _minLimitPerlinNoise;
     private readonly JavaRandom _random;
@@ -27,7 +28,6 @@ internal class OverworldIChunkGenerator : IChunkSource
     // Seed and per-instance biome source (allows thread-safe parallel generation)
     private readonly long _seed;
     private readonly OctavePerlinNoiseSampler _selectorNoise;
-    private readonly IBlockWorldContext _level;
     private Biome[] _biomes;
     private double[] _depthBuffer = new double[256];
     private double[] _depthNoiseBuffer;
@@ -494,7 +494,8 @@ internal class OverworldIChunkGenerator : IChunkSource
                 int offsetZ = z - (blockZ + 8);
                 int var22 = _level.BlocksReader.GetTopSolidBlockY(x, z);
                 double temperatureSample = _temperatures[offsetX * 16 + offsetZ] - (var22 - 64) / 64.0D * 0.3D;
-                if (temperatureSample < 0.5D && var22 > 0 && var22 < 128 && _level.BlocksReader.IsAir(x, var22, z) && _level.BlocksReader.GetMaterial(x, var22 - 1, z).BlocksMovement && _level.BlocksReader.GetMaterial(x, var22 - 1, z) != Material.Ice)
+                if (temperatureSample < 0.5D && var22 > 0 && var22 < 128 && _level.BlocksReader.IsAir(x, var22, z) && _level.BlocksReader.GetMaterial(x, var22 - 1, z).BlocksMovement &&
+                    _level.BlocksReader.GetMaterial(x, var22 - 1, z) != Material.Ice)
                 {
                     _level.BlockWriter.SetBlock(x, var22, z, Block.Snow.id);
                 }

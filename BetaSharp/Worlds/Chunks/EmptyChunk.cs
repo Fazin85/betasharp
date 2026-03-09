@@ -2,7 +2,6 @@ using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Worlds.Chunks;
 
@@ -111,7 +110,7 @@ public class EmptyChunk : Chunk
         return volume + volume / 2 * 3;
     }
 
-    public override JavaRandom GetSlimeRandom(long seed) => new((Level.GetSeed() + X * X * 4987142L + X * 5947611L + Z * Z * 4392871L + Z * 389711L) ^ seed);
+    public override JavaRandom GetSlimeRandom(long seed) => new((Level.Seed + X * X * 4987142L + X * 5947611L + Z * Z * 4392871L + Z * 389711L) ^ seed);
 
     public override bool IsEmpty() => true;
 }

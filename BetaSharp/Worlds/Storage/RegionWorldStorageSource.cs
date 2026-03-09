@@ -1,7 +1,6 @@
 using BetaSharp.NBT;
-using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Chunks.Storage;
 using BetaSharp.Worlds.Core.Systems;
-using BetaSharp.Worlds.Storage.RegionFormat;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Worlds.Storage;
@@ -53,7 +52,7 @@ public class RegionWorldStorageSource : IWorldStorageSource
         return saves;
     }
 
-    public virtual void Flush() => RegionIo.flush();
+    public virtual void Flush() => RegionIo.Flush();
 
     public virtual IWorldStorage Get(string worldName, bool createPlayerStorage) => new RegionWorldStorage(BaseDir.FullName, worldName, createPlayerStorage);
 
@@ -81,7 +80,10 @@ public class RegionWorldStorageSource : IWorldStorageSource
                 NBTTagCompound root = NbtIo.ReadCompressed(stream);
                 NBTTagCompound data = root.GetCompoundTag("Data");
 
-                WorldProperties properties = new(data) { SizeOnDisk = GetFolderSize(worldDir) };
+                WorldProperties properties = new(data)
+                {
+                    SizeOnDisk = GetFolderSize(worldDir)
+                };
                 return properties;
             }
             catch (Exception ex)

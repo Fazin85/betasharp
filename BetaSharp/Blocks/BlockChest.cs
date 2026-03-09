@@ -132,22 +132,22 @@ internal class BlockChest : BlockWithEntity
     public override bool canPlaceAt(CanPlaceAtCtx ctx)
     {
         int adjacentChestCount = 0;
-        if (ctx.WorldRead.GetBlockId(ctx.X - 1, ctx.Y, ctx.Z) == id)
+        if (ctx.Level.BlocksReader.GetBlockId(ctx.X - 1, ctx.Y, ctx.Z) == id)
         {
             ++adjacentChestCount;
         }
 
-        if (ctx.WorldRead.GetBlockId(ctx.X + 1, ctx.Y, ctx.Z) == id)
+        if (ctx.Level.BlocksReader.GetBlockId(ctx.X + 1, ctx.Y, ctx.Z) == id)
         {
             ++adjacentChestCount;
         }
 
-        if (ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z - 1) == id)
+        if (ctx.Level.BlocksReader.GetBlockId(ctx.X, ctx.Y, ctx.Z - 1) == id)
         {
             ++adjacentChestCount;
         }
 
-        if (ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z + 1) == id)
+        if (ctx.Level.BlocksReader.GetBlockId(ctx.X, ctx.Y, ctx.Z + 1) == id)
         {
             ++adjacentChestCount;
         }
@@ -155,14 +155,14 @@ internal class BlockChest : BlockWithEntity
         return adjacentChestCount > 1 ? false : hasNeighbor(ctx) ? false : hasNeighbor(ctx) ? false : hasNeighbor(ctx) ? false : !hasNeighbor(ctx);
     }
 
-    private bool hasNeighbor(CanPlaceAtCtx ctx) => ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z) != id ? false :
-        ctx.WorldRead.GetBlockId(ctx.X - 1, ctx.Y, ctx.Z) == id ? true :
-        ctx.WorldRead.GetBlockId(ctx.X + 1, ctx.Y, ctx.Z) == id ? true :
-        ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z - 1) == id ? true : ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z + 1) == id;
+    private bool hasNeighbor(CanPlaceAtCtx evt) => evt.Level.BlocksReader.GetBlockId(evt.X, evt.Y, evt.Z) != id ? false :
+        evt.Level.BlocksReader.GetBlockId(evt.X - 1, evt.Y, evt.Z) == id ? true :
+        evt.Level.BlocksReader.GetBlockId(evt.X + 1, evt.Y, evt.Z) == id ? true :
+        evt.Level.BlocksReader.GetBlockId(evt.X, evt.Y, evt.Z - 1) == id ? true : evt.Level.BlocksReader.GetBlockId(evt.X, evt.Y, evt.Z + 1) == id;
 
-    public override void onBreak(OnBreakEvt ctx)
+    public override void onBreak(OnBreakEvt evt)
     {
-        BlockEntityChest? chest = (BlockEntityChest?)ctx.WorldRead.GetBlockEntity(ctx.X, ctx.Y, ctx.Z);
+        BlockEntityChest? chest = (BlockEntityChest?)evt.Level.BlocksReader.GetBlockEntity(evt.X, evt.Y, evt.Z);
 
         for (int slot = 0; slot < chest!.size(); ++slot)
         {
@@ -182,74 +182,73 @@ internal class BlockChest : BlockWithEntity
                     }
 
                     stack.count -= amount;
-                    // TODO: Implement this
-                    // EntityItem entityItem = new(ctx.World, ctx.X + offsetX, ctx.Y + offsetY, ctx.Z + offsetZ, new ItemStack(stack.itemId, amount, stack.getDamage()));
-                    // float var13 = 0.05F;
-                    // entityItem.velocityX = random.NextGaussian() * var13;
-                    // entityItem.velocityY = random.NextGaussian() * var13 + 0.2F;
-                    // entityItem.velocityZ = random.NextGaussian() * var13;
-                    // ctx.Entities.SpawnEntity(entityItem);
+                    EntityItem entityItem = new(evt.Level, evt.X + offsetX, evt.Y + offsetY, evt.Z + offsetZ, new ItemStack(stack.itemId, amount, stack.getDamage()));
+                    float spread = 0.05F;
+                    entityItem.velocityX = random.NextGaussian() * spread;
+                    entityItem.velocityY = random.NextGaussian() * spread + 0.2F;
+                    entityItem.velocityZ = random.NextGaussian() * spread;
+                    evt.Level.Entities.SpawnEntity(entityItem);
                 }
             }
         }
 
-        base.onBreak(ctx);
+        base.onBreak(evt);
     }
 
-    public override bool onUse(OnUseEvt ctx)
+    public override bool onUse(OnUseEvt evt)
     {
-        IInventory chestInventory = (BlockEntityChest)ctx.WorldRead.GetBlockEntity(ctx.X, ctx.Y, ctx.Z);
-        if (ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y + 1, ctx.Z))
+        IInventory? chestInventory = (BlockEntityChest?)evt.Level.Entities.GetBlockEntity(evt.X, evt.Y, evt.Z);
+        if (evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y + 1, evt.Z))
         {
             return true;
         }
 
-        if (ctx.WorldRead.GetBlockId(ctx.X - 1, ctx.Y, ctx.Z) == id && ctx.WorldRead.ShouldSuffocate(ctx.X - 1, ctx.Y + 1, ctx.Z))
+        if (evt.Level.BlocksReader.GetBlockId(evt.X - 1, evt.Y, evt.Z) == id && evt.Level.BlocksReader.ShouldSuffocate(evt.X - 1, evt.Y + 1, evt.Z))
         {
             return true;
         }
 
-        if (ctx.WorldRead.GetBlockId(ctx.X + 1, ctx.Y, ctx.Z) == id && ctx.WorldRead.ShouldSuffocate(ctx.X + 1, ctx.Y + 1, ctx.Z))
+        if (evt.Level.BlocksReader.GetBlockId(evt.X + 1, evt.Y, evt.Z) == id && evt.Level.BlocksReader.ShouldSuffocate(evt.X + 1, evt.Y + 1, evt.Z))
         {
             return true;
         }
 
-        if (ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z - 1) == id && ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y + 1, ctx.Z - 1))
+        if (evt.Level.BlocksReader.GetBlockId(evt.X, evt.Y, evt.Z - 1) == id && evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y + 1, evt.Z - 1))
         {
             return true;
         }
 
-        if (ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z + 1) == id && ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y + 1, ctx.Z + 1))
+        if (evt.Level.BlocksReader.GetBlockId(evt.X, evt.Y, evt.Z + 1) == id && evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y + 1, evt.Z + 1))
         {
             return true;
         }
 
-        if (ctx.WorldRead.GetBlockId(ctx.X - 1, ctx.Y, ctx.Z) == id)
+        if (evt.Level.BlocksReader.GetBlockId(evt.X - 1, evt.Y, evt.Z) == id)
         {
-            chestInventory = new InventoryLargeChest("Large chest", (BlockEntityChest)ctx.WorldRead.GetBlockEntity(ctx.X - 1, ctx.Y, ctx.Z), chestInventory);
+            chestInventory = new InventoryLargeChest("Large chest", (BlockEntityChest)evt.Level.Entities.GetBlockEntity(evt.X - 1, evt.Y, evt.Z), chestInventory);
         }
 
-        if (ctx.WorldRead.GetBlockId(ctx.X + 1, ctx.Y, ctx.Z) == id)
+        if (evt.Level.BlocksReader.GetBlockId(evt.X + 1, evt.Y, evt.Z) == id)
         {
-            chestInventory = new InventoryLargeChest("Large chest", chestInventory, (BlockEntityChest)ctx.WorldRead.GetBlockEntity(ctx.X + 1, ctx.Y, ctx.Z));
+            chestInventory = new InventoryLargeChest("Large chest", chestInventory, (BlockEntityChest)evt.Level.Entities.GetBlockEntity(evt.X + 1, evt.Y, evt.Z));
         }
 
-        if (ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z - 1) == id)
+        if (evt.Level.BlocksReader.GetBlockId(evt.X, evt.Y, evt.Z - 1) == id)
         {
-            chestInventory = new InventoryLargeChest("Large chest", (BlockEntityChest)ctx.WorldRead.GetBlockEntity(ctx.X, ctx.Y, ctx.Z - 1), chestInventory);
+            chestInventory = new InventoryLargeChest("Large chest", (BlockEntityChest)evt.Level.Entities.GetBlockEntity(evt.X, evt.Y, evt.Z - 1), chestInventory);
         }
 
-        if (ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z + 1) == id)
+        if (evt.Level.BlocksReader.GetBlockId(evt.X, evt.Y, evt.Z + 1) == id)
         {
-            chestInventory = new InventoryLargeChest("Large chest", chestInventory, (BlockEntityChest)ctx.WorldRead.GetBlockEntity(ctx.X, ctx.Y, ctx.Z + 1));
+            chestInventory = new InventoryLargeChest("Large chest", chestInventory, (BlockEntityChest)evt.Level.Entities.GetBlockEntity(evt.X, evt.Y, evt.Z + 1));
         }
 
-        if (ctx.IsRemote)
+        if (evt.Level.IsRemote)
         {
             return true;
         }
 
-        ctx.Player.openChestScreen(chestInventory);
+        evt.Player.openChestScreen(chestInventory);
         return true;
     }
 

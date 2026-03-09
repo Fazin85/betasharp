@@ -1,5 +1,4 @@
 using BetaSharp.Blocks.Materials;
-using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
 using BetaSharp.Worlds.Core.Systems;
@@ -32,7 +31,7 @@ public abstract class BlockFluid : Block
 
     public override int getTexture(int side) => side != 0 && side != 1 ? textureId + 1 : textureId;
 
-    protected int getLiquidState(IBlockReader reader, int x, int y, int z) => reader.GetMaterial(x, y, z) != material ? -1 : reader.GetBlockMeta(x, y, z);
+    protected int getLiquidState(IBlockReader reader, int x, int y, int z) => reader.GetMaterial(x, y, z) != material ? -1 : reader.GetMeta(x, y, z);
 
     protected int getLiquidDepth(IBlockReader iBlockReader, int x, int y, int z)
     {
@@ -41,7 +40,7 @@ public abstract class BlockFluid : Block
             return -1;
         }
 
-        int depth = iBlockReader.GetBlockMeta(x, y, z);
+        int depth = iBlockReader.GetMeta(x, y, z);
         if (depth >= 8)
         {
             depth = 0;
@@ -130,7 +129,7 @@ public abstract class BlockFluid : Block
             }
         }
 
-        if (iBlockReader.GetBlockMeta(x, y, z) >= 8)
+        if (iBlockReader.GetMeta(x, y, z) >= 8)
         {
             bool hasAdjacentSolid = false;
             if (hasAdjacentSolid || isSolidFace(iBlockReader, x, y, z - 1, 2))
@@ -183,44 +182,44 @@ public abstract class BlockFluid : Block
         return flowVector;
     }
 
-    public override void applyVelocity(OnApplyVelocityEvt ctx)
+    public override void applyVelocity(OnApplyVelocityEvt evt)
     {
-        Vector3D<double> flowVec = getFlow(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z);
-        ctx.Velocity.x += flowVec.X;
-        ctx.Velocity.y += flowVec.Y;
-        ctx.Velocity.z += flowVec.Z;
+        Vector3D<double> flowVec = getFlow(evt.Level.BlocksReader, evt.X, evt.Y, evt.Z);
+        evt.Velocity.x += flowVec.X;
+        evt.Velocity.y += flowVec.Y;
+        evt.Velocity.z += flowVec.Z;
     }
 
     public override int getTickRate() => material == Material.Water ? 5 : material == Material.Lava ? 30 : 0;
 
     public override float getLuminance(LightingEngine lighting, int x, int y, int z)
     {
-        float luminance = lighting.getLuminance(x, y, z);
-        float luminanceAbove = lighting.getLuminance(x, y + 1, z);
+        float luminance = lighting.GetLuminance(x, y, z);
+        float luminanceAbove = lighting.GetLuminance(x, y + 1, z);
         return luminance > luminanceAbove ? luminance : luminanceAbove;
     }
 
-    public override void onTick(OnTickEvt ctx) => base.onTick(ctx);
+    public override void onTick(OnTickEvt evt) => base.onTick(evt);
 
     public override int getRenderLayer() => material == Material.Water ? 1 : 0;
 
-    public override void randomDisplayTick(OnTickEvt ctx)
+    public override void randomDisplayTick(OnTickEvt evt)
     {
-        if (material == Material.Water && ctx.Random.NextInt(64) == 0)
+        if (material == Material.Water && Random.Shared.Next(64) == 0)
         {
-            int meta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+            int meta = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
             if (meta > 0 && meta < 8)
             {
-                ctx.Broadcaster.PlaySoundAtPos(ctx.X + 0.5F, ctx.Y + 0.5F, ctx.Z + 0.5F, "liquid.water", ctx.Random.NextFloat() * 0.25F + 12.0F / 16.0F, ctx.Random.NextFloat() * 1.0F + 0.5F);
+                evt.Level.Broadcaster.PlaySoundAtPos(evt.X + 0.5F, evt.Y + 0.5F, evt.Z + 0.5F, "liquid.water", Random.Shared.NextSingle() * 0.25F + 12.0F / 16.0F, Random.Shared.NextSingle() * 1.0F + 0.5F);
             }
         }
 
-        if (material == Material.Lava && ctx.WorldRead.GetMaterial(ctx.X, ctx.Y + 1, ctx.Z) == Material.Air && !ctx.WorldRead.IsOpaque(ctx.X, ctx.Y + 1, ctx.Z) && ctx.Random.NextInt(100) == 0)
+        if (material == Material.Lava && evt.Level.BlocksReader.GetMaterial(evt.X, evt.Y + 1, evt.Z) == Material.Air && !evt.Level.BlocksReader.IsOpaque(evt.X, evt.Y + 1, evt.Z) && Random.Shared.Next(100) == 0)
         {
-            double particleX = ctx.X + ctx.Random.NextFloat();
-            double particleY = ctx.Y + BoundingBox.MaxY;
-            double particleZ = ctx.Z + ctx.Random.NextFloat();
-            ctx.Broadcaster.AddParticle("lava", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
+            double particleX = evt.X + Random.Shared.NextSingle();
+            double particleY = evt.Y + BoundingBox.MaxY;
+            double particleZ = evt.Z + Random.Shared.NextSingle();
+            evt.Level.Broadcaster.AddParticle("lava", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
         }
     }
 
@@ -239,11 +238,11 @@ public abstract class BlockFluid : Block
         return flowVec.X == 0.0D && flowVec.Z == 0.0D ? -1000.0D : Math.Atan2(flowVec.Z, flowVec.X) - Math.PI * 0.5D;
     }
 
-    public override void onPlaced(OnPlacedEvt ctx) => checkBlockCollisions(ctx.WorldRead, ctx.WorldWrite, ctx.Broadcaster, ctx.X, ctx.Y, ctx.Z);
+    public override void onPlaced(OnPlacedEvt evt) => checkBlockCollisions(evt.Level.BlocksReader, evt.Level.BlockWriter, evt.Level.Broadcaster, evt.X, evt.Y, evt.Z);
 
-    public override void neighborUpdate(OnTickEvt ctx) => checkBlockCollisions(ctx.WorldRead, ctx.WorldWrite, ctx.Broadcaster, ctx.X, ctx.Y, ctx.Z);
+    public override void neighborUpdate(OnTickEvt evt) => checkBlockCollisions(evt.Level.BlocksReader, evt.Level.BlockWriter, evt.Level.Broadcaster, evt.X, evt.Y, evt.Z);
 
-    private void checkBlockCollisions(WorldBlockView WorldView, WorldBlockWrite WorldWrite, WorldEventBroadcaster broadcaster, int x, int y, int z)
+    private void checkBlockCollisions(IBlockReader WorldView, WorldBlockWrite WorldWrite, WorldEventBroadcaster broadcaster, int x, int y, int z)
     {
         if (WorldView.GetBlockId(x, y, z) == id)
         {
@@ -277,7 +276,7 @@ public abstract class BlockFluid : Block
 
                 if (hasWaterAdjacent)
                 {
-                    int var6 = WorldView.GetBlockMeta(x, y, z);
+                    int var6 = WorldView.GetMeta(x, y, z);
                     if (var6 == 0)
                     {
                         WorldWrite.SetBlock(x, y, z, Obsidian.id);

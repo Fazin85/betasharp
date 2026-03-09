@@ -12,13 +12,13 @@ public abstract class BlockWithEntity : Block
     public override void onPlaced(OnPlacedEvt ctx)
     {
         base.onPlaced(ctx);
-        ctx.WorldWrite.SetBlockEntity(ctx.X, ctx.Y, ctx.Z, getBlockEntity());
+        ctx.Level.Entities.SetBlockEntity(ctx.X, ctx.Y, ctx.Z, getBlockEntity());
     }
 
     public override void onBreak(OnBreakEvt ctx)
     {
         base.onBreak(ctx);
-        ctx.WorldWrite.RemoveBlockEntity(ctx.X, ctx.Y, ctx.Z);
+        ctx.Level.Entities.RemoveBlockEntity(ctx.X, ctx.Y, ctx.Z);
     }
 
     protected abstract BlockEntity getBlockEntity();

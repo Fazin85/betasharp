@@ -2,30 +2,29 @@ using BetaSharp.Blocks;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Entities;
 
 public class EntityLightningBolt : EntityWeatherEffect
 {
+    private int flashCount;
     private int flashTimer;
     public long renderSeed;
-    private int flashCount;
 
-    public EntityLightningBolt(World world, double x, double y, double z) : base(world)
+    public EntityLightningBolt(IBlockWorldContext level, double x, double y, double z) : base(level)
     {
         setPositionAndAnglesKeepPrevAngles(x, y, z, 0.0F, 0.0F);
         flashTimer = 2;
         renderSeed = random.NextLong();
         flashCount = random.NextInt(3) + 1;
-        if (world.difficulty >= 2 && world.isRegionLoaded(MathHelper.Floor(x), MathHelper.Floor(y), MathHelper.Floor(z), 10))
+        if (level.Difficulty >= 2 && level.BlockHost.IsRegionLoaded(MathHelper.Floor(x), MathHelper.Floor(y), MathHelper.Floor(z), 10))
         {
             int strikeX = MathHelper.Floor(x);
             int strikeY = MathHelper.Floor(y);
             int strikeZ = MathHelper.Floor(z);
-            if (world.getBlockId(strikeX, strikeY, strikeZ) == 0 && Block.Fire.canPlaceAt(world.BlocksReader, strikeX, strikeY, strikeZ))
+            if (level.BlocksReader.GetBlockId(strikeX, strikeY, strikeZ) == 0 && Block.Fire.canPlaceAt(new CanPlaceAtCtx(level, 0, strikeX, strikeY, strikeZ)))
             {
-                world.setBlock(strikeX, strikeY, strikeZ, Block.Fire.id);
+                level.BlockWriter.SetBlock(strikeX, strikeY, strikeZ, Block.Fire.id);
             }
 
             for (strikeX = 0; strikeX < 4; ++strikeX)
@@ -33,13 +32,12 @@ public class EntityLightningBolt : EntityWeatherEffect
                 strikeY = MathHelper.Floor(x) + random.NextInt(3) - 1;
                 strikeZ = MathHelper.Floor(y) + random.NextInt(3) - 1;
                 int fireZ = MathHelper.Floor(z) + random.NextInt(3) - 1;
-                if (world.getBlockId(strikeY, strikeZ, fireZ) == 0 && Block.Fire.canPlaceAt(world.BlocksReader, strikeY, strikeZ, fireZ))
+                if (level.BlocksReader.GetBlockId(strikeY, strikeZ, fireZ) == 0 && Block.Fire.canPlaceAt(new CanPlaceAtCtx(level, 0, strikeY, strikeZ, fireZ)))
                 {
-                    world.setBlock(strikeY, strikeZ, fireZ, Block.Fire.id);
+                    level.BlockWriter.SetBlock(strikeY, strikeZ, fireZ, Block.Fire.id);
                 }
             }
         }
-
     }
 
     public override void tick()
@@ -47,8 +45,8 @@ public class EntityLightningBolt : EntityWeatherEffect
         base.tick();
         if (flashTimer == 2)
         {
-            _level.playSound(x, y, z, "ambient.weather.thunder", 10000.0F, 0.8F + random.NextFloat() * 0.2F);
-            _level.playSound(x, y, z, "random.explode", 2.0F, 0.5F + random.NextFloat() * 0.2F);
+            _level.Broadcaster.PlaySoundAtPos(x, y, z, "ambient.weather.thunder", 10000.0F, 0.8F + random.NextFloat() * 0.2F);
+            _level.Broadcaster.PlaySoundAtPos(x, y, z, "random.explode", 2.0F, 0.5F + random.NextFloat() * 0.2F);
         }
 
         --flashTimer;
@@ -63,14 +61,14 @@ public class EntityLightningBolt : EntityWeatherEffect
                 --flashCount;
                 flashTimer = 1;
                 renderSeed = random.NextLong();
-                if (_level.isRegionLoaded(MathHelper.Floor(x), MathHelper.Floor(y), MathHelper.Floor(z), 10))
+                if (_level.BlockHost.IsRegionLoaded(MathHelper.Floor(x), MathHelper.Floor(y), MathHelper.Floor(z), 10))
                 {
                     int floorX = MathHelper.Floor(x);
                     int floorY = MathHelper.Floor(y);
                     int floorZ = MathHelper.Floor(z);
-                    if (_level.getBlockId(floorX, floorY, floorZ) == 0 && Block.Fire.canPlaceAt(_level.BlocksView, floorX, floorY, floorZ))
+                    if (_level.BlocksReader.GetBlockId(floorX, floorY, floorZ) == 0 && Block.Fire.canPlaceAt(new CanPlaceAtCtx(_level, 0, floorX, floorY, floorZ)))
                     {
-                        _level.setBlock(floorX, floorY, floorZ, Block.Fire.id);
+                        _level.BlockWriter.SetBlock(floorX, floorY, floorZ, Block.Fire.id);
                     }
                 }
             }
@@ -79,7 +77,7 @@ public class EntityLightningBolt : EntityWeatherEffect
         if (flashTimer >= 0)
         {
             double searchRadius = 3.0D;
-            var entities = _level.getEntities(this, new Box(x - searchRadius, y - searchRadius, z - searchRadius, x + searchRadius, y + 6.0D + searchRadius, z + searchRadius));
+            List<Entity> entities = _level.Entities.CollectEntitiesOfType<Entity>(new Box(x - searchRadius, y - searchRadius, z - searchRadius, x + searchRadius, y + 6.0D + searchRadius, z + searchRadius));
 
             for (int i = 0; i < entities.Count; ++i)
             {
@@ -87,9 +85,8 @@ public class EntityLightningBolt : EntityWeatherEffect
                 entity.onStruckByLightning(this);
             }
 
-            _level.lightningTicksLeft = 2;
+            _level.Environment.LightningTicksLeft = 2;
         }
-
     }
 
     protected override void initDataTracker()
@@ -104,8 +101,5 @@ public class EntityLightningBolt : EntityWeatherEffect
     {
     }
 
-    public override bool shouldRender(Vec3D cameraPos)
-    {
-        return flashTimer >= 0;
-    }
+    public override bool shouldRender(Vec3D cameraPos) => flashTimer >= 0;
 }

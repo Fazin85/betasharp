@@ -5,7 +5,6 @@ using BetaSharp.Network.Packets.S2CPlay;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
 using BetaSharp.Worlds.Chunks;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Items;
 
@@ -17,40 +16,40 @@ public class ItemMap : NetworkSyncedItem
         setMaxCount(1);
     }
 
-    public static MapState getMapState(short mapId, World world)
+    public static MapState getMapState(short mapId, IBlockWorldContext world)
     {
-        MapState? mapState = (MapState?)world.getOrCreateState(typeof(MapState), "map_" + mapId);
+        MapState? mapState = (MapState?)world.StateManager.LoadData(typeof(MapState), $"map_{mapId}");
         if (mapState == null)
         {
-            int mapIdCount = world.getIdCount("map");
+            int mapIdCount = world.StateManager.GetUniqueDataId("map");
             string mapName = "map_" + mapIdCount;
             mapState = new MapState(mapName);
-            world.setState(mapName, mapState);
+            world.StateManager.SetData(mapName, mapState);
         }
 
         return mapState;
     }
 
-    public MapState getSavedMapState(ItemStack stack, World world)
+    public MapState getSavedMapState(ItemStack stack, IBlockWorldContext world)
     {
         string mapName = "map_" + stack.getDamage();
-        MapState? mapState = (MapState?)world.getOrCreateState(typeof(MapState), mapName);
+        MapState? mapState = (MapState?)world.StateManager.LoadData(typeof(MapState), mapName);
         if (mapState == null)
         {
-            stack.setDamage(world.getIdCount("map"));
+            stack.setDamage(world.StateManager.GetUniqueDataId("map"));
             mapState = new MapState(mapName);
             mapState.centerX = world.Properties.SpawnX;
             mapState.centerZ = world.Properties.SpawnZ;
             mapState.scale = 3;
             mapState.dimension = (sbyte)world.dimension.Id;
             mapState.markDirty();
-            world.setState(mapName, mapState);
+            world.StateManager.SetData(mapName, mapState);
         }
 
         return mapState;
     }
 
-    public void update(World world, Entity entity, MapState map)
+    public void update(IBlockWorldContext world, Entity entity, MapState map)
     {
         if (world.dimension.Id == map.dimension)
         {
@@ -90,7 +89,7 @@ public class ItemMap : NetworkSyncedItem
                             byte greenSum = 0;
                             byte blueSum = 0;
                             int[] blockHistogram = new int[256];
-                            Chunk chunk = world.GetChunkFromPos(worldX, worldZ);
+                            Chunk chunk = world.BlockHost.GetChunkFromPos(worldX, worldZ);
                             int chunkOffsetX = worldX & 15;
                             int chunkOffsetZ = worldZ & 15;
                             int fluidDepth = 0;
@@ -266,7 +265,7 @@ public class ItemMap : NetworkSyncedItem
         }
     }
 
-    public override void inventoryTick(ItemStack itemStack, World world, Entity entity, int slotIndex, bool shouldUpdate)
+    public override void inventoryTick(ItemStack itemStack, IBlockWorldContext world, Entity entity, int slotIndex, bool shouldUpdate)
     {
         if (!world.IsRemote)
         {
@@ -285,12 +284,12 @@ public class ItemMap : NetworkSyncedItem
         }
     }
 
-    public override void onCraft(ItemStack itemStack, World world, EntityPlayer entityPlayer)
+    public override void onCraft(ItemStack itemStack, IBlockWorldContext world, EntityPlayer entityPlayer)
     {
-        itemStack.setDamage(world.getIdCount("map"));
+        itemStack.setDamage(world.StateManager.GetUniqueDataId("map"));
         string mapName = "map_" + itemStack.getDamage();
         MapState mapState = new MapState(mapName);
-        world.setState(mapName, mapState);
+        world.StateManager.SetData(mapName, mapState);
         mapState.centerX = MathHelper.Floor(entityPlayer.x);
         mapState.centerZ = MathHelper.Floor(entityPlayer.z);
         mapState.scale = 3;
@@ -298,9 +297,9 @@ public class ItemMap : NetworkSyncedItem
         mapState.markDirty();
     }
 
-    public override Packet getUpdatePacket(ItemStack stack, World world, EntityPlayer player)
+    public override Packet? getUpdatePacket(ItemStack stack, IBlockWorldContext world, EntityPlayer player)
     {
         byte[] updateData = getSavedMapState(stack, world).getPlayerMarkerPacket(player);
-        return updateData == null ? null : new MapUpdateS2CPacket((short)Item.Map.id, (short)stack.getDamage(), updateData);
+        return updateData == null ? null : MapUpdateS2CPacket.Get((short)Item.Map.id, (short)stack.getDamage(), updateData);
     }
 }

@@ -28,7 +28,7 @@ internal class BlockTorch : Block
 
     public override void onPlaced(OnPlacedEvt evt)
     {
-        int meta = evt.Level.BlocksReader.GetBlockMeta(evt.X, evt.Y, evt.Z);
+        int meta = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
         if (evt.Direction == 1 && canPlaceOn(evt.Level.BlocksReader, evt.X, evt.Y - 1, evt.Z))
         {
             meta = 5;
@@ -60,7 +60,7 @@ internal class BlockTorch : Block
     public override void onTick(OnTickEvt evt)
     {
         base.onTick(evt);
-        if (evt.Level.BlocksReader.GetBlockMeta(evt.X, evt.Y, evt.Z) == 0)
+        if (evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z) == 0)
         {
             onPlaced(evt);
         }
@@ -96,7 +96,7 @@ internal class BlockTorch : Block
     {
         if (breakIfCannotPlaceAt(evt, evt.X, evt.Y, evt.Z))
         {
-            int meta = evt.Level.BlocksReader.GetBlockMeta(evt.X, evt.Y, evt.Z);
+            int meta = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
             bool shouldDrop = false;
 
             if (!evt.Level.BlocksReader.ShouldSuffocate(evt.X - 1, evt.Y, evt.Z) && meta == 1)
@@ -126,7 +126,7 @@ internal class BlockTorch : Block
 
             if (shouldDrop)
             {
-                dropStacks(new OnDropEvt(evt.Level, evt.X, evt.Y, evt.Z, evt.Level.BlocksReader.GetBlockMeta(evt.X, evt.Y, evt.Z)));
+                dropStacks(new OnDropEvt(evt.Level, evt.X, evt.Y, evt.Z, evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z)));
                 evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, 0);
             }
         }
@@ -136,7 +136,7 @@ internal class BlockTorch : Block
     {
         if (!canPlaceAt(new CanPlaceAtCtx(evt.Level, 0, x, y, z)))
         {
-            dropStacks(new OnDropEvt(evt.Level, x, y, z, evt.Level.BlocksReader.GetBlockMeta(x, y, z)));
+            dropStacks(new OnDropEvt(evt.Level, x, y, z, evt.Level.BlocksReader.GetMeta(x, y, z)));
             evt.Level.BlockWriter.SetBlock(x, y, z, 0);
             return false;
         }
@@ -146,7 +146,7 @@ internal class BlockTorch : Block
 
     public override HitResult raycast(IBlockReader world, int x, int y, int z, Vec3D startPos, Vec3D endPos)
     {
-        int meta = world.GetBlockMeta(x, y, z) & 7;
+        int meta = world.GetMeta(x, y, z) & 7;
         float torchWidth = 0.15F;
         if (meta == 1)
         {
@@ -175,7 +175,7 @@ internal class BlockTorch : Block
 
     public override void randomDisplayTick(OnTickEvt evt)
     {
-        int meta = evt.Level.BlocksReader.GetBlockMeta(evt.X, evt.Y, evt.Z);
+        int meta = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
         float flameX = evt.X + 0.5F;
         float flameY = evt.Y + 0.7F;
         float flameZ = evt.Z + 0.5F;

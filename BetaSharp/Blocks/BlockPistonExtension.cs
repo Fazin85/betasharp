@@ -18,22 +18,22 @@ public class BlockPistonExtension : Block
 
     public void clearSprite() => pistonHeadSprite = -1;
 
-    public override void onBreak(OnBreakEvt ctx)
+    public override void onBreak(OnBreakEvt evt)
     {
-        base.onBreak(ctx);
-        int var5 = ctx.Level.BlocksReader.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+        base.onBreak(evt);
+        int var5 = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
         int var6 = PistonConstants.field_31057_a[getFacing(var5)];
-        ctx.X += PistonConstants.HEAD_OFFSET_X[var6];
-        ctx.Y += PistonConstants.HEAD_OFFSET_Y[var6];
-        ctx.Z += PistonConstants.HEAD_OFFSET_Z[var6];
-        int var7 = ctx.Level.BlocksReader.GetBlockId(ctx.X, ctx.Y, ctx.Z);
+        evt.X += PistonConstants.HEAD_OFFSET_X[var6];
+        evt.Y += PistonConstants.HEAD_OFFSET_Y[var6];
+        evt.Z += PistonConstants.HEAD_OFFSET_Z[var6];
+        int var7 = evt.Level.BlocksReader.GetBlockId(evt.X, evt.Y, evt.Z);
         if (var7 == Piston.id || var7 == StickyPiston.id)
         {
-            var5 = ctx.Level.BlocksReader.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+            var5 = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
             if (BlockPistonBase.isExtended(var5))
             {
-                Blocks[var7].dropStacks(new OnDropEvt(ctx.Level, ctx.X, ctx.Y, ctx.Z, var5));
-                ctx.Level.BlockWriter.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
+                Blocks[var7].dropStacks(new OnDropEvt(evt.Level, evt.X, evt.Y, evt.Z, var5));
+                evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, 0);
             }
         }
     }
@@ -56,7 +56,7 @@ public class BlockPistonExtension : Block
 
     public override void addIntersectingBoundingBox(IBlockReader reader, int x, int y, int z, Box box, List<Box> boxes)
     {
-        int var7 = reader.GetBlockMeta(x, y, z);
+        int var7 = reader.GetMeta(x, y, z);
         switch (getFacing(var7))
         {
             case 0:
@@ -102,7 +102,7 @@ public class BlockPistonExtension : Block
 
     public override void updateBoundingBox(IBlockReader reader, int x, int y, int z)
     {
-        int var5 = reader.GetBlockMeta(x, y, z);
+        int var5 = reader.GetMeta(x, y, z);
         switch (getFacing(var5))
         {
             case 0:
@@ -126,17 +126,18 @@ public class BlockPistonExtension : Block
         }
     }
 
-    public override void neighborUpdate(OnTickEvt ctx)
+    public override void neighborUpdate(OnTickEvt evt)
     {
-        int facing = getFacing(ctx.Level.BlocksReader.GetBlockMeta(ctx.X, ctx.Y, ctx.Z));
-        int var7 = ctx.Level.BlocksReader.GetBlockId(ctx.X - PistonConstants.HEAD_OFFSET_X[facing], ctx.Y - PistonConstants.HEAD_OFFSET_Y[facing], ctx.Z - PistonConstants.HEAD_OFFSET_Z[facing]);
+        int facing = getFacing(evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z));
+        int var7 = evt.Level.BlocksReader.GetBlockId(evt.X - PistonConstants.HEAD_OFFSET_X[facing], evt.Y - PistonConstants.HEAD_OFFSET_Y[facing], evt.Z - PistonConstants.HEAD_OFFSET_Z[facing]);
         if (var7 != Piston.id && var7 != StickyPiston.id)
         {
-            ctx.Level.BlockWriter.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
+            evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, 0);
         }
         else
         {
-            Blocks[var7].neighborUpdate(new OnTickEvt(ctx.Level, ctx.X - PistonConstants.HEAD_OFFSET_X[facing], ctx.Y - PistonConstants.HEAD_OFFSET_Y[facing], ctx.Z - PistonConstants.HEAD_OFFSET_Z[facing], ctx.Level.BlocksReader.GetBlockMeta(ctx.X - PistonConstants.HEAD_OFFSET_X[facing], ctx.Y - PistonConstants.HEAD_OFFSET_Y[facing], ctx.Z - PistonConstants.HEAD_OFFSET_Z[facing]), id));
+            Blocks[var7].neighborUpdate(new OnTickEvt(evt.Level, evt.X - PistonConstants.HEAD_OFFSET_X[facing], evt.Y - PistonConstants.HEAD_OFFSET_Y[facing], evt.Z - PistonConstants.HEAD_OFFSET_Z[facing],
+                evt.Level.BlocksReader.GetMeta(evt.X - PistonConstants.HEAD_OFFSET_X[facing], evt.Y - PistonConstants.HEAD_OFFSET_Y[facing], evt.Z - PistonConstants.HEAD_OFFSET_Z[facing]), id));
         }
     }
 

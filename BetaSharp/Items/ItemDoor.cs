@@ -18,7 +18,7 @@ internal class ItemDoor : Item
         maxCount = 1;
     }
 
-    public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int meta)
+    public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, IBlockWorldContext world, int x, int y, int z, int meta)
     {
         if (meta != 1)
         {
@@ -37,7 +37,7 @@ internal class ItemDoor : Item
                 block = Block.IronDoor;
             }
 
-            if (!block.canPlaceAt(world.BlocksReader, x, y, z))
+            if (!block.canPlaceAt(new CanPlaceAtCtx(world, 0, x, y, z)))
             {
                 return false;
             }
@@ -66,10 +66,10 @@ internal class ItemDoor : Item
                     offsetX = 1;
                 }
 
-                int solidBlocksLeft = (world.shouldSuffocate(x - offsetX, y, z - offsetZ) ? 1 : 0) + (world.shouldSuffocate(x - offsetX, y + 1, z - offsetZ) ? 1 : 0);
-                int solidBlocksRight = (world.shouldSuffocate(x + offsetX, y, z + offsetZ) ? 1 : 0) + (world.shouldSuffocate(x + offsetX, y + 1, z + offsetZ) ? 1 : 0);
-                bool hasDoorOnLeft = world.getBlockId(x - offsetX, y, z - offsetZ) == block.id || world.getBlockId(x - offsetX, y + 1, z - offsetZ) == block.id;
-                bool hasDoorOnRight = world.getBlockId(x + offsetX, y, z + offsetZ) == block.id || world.getBlockId(x + offsetX, y + 1, z + offsetZ) == block.id;
+                int solidBlocksLeft = (world.BlocksReader.ShouldSuffocate(x - offsetX, y, z - offsetZ) ? 1 : 0) + (world.BlocksReader.ShouldSuffocate(x - offsetX, y + 1, z - offsetZ) ? 1 : 0);
+                int solidBlocksRight = (world.BlocksReader.ShouldSuffocate(x + offsetX, y, z + offsetZ) ? 1 : 0) + (world.BlocksReader.ShouldSuffocate(x + offsetX, y + 1, z + offsetZ) ? 1 : 0);
+                bool hasDoorOnLeft = world.BlocksReader.GetBlockId(x - offsetX, y, z - offsetZ) == block.id || world.BlocksReader.GetBlockId(x - offsetX, y + 1, z - offsetZ) == block.id;
+                bool hasDoorOnRight = world.BlocksReader.GetBlockId(x + offsetX, y, z + offsetZ) == block.id || world.BlocksReader.GetBlockId(x + offsetX, y + 1, z + offsetZ) == block.id;
                 bool shouldMirror = false;
                 if (hasDoorOnLeft && !hasDoorOnRight)
                 {
@@ -87,10 +87,11 @@ internal class ItemDoor : Item
                 }
 
 
-                world.setBlockPaused(x, y, z, block.id, direction);
-                world.setBlockPaused(x, y + 1, z, block.id, direction + 8);
-                world.notifyNeighbors(x, y, z, block.id);
-                world.notifyNeighbors(x, y + 1, z, block.id);
+                // TODO: Need to check this PauseTicking stuff
+                world.BlockWriter.SetBlock(x, y, z, block.id, direction);
+                world.BlockWriter.SetBlock(x, y + 1, z, block.id, direction + 8);
+                world.Broadcaster.NotifyNeighbors(x, y, z, block.id);
+                world.Broadcaster.NotifyNeighbors(x, y + 1, z, block.id);
                 --itemStack.count;
                 return true;
             }

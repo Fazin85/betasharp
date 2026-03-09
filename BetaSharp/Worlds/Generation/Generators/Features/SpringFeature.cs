@@ -75,9 +75,10 @@ internal class SpringFeature : Feature
         {
             level.BlockWriter.SetBlock(x, y, z, _liquidBlockId);
 
-            level.InstantBlockUpdateEnabled = true;
-            Block.Blocks[_liquidBlockId].onTick(new OnTickEvt(level, x, y, z, level.BlocksReader.GetBlockMeta(x, y, z), level.BlocksReader.GetBlockId(x, y, z)));
-            level.InstantBlockUpdateEnabled = false;
+            // TODO: Investigate this InstantBlockUpdateEnabled further
+            //level.Properties.InstantBlockUpdateEnabled = true;
+            Block.Blocks[_liquidBlockId].onTick(new OnTickEvt(level, x, y, z, level.BlocksReader.GetMeta(x, y, z), level.BlocksReader.GetBlockId(x, y, z)));
+            //level.Properties.InstantBlockUpdateEnabled = false;
         }
 
         return true;

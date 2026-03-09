@@ -2,7 +2,6 @@ using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Rules;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Blocks;
 
@@ -18,25 +17,25 @@ internal class BlockCrops : BlockPlant
 
     protected override bool canPlantOnTop(int id) => id == Farmland.id;
 
-    public override void onTick(OnTickEvt ctx)
+    public override void onTick(OnTickEvt evt)
     {
-        base.onTick(ctx);
-        if (ctx.Lighting.GetBrightness(LightType.Block, ctx.X, ctx.Y + 1, ctx.Z) >= 9)
+        base.onTick(evt);
+        if (evt.Level.Lighting.GetBrightness(LightType.Block, evt.X, evt.Y + 1, evt.Z) >= 9)
         {
-            int meta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+            int meta = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
             if (meta < 7)
             {
-                float var7 = getAvailableMoisture(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z);
+                float var7 = getAvailableMoisture(evt.Level.BlocksReader, evt.X, evt.Y, evt.Z);
                 if (Random.Shared.Next(100) / var7 == 0)
                 {
                     ++meta;
-                    ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, meta);
+                    evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, meta);
                 }
             }
         }
     }
 
-    public void applyFullGrowth(World world, int x, int y, int z) => world.setBlockMeta(x, y, z, 7);
+    public void applyFullGrowth(IBlockWorldContext world, int x, int y, int z) => world.BlockWriter.SetBlockMeta(x, y, z, 7);
 
     private float getAvailableMoisture(IBlockReader read, int x, int y, int z)
     {
@@ -62,7 +61,7 @@ internal class BlockCrops : BlockPlant
                 if (blockBelow == Farmland.id)
                 {
                     cellMoisture = 1.0F;
-                    if (read.GetBlockMeta(dx, y - 1, dz) > 0)
+                    if (read.GetMeta(dx, y - 1, dz) > 0)
                     {
                         cellMoisture = 3.0F;
                     }
@@ -97,22 +96,22 @@ internal class BlockCrops : BlockPlant
 
     public override BlockRendererType getRenderType() => BlockRendererType.Crops;
 
-    public override void dropStacks(OnDropEvt ctx)
+    public override void dropStacks(OnDropEvt evt)
     {
-        base.dropStacks(ctx);
-        if (!ctx.IsRemote && ctx.Rules.GetBool(DefaultRules.DoTileDrops))
+        base.dropStacks(evt);
+        if (!evt.Level.IsRemote && evt.Level.Rules.GetBool(DefaultRules.DoTileDrops))
         {
             for (int attempt = 0; attempt < 3; ++attempt)
             {
-                if (Random.Shared.Next(15) <= ctx.Meta)
+                if (Random.Shared.Next(15) <= evt.Meta)
                 {
                     float spreadFactor = 0.7F;
                     float offsetX = Random.Shared.NextSingle() * spreadFactor + (1.0F - spreadFactor) * 0.5F;
                     float offsetY = Random.Shared.NextSingle() * spreadFactor + (1.0F - spreadFactor) * 0.5F;
                     float offsetZ = Random.Shared.NextSingle() * spreadFactor + (1.0F - spreadFactor) * 0.5F;
-                    EntityItem entityItem = new(world, (float)x + offsetX, (float)y + offsetY, (float)z + offsetZ, new ItemStack(Item.Seeds));
+                    EntityItem entityItem = new(evt.Level, evt.X + offsetX, evt.Y + offsetY, evt.Z + offsetZ, new ItemStack(Item.Seeds));
                     entityItem.delayBeforeCanPickup = 10;
-                    ctx.Entities.SpawnEntity(entityItem);
+                    evt.Level.Entities.SpawnEntity(entityItem);
                 }
             }
         }

@@ -4,7 +4,6 @@ using BetaSharp.Entities;
 using BetaSharp.Profiling;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Worlds.Chunks;
@@ -26,13 +25,13 @@ public class Chunk
     public byte[] HeightMap;
     public bool LastSaveHadEntities;
     public long LastSaveTime;
+    public IBlockWorldContext Level;
 
     public bool Loaded;
     public ChunkNibbleArray Meta;
     public int MinHeightMapValue;
     public ChunkNibbleArray SkyLight;
     public bool TerrainPopulated;
-    public IBlockWorldContext Level;
 
     public Chunk(IBlockWorldContext level, int x, int z)
     {
@@ -53,7 +52,7 @@ public class Chunk
         }
     }
 
-    public Chunk(World world, byte[] blocks, int x, int z) : this(world, x, z)
+    public Chunk(IBlockWorldContext level, byte[] blocks, int x, int z) : this(level, x, z)
     {
         Blocks = blocks;
         Meta = new ChunkNibbleArray(blocks.Length);

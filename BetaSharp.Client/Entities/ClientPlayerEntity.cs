@@ -1,5 +1,4 @@
 using BetaSharp.Blocks.Entities;
-using BetaSharp.Client.Achievements;
 using BetaSharp.Client.Entities.FX;
 using BetaSharp.Client.Guis;
 using BetaSharp.Client.Input;
@@ -9,34 +8,25 @@ using BetaSharp.NBT;
 using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Client.Entities;
 
 public class ClientPlayerEntity : EntityPlayer
 {
-    public MovementInput movementInput;
-    protected BetaSharp Game;
+    private readonly MouseFilter field_21902_bL = new();
     private readonly MouseFilter field_21903_bJ = new();
     private readonly MouseFilter field_21904_bK = new();
-    private readonly MouseFilter field_21902_bL = new();
+    protected BetaSharp Game;
+    public MovementInput movementInput;
 
-    public ClientPlayerEntity(BetaSharp game, World world, Session session, int dimensionId) : base(world)
+    public ClientPlayerEntity(BetaSharp game, IBlockWorldContext world, Session session, int dimensionId) : base(world)
     {
-        this.Game = game;
-        base.dimensionId = dimensionId;
-        if (session != null && session.username != null && session.username.Length > 0)
-        {
-            skinUrl = session.skinUrl ?? "http://s3.amazonaws.com/MinecraftSkins/" + session.username + ".png";
-        }
-
+        Game = game;
+        this.dimensionId = dimensionId;
         name = session.username;
     }
 
-    public override void move(double x, double y, double z)
-    {
-        base.move(x, y, z);
-    }
+    public override void move(double x, double y, double z) => base.move(x, y, z);
 
     public override void tickLiving()
     {
@@ -56,14 +46,14 @@ public class ClientPlayerEntity : EntityPlayer
         lastScreenDistortion = changeDimensionCooldown;
         if (inTeleportationState)
         {
-            if (!_ctx.isRemote && vehicle != null)
+            if (!_level.IsRemote && vehicle != null)
             {
-                setVehicle((Entity)null);
+                setVehicle(null);
             }
 
             if (Game.currentScreen != null)
             {
-                Game.displayGuiScreen((GuiScreen)null);
+                Game.displayGuiScreen(null);
             }
 
             if (changeDimensionCooldown == 0.0F)
@@ -103,22 +93,16 @@ public class ClientPlayerEntity : EntityPlayer
             cameraOffset = 0.2F;
         }
 
-        pushOutOfBlocks(x - (double)width * 0.35D, boundingBox.MinY + 0.5D, z + (double)width * 0.35D);
-        pushOutOfBlocks(x - (double)width * 0.35D, boundingBox.MinY + 0.5D, z - (double)width * 0.35D);
-        pushOutOfBlocks(x + (double)width * 0.35D, boundingBox.MinY + 0.5D, z - (double)width * 0.35D);
-        pushOutOfBlocks(x + (double)width * 0.35D, boundingBox.MinY + 0.5D, z + (double)width * 0.35D);
+        pushOutOfBlocks(x - width * 0.35D, boundingBox.MinY + 0.5D, z + width * 0.35D);
+        pushOutOfBlocks(x - width * 0.35D, boundingBox.MinY + 0.5D, z - width * 0.35D);
+        pushOutOfBlocks(x + width * 0.35D, boundingBox.MinY + 0.5D, z - width * 0.35D);
+        pushOutOfBlocks(x + width * 0.35D, boundingBox.MinY + 0.5D, z + width * 0.35D);
         base.tickMovement();
     }
 
-    public void resetPlayerKeyState()
-    {
-        movementInput.resetKeyState();
-    }
+    public void resetPlayerKeyState() => movementInput.resetKeyState();
 
-    public void handleKeyPress(int key, bool isPressed)
-    {
-        movementInput.checkKeyForMovementInput(key, isPressed);
-    }
+    public void handleKeyPress(int key, bool isPressed) => movementInput.checkKeyForMovementInput(key, isPressed);
 
     public override void writeNbt(NBTTagCompound nbt)
     {
@@ -138,50 +122,23 @@ public class ClientPlayerEntity : EntityPlayer
         Game.displayGuiScreen(null);
     }
 
-    public override void openEditSignScreen(BlockEntitySign sign)
-    {
-        Game.displayGuiScreen(new GuiEditSign(sign));
-    }
+    public override void openEditSignScreen(BlockEntitySign sign) => Game.displayGuiScreen(new GuiEditSign(sign));
 
-    public override void openChestScreen(IInventory inventory)
-    {
-        Game.displayGuiScreen(new GuiChest(base.inventory, inventory));
-    }
+    public override void openChestScreen(IInventory inventory) => Game.displayGuiScreen(new GuiChest(this.inventory, inventory));
 
-    public override void openCraftingScreen(int x, int y, int z)
-    {
-        Game.displayGuiScreen(new GuiCrafting(inventory, _ctx, x, y, z));
-    }
+    public override void openCraftingScreen(int x, int y, int z) => Game.displayGuiScreen(new GuiCrafting(inventory, _level, x, y, z));
 
-    public override void openFurnaceScreen(BlockEntityFurnace furnace)
-    {
-        Game.displayGuiScreen(new GuiFurnace(inventory, furnace));
-    }
+    public override void openFurnaceScreen(BlockEntityFurnace furnace) => Game.displayGuiScreen(new GuiFurnace(inventory, furnace));
 
-    public override void openDispenserScreen(BlockEntityDispenser dispenser)
-    {
-        Game.displayGuiScreen(new GuiDispenser(inventory, dispenser));
-    }
+    public override void openDispenserScreen(BlockEntityDispenser dispenser) => Game.displayGuiScreen(new GuiDispenser(inventory, dispenser));
 
-    public override void sendPickup(Entity entity, int count)
-    {
-        Game.particleManager.addEffect(new EntityPickupFX(Game.world, entity, this, -0.5F));
-    }
+    public override void sendPickup(Entity entity, int count) => Game.particleManager.addEffect(new EntityPickupFX(Game.world, entity, this, -0.5F));
 
-    public int getPlayerArmorValue()
-    {
-        return inventory.getTotalArmorValue();
-    }
+    public int getPlayerArmorValue() => inventory.getTotalArmorValue();
 
-    public virtual void sendChatMessage(string message)
-    {
-        Game.ingameGUI.addChatMessage($"<{name}> {message}");
-    }
+    public virtual void sendChatMessage(string message) => Game.ingameGUI.addChatMessage($"<{name}> {message}");
 
-    public override bool isSneaking()
-    {
-        return movementInput.sneak && !sleeping;
-    }
+    public override bool isSneaking() => movementInput.sneak && !sleeping;
 
     public virtual void setHealth(int newHealth)
     {
@@ -200,24 +157,16 @@ public class ClientPlayerEntity : EntityPlayer
             lastHealth = health;
             hearts = maxHealth;
             applyDamage(damageAmount);
-
         }
-
     }
 
-    public override void respawn()
-    {
-        Game.respawn(false, 0);
-    }
+    public override void respawn() => Game.respawn(false, 0);
 
     public override void spawn()
     {
     }
 
-    public override void sendMessage(string message)
-    {
-        Game.ingameGUI.addChatMessageTranslate(message);
-    }
+    public override void sendMessage(string message) => Game.ingameGUI.addChatMessageTranslate(message);
 
     public override void increaseStat(StatBase stat, int value)
     {
@@ -243,22 +192,18 @@ public class ClientPlayerEntity : EntityPlayer
             {
                 Game.statFileWriter.ReadStat(stat, value);
             }
-
         }
     }
 
-    private bool isBlockTranslucent(int x, int y, int z)
-    {
-        return _ctx.shouldSuffocate(x, y, z);
-    }
+    private bool isBlockTranslucent(int x, int y, int z) => _level.BlocksReader.ShouldSuffocate(x, y, z);
 
     protected override bool pushOutOfBlocks(double posX, double posY, double posZ)
     {
         int floorX = MathHelper.Floor(posX);
         int floorY = MathHelper.Floor(posY);
         int floorZ = MathHelper.Floor(posZ);
-        double fracX = posX - (double)floorX;
-        double fracZ = posZ - (double)floorZ;
+        double fracX = posX - floorX;
+        double fracZ = posZ - floorZ;
         if (isBlockTranslucent(floorX, floorY, floorZ) || isBlockTranslucent(floorX, floorY + 1, floorZ))
         {
             bool canPushWest = !isBlockTranslucent(floorX - 1, floorY, floorZ) && !isBlockTranslucent(floorX - 1, floorY + 1, floorZ);
@@ -294,22 +239,22 @@ public class ClientPlayerEntity : EntityPlayer
             float pushStrength = 0.1F;
             if (pushDirection == 0)
             {
-                velocityX = (double)(-pushStrength);
+                velocityX = -pushStrength;
             }
 
             if (pushDirection == 1)
             {
-                velocityX = (double)pushStrength;
+                velocityX = pushStrength;
             }
 
             if (pushDirection == 4)
             {
-                velocityZ = (double)(-pushStrength);
+                velocityZ = -pushStrength;
             }
 
             if (pushDirection == 5)
             {
-                velocityZ = (double)pushStrength;
+                velocityZ = pushStrength;
             }
         }
 

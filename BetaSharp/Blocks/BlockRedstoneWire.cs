@@ -40,7 +40,7 @@ public class BlockRedstoneWire : Block
 
     private void func_21030_a(IBlockWorldContext level, int var2, int var3, int var4, int var5, int var6, int var7, HashSet<BlockPos> neighbors)
     {
-        int var8 = level.BlocksReader.GetBlockMeta(var2, var3, var4);
+        int var8 = level.BlocksReader.GetMeta(var2, var3, var4);
         int var9 = 0;
         s_wiresProvidePower.Value = false;
         bool var10 = level.Redstone.IsPowered(var2, var3, var4);
@@ -146,7 +146,7 @@ public class BlockRedstoneWire : Block
 
                 bool var15 = false;
                 int var16 = getMaxCurrentStrength(level.BlocksReader, var12, var3, var13, -1);
-                var9 = level.BlocksReader.GetBlockMeta(var2, var3, var4);
+                var9 = level.BlocksReader.GetMeta(var2, var3, var4);
                 if (var9 > 0)
                 {
                     --var9;
@@ -158,7 +158,7 @@ public class BlockRedstoneWire : Block
                 }
 
                 var16 = getMaxCurrentStrength(level.BlocksReader, var12, var14, var13, -1);
-                var9 = level.BlocksReader.GetBlockMeta(var2, var3, var4);
+                var9 = level.BlocksReader.GetMeta(var2, var3, var4);
                 if (var9 > 0)
                 {
                     --var9;
@@ -197,102 +197,102 @@ public class BlockRedstoneWire : Block
         }
     }
 
-    public override void onPlaced(OnPlacedEvt ctx)
+    public override void onPlaced(OnPlacedEvt evt)
     {
-        base.onPlaced(ctx);
-        if (!ctx.Level.IsRemote)
+        base.onPlaced(evt);
+        if (!evt.Level.IsRemote)
         {
-            updateAndPropagateCurrentStrength(ctx.Level, ctx.X, ctx.Y, ctx.Z);
-            ctx.Level.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y + 1, ctx.Z, id);
-            ctx.Level.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y - 1, ctx.Z, id);
-            NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X - 1, ctx.Y, ctx.Z);
-            NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X + 1, ctx.Y, ctx.Z);
-            NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X, ctx.Y, ctx.Z - 1);
-            NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X, ctx.Y, ctx.Z + 1);
-            if (ctx.Level.BlocksReader.ShouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z))
+            updateAndPropagateCurrentStrength(evt.Level, evt.X, evt.Y, evt.Z);
+            evt.Level.Broadcaster.NotifyNeighbors(evt.X, evt.Y + 1, evt.Z, id);
+            evt.Level.Broadcaster.NotifyNeighbors(evt.X, evt.Y - 1, evt.Z, id);
+            NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X - 1, evt.Y, evt.Z);
+            NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X + 1, evt.Y, evt.Z);
+            NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X, evt.Y, evt.Z - 1);
+            NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X, evt.Y, evt.Z + 1);
+            if (evt.Level.BlocksReader.ShouldSuffocate(evt.X - 1, evt.Y, evt.Z))
             {
-                NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X - 1, ctx.Y + 1, ctx.Z);
+                NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X - 1, evt.Y + 1, evt.Z);
             }
             else
             {
-                NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X - 1, ctx.Y - 1, ctx.Z);
+                NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X - 1, evt.Y - 1, evt.Z);
             }
 
-            if (ctx.Level.BlocksReader.ShouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z))
+            if (evt.Level.BlocksReader.ShouldSuffocate(evt.X + 1, evt.Y, evt.Z))
             {
-                NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X + 1, ctx.Y + 1, ctx.Z);
+                NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X + 1, evt.Y + 1, evt.Z);
             }
             else
             {
-                NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X + 1, ctx.Y - 1, ctx.Z);
+                NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X + 1, evt.Y - 1, evt.Z);
             }
 
-            if (ctx.Level.BlocksReader.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1))
+            if (evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y, evt.Z - 1))
             {
-                NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X, ctx.Y + 1, ctx.Z - 1);
+                NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X, evt.Y + 1, evt.Z - 1);
             }
             else
             {
-                NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X, ctx.Y - 1, ctx.Z - 1);
+                NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X, evt.Y - 1, evt.Z - 1);
             }
 
-            if (ctx.Level.BlocksReader.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1))
+            if (evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y, evt.Z + 1))
             {
-                NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X, ctx.Y + 1, ctx.Z + 1);
+                NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X, evt.Y + 1, evt.Z + 1);
             }
             else
             {
-                NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X, ctx.Y - 1, ctx.Z + 1);
+                NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X, evt.Y - 1, evt.Z + 1);
             }
         }
     }
 
-    public override void onBreak(OnBreakEvt ctx)
+    public override void onBreak(OnBreakEvt evt)
     {
-        base.onBreak(ctx);
-        if (!ctx.Level.IsRemote)
+        base.onBreak(evt);
+        if (!evt.Level.IsRemote)
         {
-            ctx.Level.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y + 1, ctx.Z, id);
-            ctx.Level.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y - 1, ctx.Z, id);
-            updateAndPropagateCurrentStrength(ctx.Level, ctx.X, ctx.Y, ctx.Z);
-            NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X - 1, ctx.Y, ctx.Z);
-            NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X + 1, ctx.Y, ctx.Z);
-            NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X, ctx.Y, ctx.Z - 1);
-            NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X, ctx.Y, ctx.Z + 1);
-            if (ctx.Level.BlocksReader.ShouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z))
+            evt.Level.Broadcaster.NotifyNeighbors(evt.X, evt.Y + 1, evt.Z, id);
+            evt.Level.Broadcaster.NotifyNeighbors(evt.X, evt.Y - 1, evt.Z, id);
+            updateAndPropagateCurrentStrength(evt.Level, evt.X, evt.Y, evt.Z);
+            NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X - 1, evt.Y, evt.Z);
+            NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X + 1, evt.Y, evt.Z);
+            NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X, evt.Y, evt.Z - 1);
+            NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X, evt.Y, evt.Z + 1);
+            if (evt.Level.BlocksReader.ShouldSuffocate(evt.X - 1, evt.Y, evt.Z))
             {
-                NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X - 1, ctx.Y + 1, ctx.Z);
+                NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X - 1, evt.Y + 1, evt.Z);
             }
             else
             {
-                NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X - 1, ctx.Y - 1, ctx.Z);
+                NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X - 1, evt.Y - 1, evt.Z);
             }
 
-            if (ctx.Level.BlocksReader.ShouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z))
+            if (evt.Level.BlocksReader.ShouldSuffocate(evt.X + 1, evt.Y, evt.Z))
             {
-                NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X + 1, ctx.Y + 1, ctx.Z);
+                NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X + 1, evt.Y + 1, evt.Z);
             }
             else
             {
-                NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X + 1, ctx.Y - 1, ctx.Z);
+                NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X + 1, evt.Y - 1, evt.Z);
             }
 
-            if (ctx.Level.BlocksReader.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1))
+            if (evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y, evt.Z - 1))
             {
-                NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X, ctx.Y + 1, ctx.Z - 1);
+                NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X, evt.Y + 1, evt.Z - 1);
             }
             else
             {
-                NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X, ctx.Y - 1, ctx.Z - 1);
+                NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X, evt.Y - 1, evt.Z - 1);
             }
 
-            if (ctx.Level.BlocksReader.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1))
+            if (evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y, evt.Z + 1))
             {
-                NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X, ctx.Y + 1, ctx.Z + 1);
+                NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X, evt.Y + 1, evt.Z + 1);
             }
             else
             {
-                NotifyWireNeighborsOfNeighborChange(ctx.Level, ctx.X, ctx.Y - 1, ctx.Z + 1);
+                NotifyWireNeighborsOfNeighborChange(evt.Level, evt.X, evt.Y - 1, evt.Z + 1);
             }
         }
     }
@@ -304,27 +304,27 @@ public class BlockRedstoneWire : Block
             return var5;
         }
 
-        int var6 = var1.GetBlockMeta(var2, var3, var4);
+        int var6 = var1.GetMeta(var2, var3, var4);
         return var6 > var5 ? var6 : var5;
     }
 
-    public override void neighborUpdate(OnTickEvt ctx)
+    public override void neighborUpdate(OnTickEvt evt)
     {
-        if (!ctx.Level.IsRemote)
+        if (!evt.Level.IsRemote)
         {
-            int var6 = ctx.Level.BlocksReader.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
-            bool var7 = canPlaceAt(new CanPlaceAtCtx(ctx.Level, 0, ctx.X, ctx.Y, ctx.Z));
+            int var6 = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
+            bool var7 = canPlaceAt(new CanPlaceAtCtx(evt.Level, 0, evt.X, evt.Y, evt.Z));
             if (!var7)
             {
-                dropStacks(new OnDropEvt(ctx.Level, ctx.X, ctx.Y, ctx.Z, var6));
-                ctx.Level.BlockWriter.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
+                dropStacks(new OnDropEvt(evt.Level, evt.X, evt.Y, evt.Z, var6));
+                evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, 0);
             }
             else
             {
-                updateAndPropagateCurrentStrength(ctx.Level, ctx.X, ctx.Y, ctx.Z);
+                updateAndPropagateCurrentStrength(evt.Level, evt.X, evt.Y, evt.Z);
             }
 
-            base.neighborUpdate(ctx);
+            base.neighborUpdate(evt);
         }
     }
 
@@ -339,7 +339,7 @@ public class BlockRedstoneWire : Block
             return false;
         }
 
-        if (var1.GetBlockMeta(var2, var3, var4) == 0)
+        if (var1.GetMeta(var2, var3, var4) == 0)
         {
             return false;
         }
@@ -384,14 +384,14 @@ public class BlockRedstoneWire : Block
 
     public override bool canEmitRedstonePower() => s_wiresProvidePower.Value;
 
-    public override void randomDisplayTick(OnTickEvt ctx)
+    public override void randomDisplayTick(OnTickEvt evt)
     {
-        int var6 = ctx.Level.BlocksReader.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+        int var6 = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
         if (var6 > 0)
         {
-            double x = ctx.X + 0.5D + (ctx.Level.random.NextFloat() - 0.5D) * 0.2D;
-            double y = ctx.Y + 1.0F / 16.0F;
-            double z = ctx.Z + 0.5D + (ctx.Level.random.NextFloat() - 0.5D) * 0.2D;
+            double x = evt.X + 0.5D + (evt.Level.random.NextFloat() - 0.5D) * 0.2D;
+            double y = evt.Y + 1.0F / 16.0F;
+            double z = evt.Z + 0.5D + (evt.Level.random.NextFloat() - 0.5D) * 0.2D;
             float var13 = var6 / 15.0F;
             float xVel = var13 * 0.6F + 0.4F;
             if (var6 == 0)
@@ -411,7 +411,7 @@ public class BlockRedstoneWire : Block
                 zVel = 0.0F;
             }
 
-            ctx.Level.Broadcaster.AddParticle("reddust", x, y, z, xVel, yVle, zVel);
+            evt.Level.Broadcaster.AddParticle("reddust", x, y, z, xVel, yVle, zVel);
         }
     }
 
@@ -438,7 +438,7 @@ public class BlockRedstoneWire : Block
             return false;
         }
 
-        int var6 = var0.GetBlockMeta(var1, var2, var3);
+        int var6 = var0.GetMeta(var1, var2, var3);
         return var4 == Facings.OPPOSITE[var6 & 3];
     }
 }

@@ -6,17 +6,17 @@ internal class BlockSponge : Block
 {
     public BlockSponge(int id) : base(id, Material.Sponge) => textureId = 48;
 
-    public override void onPlaced(OnPlacedEvt ctx)
+    public override void onPlaced(OnPlacedEvt evt)
     {
         sbyte radius = 2;
 
-        for (int checkX = ctx.X - radius; checkX <= ctx.X + radius; ++checkX)
+        for (int checkX = evt.X - radius; checkX <= evt.X + radius; ++checkX)
         {
-            for (int checkY = ctx.Y - radius; checkY <= ctx.Y + radius; ++checkY)
+            for (int checkY = evt.Y - radius; checkY <= evt.Y + radius; ++checkY)
             {
-                for (int checkZ = ctx.Z - radius; checkZ <= ctx.Z + radius; ++checkZ)
+                for (int checkZ = evt.Z - radius; checkZ <= evt.Z + radius; ++checkZ)
                 {
-                    if (ctx.WorldRead.GetMaterial(checkX, checkY, checkZ) == Material.Water)
+                    if (evt.Level.BlocksReader.GetMaterial(checkX, checkY, checkZ) == Material.Water)
                     {
                     }
                 }
@@ -24,18 +24,17 @@ internal class BlockSponge : Block
         }
     }
 
-    public override void onBreak(OnBreakEvt ctx)
+    public override void onBreak(OnBreakEvt evt)
     {
         sbyte radius = 2;
 
-        for (int checkX = ctx.X - radius; checkX <= ctx.X + radius; ++checkX)
+        for (int checkX = evt.X - radius; checkX <= evt.X + radius; ++checkX)
         {
-            for (int checkY = ctx.Y - radius; checkY <= ctx.Y + radius; ++checkY)
+            for (int checkY = evt.Y - radius; checkY <= evt.Y + radius; ++checkY)
             {
-                for (int checkZ = ctx.Z - radius; checkZ <= ctx.Z + radius; ++checkZ)
+                for (int checkZ = evt.Z - radius; checkZ <= evt.Z + radius; ++checkZ)
                 {
-                    // TODO: Implement this
-                    // ctx.World.notifyNeighbors(checkX, checkY, checkZ, ctx.World.getBlockId(checkX, checkY, checkZ));
+                    evt.Level.Broadcaster.NotifyNeighbors(checkX, checkY, checkZ, evt.Level.BlocksReader.GetBlockId(checkX, checkY, checkZ));
                 }
             }
         }

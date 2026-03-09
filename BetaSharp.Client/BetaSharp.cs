@@ -34,6 +34,7 @@ using BetaSharp.Worlds.Core.Systems;
 using BetaSharp.Worlds.Storage;
 using ImGuiNET;
 using Microsoft.Extensions.Logging;
+using Silk.NET.GLFW;
 using Silk.NET.Input;
 using Silk.NET.OpenGL;
 using Silk.NET.OpenGL.Extensions.ImGui;
@@ -104,6 +105,18 @@ public partial class BetaSharp
     private ImGuiController imGuiController;
     public InternalServer? internalServer;
     private GLErrorHandler _glErrorHandler;
+
+    private bool _wasLeftBumperDown;
+    private bool _wasRightBumperDown;
+    private bool _wasLeftTriggerDown;
+    private bool _wasRightTriggerDown;
+    private bool _wasStartButtonDown;
+    private bool _wasYButtonDown;
+    private bool _wasDpadDownDown;
+
+    public bool isControllerMode;
+    public float virtualCursorX;
+    public float virtualCursorY;
 
     public BetaSharp(int width, int height, bool isFullscreen)
     {
@@ -264,6 +277,7 @@ public partial class BetaSharp
 
         Keyboard.create(Display.getGlfw(), Display.getWindowHandle());
         Mouse.create(Display.getGlfw(), Display.getWindowHandle(), Display.getWidth(), Display.getHeight());
+        Controller.Create(Display.getGlfw(), Display.getWindowHandle());
         mouseHelper = new MouseHelper();
 
         checkGLError("Pre startup");
@@ -412,6 +426,12 @@ public partial class BetaSharp
 
         currentScreen = newScreen;
 
+        if (currentScreen != null)
+        {
+            virtualCursorX = displayWidth / 2.0f;
+            virtualCursorY = displayHeight / 2.0f;
+        }
+
         if (internalServer != null)
         {
             bool shouldPause = newScreen?.PausesGame ?? false;
@@ -527,6 +547,37 @@ public partial class BetaSharp
                     if (Display.isCloseRequested())
                     {
                         shutdown();
+                    }
+
+                    Controller.PollEvents();
+                    if (Controller.IsActive())
+                    {
+                        if (!isControllerMode)
+                        {
+                            Mouse.setCursorVisible(false);
+                            isControllerMode = true;
+                        }
+                    }
+
+                    if (isControllerMode && currentScreen != null)
+                    {
+                        float lx = Controller.LeftStickX;
+                        float ly = Controller.LeftStickY;
+
+                        if (Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.DPadLeft)) lx = -0.2f;
+                        if (Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.DPadRight)) lx = 0.2f;
+                        if (Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.DPadUp)) ly = -0.2f;
+                        if (Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.DPadDown)) ly = 0.2f;
+
+                        const float speed = 600f; // Pixels per second
+
+                        virtualCursorX += lx * speed * Timer.DeltaTime;
+                        virtualCursorY += ly * speed * Timer.DeltaTime;
+
+                        if (virtualCursorX < 0) virtualCursorX = 0;
+                        if (virtualCursorX > displayWidth) virtualCursorX = displayWidth;
+                        if (virtualCursorY < 0) virtualCursorY = 0;
+                        if (virtualCursorY > displayHeight) virtualCursorY = displayHeight;
                     }
 
                     if (isGamePaused && world != null)
@@ -949,6 +1000,7 @@ public partial class BetaSharp
             inGameHasFocus = false;
             GCSettings.LatencyMode = GCLatencyMode.Batch;
             mouseHelper.ungrabMouseCursor();
+            Mouse.setCursorVisible(!isControllerMode);
         }
     }
 
@@ -1282,7 +1334,7 @@ public partial class BetaSharp
                 }
             }
 
-            world.difficulty = options.Difficulty;
+            world.Difficulty = options.Difficulty;
             if (internalServer != null)
             {
                 internalServer.SetDifficulty(options.Difficulty);
@@ -1290,7 +1342,7 @@ public partial class BetaSharp
 
             if (world.IsRemote)
             {
-                world.difficulty = 3;
+                world.Difficulty = 3;
             }
 
             Profiler.Start("entityRendererUpdate");
@@ -1351,11 +1403,19 @@ public partial class BetaSharp
         {
             long timeSinceLastMouseEvent = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
  - systemTime;
+            if (Mouse.getEventDX() != 0 || Mouse.getEventDY() != 0)
+            {
+                isControllerMode = false;
+                Mouse.setCursorVisible(true);
+            }
+
             if (timeSinceLastMouseEvent <= 200L)
             {
                 int mouseWheelDelta = Mouse.getEventDWheel();
                 if (mouseWheelDelta != 0)
                 {
+                    isControllerMode = false;
+                    Mouse.setCursorVisible(true);
                     player.inventory.changeCurrentItem(mouseWheelDelta);
                     if (options.InvertScrolling)
                     {
@@ -1506,8 +1566,74 @@ public partial class BetaSharp
             }
         }
 
+
+        while (Controller.Next())
+        {
+            if (currentScreen != null)
+            {
+                currentScreen.HandleControllerInput();
+            }
+            else if (inGameHasFocus)
+            {
+                if (Controller.GetEventButton() == (int)GamepadButton.A)
+                {
+                    player.movementInput.checkKeyForMovementInput(options.KeyBindJump.keyCode, Controller.GetEventButtonState());
+                }
+
+                if (Controller.GetEventButton() == (int)GamepadButton.DPadDown && Controller.GetEventButtonState())
+                {
+                    options.CameraMode = (EnumCameraMode)((int)(options.CameraMode + 2) % 3);
+                }
+            }
+        }
+
         if (currentScreen == null)
         {
+            if (isControllerMode && inGameHasFocus)
+            {
+                bool lbDown = Controller.IsButtonDown(GamepadButton.LeftBumper);
+                bool rbDown = Controller.IsButtonDown(GamepadButton.RightBumper);
+                bool ltDown = Controller.LeftTrigger > 0.5f;
+                bool rtDown = Controller.RightTrigger > 0.5f;
+                bool startDown = Controller.IsButtonDown(GamepadButton.Start);
+                bool yDown = Controller.IsButtonDown(GamepadButton.Y);
+
+                if (lbDown && !_wasLeftBumperDown) player.inventory.changeCurrentItem(1);
+                if (rbDown && !_wasRightBumperDown) player.inventory.changeCurrentItem(-1);
+
+                if (startDown && !_wasStartButtonDown) displayInGameMenu();
+                if (yDown && !_wasYButtonDown) displayGuiScreen(new GuiInventory(player));
+
+                if (rtDown && !_wasRightTriggerDown)
+                {
+                    clickMouse(0);
+                    mouseTicksRan = ticksRan;
+                }
+                else if (rtDown && (float)(ticksRan - mouseTicksRan) >= Timer.ticksPerSecond / 4.0F)
+                {
+                    clickMouse(0);
+                    mouseTicksRan = ticksRan;
+                }
+
+                if (ltDown && !_wasLeftTriggerDown)
+                {
+                    clickMouse(1);
+                    mouseTicksRan = ticksRan;
+                }
+                else if (ltDown && (float)(ticksRan - mouseTicksRan) >= Timer.ticksPerSecond / 4.0F)
+                {
+                    clickMouse(1);
+                    mouseTicksRan = ticksRan;
+                }
+
+                _wasLeftBumperDown = lbDown;
+                _wasRightBumperDown = rbDown;
+                _wasLeftTriggerDown = ltDown;
+                _wasRightTriggerDown = rtDown;
+                _wasStartButtonDown = startDown;
+                _wasYButtonDown = yDown;
+            }
+
             if (Mouse.isButtonDown(0) && (float)(ticksRan - mouseTicksRan) >= Timer.ticksPerSecond / 4.0F &&
                 inGameHasFocus)
             {
@@ -1523,7 +1649,7 @@ public partial class BetaSharp
             }
         }
 
-        func_6254_a(0, currentScreen == null && Mouse.isButtonDown(0) && inGameHasFocus);
+        func_6254_a(0, currentScreen == null && (Mouse.isButtonDown(0) || _wasRightTriggerDown) && inGameHasFocus);
     }
 
     private void forceReload()
@@ -1591,10 +1717,7 @@ public partial class BetaSharp
 
             newWorld.AddPlayer(player);
 
-            if (!string.IsNullOrEmpty(session?.skinUrl))
-            {
-                skinManager.RequestDownload(session.skinUrl);
-            }
+            skinManager.RequestDownload(player.name);
 
             if (newWorld.IsNewWorld)
             {
@@ -1769,7 +1892,7 @@ public partial class BetaSharp
         }
     }
 
-    private static void StartMainThread(string playerName, string sessionToken, string? skinUrl = null)
+    private static void StartMainThread(string playerName, string sessionToken)
     {
         Thread.CurrentThread.Name = "BetaSharp Main Thread";
 
@@ -1780,12 +1903,12 @@ public partial class BetaSharp
 
         if (playerName != null && sessionToken != null)
         {
-            game.session = new Session(playerName, sessionToken, skinUrl);
+            game.session = new Session(playerName, sessionToken);
 
             if (sessionToken == "-")
             {
                 hasPaidCheckTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-;
+    ;
             }
         }
         else
@@ -1803,15 +1926,14 @@ public partial class BetaSharp
 
     public static void Startup(string[] args)
     {
-        (string Name, string Session, string? SkinUrl) result = args.Length switch
+        (string Name, string Session) result = args.Length switch
         {
-            0 => ($"Player{Random.Shared.Next()}", "-", null),
-            1 => (args[0], "-", null),
-            2 => (args[0], args[1], null),
-            _ => (args[0], args[1], args[2]),
+            0 => ($"Player{Random.Shared.Next()}", "-"),
+            1 => (args[0], "-"),
+            _ => (args[0], args[1]),
         };
 
-        StartMainThread(result.Name, result.Session, result.SkinUrl);
+        StartMainThread(result.Name, result.Session);
     }
 
     public static bool isGuiEnabled()

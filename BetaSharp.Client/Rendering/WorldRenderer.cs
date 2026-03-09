@@ -12,17 +12,15 @@ using BetaSharp.Items;
 using BetaSharp.Profiling;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
 using Silk.NET.Maths;
 using BetaSharp.Util;
 using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Core.OpenGL;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Client.Rendering;
 
-public class WorldRenderer : IWorldAccess
+public class WorldRenderer : IWorldEventListener
 {
     private World world;
     private readonly TextureManager renderEngine;
@@ -912,15 +910,11 @@ public class WorldRenderer : IWorldAccess
     public void notifyEntityAdded(Entity var1)
     {
         var1.updateCloak();
-        if (!string.IsNullOrEmpty(var1.skinUrl) && _game.session.skinUrl != null)
-        {
-            EntityRenderDispatcher.instance.skinManager?.RequestDownload(var1.skinUrl);
-        }
+        EntityRenderDispatcher.instance.skinManager.RequestDownload((var1 as EntityPlayer)?.name);
     }
 
     public void notifyEntityRemoved(Entity var1)
     {
-        EntityRenderDispatcher.instance.skinManager?.Release(var1.skinUrl);
     }
 
     public void notifyAmbientDarknessChanged()
@@ -1003,4 +997,7 @@ public class WorldRenderer : IWorldAccess
         }
 
     }
+
+    public void playNote(int x, int y, int z, int soundType, int pitch) => throw new NotImplementedException();
+    public void broadcastEntityEvent(Entity entity, byte @event) => throw new NotImplementedException();
 }

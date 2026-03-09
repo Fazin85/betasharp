@@ -1,7 +1,6 @@
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Blocks;
 
@@ -27,80 +26,82 @@ internal class BlockButton : Block
         return read.ShouldSuffocate(x - 1, y, z) ? true : read.ShouldSuffocate(x + 1, y, z) ? true : read.ShouldSuffocate(x, y, z - 1) ? true : read.ShouldSuffocate(x, y, z + 1);
     }
 
-    public override bool canPlaceAt(CanPlaceAtCtx ctx) => IsValidPlacementSide(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z, ctx.Side);
+    public override bool canPlaceAt(CanPlaceAtCtx ctx) => IsValidPlacementSide(ctx.Level.BlocksReader, ctx.X, ctx.Y, ctx.Z, ctx.Direction);
 
-    public override void onPlaced(OnPlacedEvt ctx)
+    public override void onPlaced(OnPlacedEvt evt)
     {
-        int facing = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+        int facing = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
         int pressedBit = facing & 8;
         facing &= 7;
-        if (ctx.Direction == 2 && ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1))
+        if (evt.Direction == 2 && evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y, evt.Z + 1))
         {
             facing = 4;
         }
-        else if (ctx.Direction == 3 && ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1))
+        else if (evt.Direction == 3 && evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y, evt.Z - 1))
         {
             facing = 3;
         }
-        else if (ctx.Direction == 4 && ctx.WorldRead.ShouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z))
+        else if (evt.Direction == 4 && evt.Level.BlocksReader.ShouldSuffocate(evt.X + 1, evt.Y, evt.Z))
         {
             facing = 2;
         }
-        else if (ctx.Direction == 5 && ctx.WorldRead.ShouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z))
+        else if (evt.Direction == 5 && evt.Level.BlocksReader.ShouldSuffocate(evt.X - 1, evt.Y, evt.Z))
         {
             facing = 1;
         }
         else
         {
-            facing = getPlacementSide(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z);
+            facing = getPlacementSide(evt.Level.BlocksReader, evt.X, evt.Y, evt.Z);
         }
 
-        ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, facing + pressedBit);
+        evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, facing + pressedBit);
     }
 
     private int getPlacementSide(IBlockReader world, int x, int y, int z) =>
         world.ShouldSuffocate(x - 1, y, z) ? 1 : world.ShouldSuffocate(x + 1, y, z) ? 2 : world.ShouldSuffocate(x, y, z - 1) ? 3 : world.ShouldSuffocate(x, y, z + 1) ? 4 : 1;
 
-    public override void neighborUpdate(OnTickEvt ctx)
+    public override void neighborUpdate(OnTickEvt evt)
     {
-        if (breakIfCannotPlaceAt(ctx))
+        if (!breakIfCannotPlaceAt(evt))
         {
-            int facing = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z) & 7;
-            bool shouldBreak = false;
-            if (!ctx.WorldRead.ShouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z) && facing == 1)
-            {
-                shouldBreak = true;
-            }
+            return;
+        }
 
-            if (!ctx.WorldRead.ShouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z) && facing == 2)
-            {
-                shouldBreak = true;
-            }
+        int facing = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z) & 7;
+        bool shouldBreak = false;
+        if (!evt.Level.BlocksReader.ShouldSuffocate(evt.X - 1, evt.Y, evt.Z) && facing == 1)
+        {
+            shouldBreak = true;
+        }
 
-            if (!ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1) && facing == 3)
-            {
-                shouldBreak = true;
-            }
+        if (!evt.Level.BlocksReader.ShouldSuffocate(evt.X + 1, evt.Y, evt.Z) && facing == 2)
+        {
+            shouldBreak = true;
+        }
 
-            if (!ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1) && facing == 4)
-            {
-                shouldBreak = true;
-            }
+        if (!evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y, evt.Z - 1) && facing == 3)
+        {
+            shouldBreak = true;
+        }
 
-            if (shouldBreak)
-            {
-                dropStacks(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z, ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z));
-                ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
-            }
+        if (!evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y, evt.Z + 1) && facing == 4)
+        {
+            shouldBreak = true;
+        }
+
+        if (shouldBreak)
+        {
+            dropStacks(new OnDropEvt(evt.Level, evt.X, evt.Y, evt.Z, evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z)));
+            evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, 0);
         }
     }
 
-    private bool breakIfCannotPlaceAt(OnTickEvt ctx)
+    private bool breakIfCannotPlaceAt(OnTickEvt evt)
     {
-        if (!IsValidPlacementSide(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z))
+        if (!IsValidPlacementSide(evt.Level.BlocksReader, evt.X, evt.Y, evt.Z))
         {
-            dropStacks(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z, ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z));
-            ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
+            dropStacks(new OnDropEvt(evt.Level, evt.X, evt.Y, evt.Z, evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z)));
+            evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, 0);
             return false;
         }
 
@@ -109,7 +110,7 @@ internal class BlockButton : Block
 
     public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
     {
-        int meta = iBlockReader.GetBlockMeta(x, y, z);
+        int meta = iBlockReader.GetMeta(x, y, z);
         int facing = meta & 7;
         bool isPressed = (meta & 8) > 0;
         float minY = 6.0F / 16.0F;
@@ -140,9 +141,9 @@ internal class BlockButton : Block
     }
 
 
-    private bool updateState(IBlockReader reader, IBlockWrite writer, WorldEventBroadcaster broadcaster, int x, int y, int z)
+    private bool updateState(IBlockWorldContext level, int x, int y, int z)
     {
-        int meta = reader.GetBlockMeta(x, y, z);
+        int meta = level.BlocksReader.GetMeta(x, y, z);
         int facing = meta & 7;
         int pressToggle = 8 - (meta & 8);
         if (pressToggle == 0)
@@ -150,76 +151,76 @@ internal class BlockButton : Block
             return true;
         }
 
-        writer.SetBlockMeta(x, y, z, facing + pressToggle);
-        writer.SetBlocksDirty(x, y, z, x, y, z);
-        broadcaster.PlaySoundAtPos(x + 0.5D, y + 0.5D, z + 0.5D, "random.click", 0.3F, 0.6F);
-        broadcaster.NotifyNeighbors(x, y, z, id);
+        level.BlockWriter.SetBlockMeta(x, y, z, facing + pressToggle);
+        level.Broadcaster.SetBlocksDirty(x, y, z, x, y, z);
+        level.Broadcaster.PlaySoundAtPos(x + 0.5D, y + 0.5D, z + 0.5D, "random.click", 0.3F, 0.6F);
+        level.Broadcaster.NotifyNeighbors(x, y, z, id);
         if (facing == 1)
         {
-            broadcaster.NotifyNeighbors(x - 1, y, z, id);
+            level.Broadcaster.NotifyNeighbors(x - 1, y, z, id);
         }
         else if (facing == 2)
         {
-            broadcaster.NotifyNeighbors(x + 1, y, z, id);
+            level.Broadcaster.NotifyNeighbors(x + 1, y, z, id);
         }
         else if (facing == 3)
         {
-            broadcaster.NotifyNeighbors(x, y, z - 1, id);
+            level.Broadcaster.NotifyNeighbors(x, y, z - 1, id);
         }
         else if (facing == 4)
         {
-            broadcaster.NotifyNeighbors(x, y, z + 1, id);
+            level.Broadcaster.NotifyNeighbors(x, y, z + 1, id);
         }
         else
         {
-            broadcaster.NotifyNeighbors(x, y - 1, z, id);
+            level.Broadcaster.NotifyNeighbors(x, y - 1, z, id);
         }
 
-        writer.ScheduleBlockUpdate(x, y, z, id, getTickRate());
+        level.TickScheduler.ScheduleBlockUpdate(x, y, z, id, getTickRate());
         return true;
     }
 
-    public override void onBlockBreakStart(OnBlockBreakStartEvt ctx) => updateState(ctx.WorldRead, ctx.WorldWrite, ctx.Broadcaster, ctx.X, ctx.Y, ctx.Z);
+    public override void onBlockBreakStart(OnBlockBreakStartEvt evt) => updateState(evt.Level, evt.X, evt.Y, evt.Z);
 
-    public override bool onUse(OnUseEvt ctx) => updateState(ctx.WorldRead, ctx.WorldWrite, ctx.Broadcaster, ctx.X, ctx.Y, ctx.Z);
+    public override bool onUse(OnUseEvt evt) => updateState(evt.Level, evt.X, evt.Y, evt.Z);
 
-    public override void onBreak(OnBreakEvt ctx)
+    public override void onBreak(OnBreakEvt evt)
     {
-        int meta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+        int meta = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
         if ((meta & 8) > 0)
         {
-            ctx.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z, id);
+            evt.Level.Broadcaster.NotifyNeighbors(evt.X, evt.Y, evt.Z, id);
             int facing = meta & 7;
             if (facing == 1)
             {
-                ctx.Broadcaster.NotifyNeighbors(ctx.X - 1, ctx.Y, ctx.Z, id);
+                evt.Level.Broadcaster.NotifyNeighbors(evt.X - 1, evt.Y, evt.Z, id);
             }
             else if (facing == 2)
             {
-                ctx.Broadcaster.NotifyNeighbors(ctx.X + 1, ctx.Y, ctx.Z, id);
+                evt.Level.Broadcaster.NotifyNeighbors(evt.X + 1, evt.Y, evt.Z, id);
             }
             else if (facing == 3)
             {
-                ctx.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z - 1, id);
+                evt.Level.Broadcaster.NotifyNeighbors(evt.X, evt.Y, evt.Z - 1, id);
             }
             else if (facing == 4)
             {
-                ctx.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z + 1, id);
+                evt.Level.Broadcaster.NotifyNeighbors(evt.X, evt.Y, evt.Z + 1, id);
             }
             else
             {
-                ctx.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y - 1, ctx.Z, id);
+                evt.Level.Broadcaster.NotifyNeighbors(evt.X, evt.Y - 1, evt.Z, id);
             }
         }
 
-        base.onBreak(ctx);
+        base.onBreak(evt);
     }
 
-    public override bool isPoweringSide(IBlockReader reader, int x, int y, int z, int side) => (reader.GetBlockMeta(x, y, z) & 8) > 0;
+    public override bool isPoweringSide(IBlockReader reader, int x, int y, int z, int side) => (reader.GetMeta(x, y, z) & 8) > 0;
 
     public override bool isStrongPoweringSide(IBlockReader read, int x, int y, int z, int side)
     {
-        int meta = read.GetBlockMeta(x, y, z);
+        int meta = read.GetMeta(x, y, z);
         if ((meta & 8) == 0)
         {
             return false;
@@ -231,40 +232,42 @@ internal class BlockButton : Block
 
     public override bool canEmitRedstonePower() => true;
 
-    public override void onTick(OnTickEvt ctx)
+    public override void onTick(OnTickEvt evt)
     {
-        if (!ctx.IsRemote)
+        if (evt.Level.IsRemote)
         {
-            int meta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
-            if ((meta & 8) != 0)
-            {
-                ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, meta & 7);
-                ctx.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z, id);
-                int facing = meta & 7;
-                if (facing == 1)
-                {
-                    ctx.Broadcaster.NotifyNeighbors(ctx.X - 1, ctx.Y, ctx.Z, id);
-                }
-                else if (facing == 2)
-                {
-                    ctx.Broadcaster.NotifyNeighbors(ctx.X + 1, ctx.Y, ctx.Z, id);
-                }
-                else if (facing == 3)
-                {
-                    ctx.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z - 1, id);
-                }
-                else if (facing == 4)
-                {
-                    ctx.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z + 1, id);
-                }
-                else
-                {
-                    ctx.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y - 1, ctx.Z, id);
-                }
+            return;
+        }
 
-                ctx.Broadcaster.PlaySoundAtPos(ctx.X + 0.5D, ctx.Y + 0.5D, ctx.Z + 0.5D, "random.click", 0.3F, 0.5F);
-                ctx.WorldWrite.SetBlocksDirty(ctx.X, ctx.Y, ctx.Z);
+        int meta = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
+        if ((meta & 8) != 0)
+        {
+            evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, meta & 7);
+            evt.Level.Broadcaster.NotifyNeighbors(evt.X, evt.Y, evt.Z, id);
+            int facing = meta & 7;
+            if (facing == 1)
+            {
+                evt.Level.Broadcaster.NotifyNeighbors(evt.X - 1, evt.Y, evt.Z, id);
             }
+            else if (facing == 2)
+            {
+                evt.Level.Broadcaster.NotifyNeighbors(evt.X + 1, evt.Y, evt.Z, id);
+            }
+            else if (facing == 3)
+            {
+                evt.Level.Broadcaster.NotifyNeighbors(evt.X, evt.Y, evt.Z - 1, id);
+            }
+            else if (facing == 4)
+            {
+                evt.Level.Broadcaster.NotifyNeighbors(evt.X, evt.Y, evt.Z + 1, id);
+            }
+            else
+            {
+                evt.Level.Broadcaster.NotifyNeighbors(evt.X, evt.Y - 1, evt.Z, id);
+            }
+
+            evt.Level.Broadcaster.PlaySoundAtPos(evt.X + 0.5D, evt.Y + 0.5D, evt.Z + 0.5D, "random.click", 0.3F, 0.5F);
+            evt.Level.Broadcaster.SetBlocksDirty(evt.X, evt.Y, evt.Z);
         }
     }
 

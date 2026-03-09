@@ -25,22 +25,22 @@ internal class BlockSlab : Block
 
     public override bool isOpaque() => doubleSlab;
 
-    public override void onPlaced(OnPlacedEvt ctx)
+    public override void onPlaced(OnPlacedEvt etv)
     {
         if (this != Slab)
         {
-            base.onPlaced(ctx);
+            base.onPlaced(etv);
         }
 
-        int blockBelowId = ctx.WorldRead.GetBlockId(ctx.X, ctx.Y - 1, ctx.Z);
-        int slabMeta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
-        int blockBelowMeta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y - 1, ctx.Z);
+        int blockBelowId = etv.Level.BlocksReader.GetBlockId(etv.X, etv.Y - 1, etv.Z);
+        int slabMeta = etv.Level.BlocksReader.GetMeta(etv.X, etv.Y, etv.Z);
+        int blockBelowMeta = etv.Level.BlocksReader.GetMeta(etv.X, etv.Y - 1, etv.Z);
         if (slabMeta == blockBelowMeta)
         {
             if (blockBelowId == Slab.id)
             {
-                ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
-                ctx.WorldWrite.SetBlock(ctx.X, ctx.Y - 1, ctx.Z, DoubleSlab.id, slabMeta);
+                etv.Level.BlockWriter.SetBlock(etv.X, etv.Y, etv.Z, 0);
+                etv.Level.BlockWriter.SetBlock(etv.X, etv.Y - 1, etv.Z, DoubleSlab.id, slabMeta);
             }
         }
     }

@@ -7,7 +7,7 @@ internal sealed class Session
 {
     public required string Name { get; init; }
 
-    public required string Skin { get; init; }
+    public required string Face { get; init; }
 
     public required string Token { get; set; }
 

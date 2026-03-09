@@ -5,14 +5,11 @@ using BetaSharp.Server.Internal;
 using BetaSharp.Server.Network;
 using BetaSharp.Server.Worlds;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
 using BetaSharp.Worlds.Storage;
 using java.lang;
-using java.util;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using System.Threading;
 using BetaSharp.Worlds.Core;
 using Exception = System.Exception;
 
@@ -130,8 +127,8 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                 worlds[i] = new ReadOnlyServerWorld(this, worldStorage, worldDir, i == 0 ? 0 : -1, seed, worlds[0]);
             }
 
-            worlds[i].AddWorldAccess(new ServerWorldEventListener(this, worlds[i]));
-            worlds[i].difficulty = config.GetSpawnMonsters(true) ? 1 : 0;
+            worlds[i].EventListeners.Add(new ServerWorldEventListener(this, worlds[i]));
+            worlds[i].SetDifficulty(config.GetSpawnMonsters(true) ? 1 : 0);
             worlds[i].allowSpawning(config.GetSpawnMonsters(true), spawnAnimals);
             playerManager.saveAllPlayers(worlds);
         }
@@ -148,7 +145,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
             if (i == 0)
             {
                 ServerWorld world = worlds[i];
-                Vec3i spawnPos = world.GetSpawnPos();
+                Vec3i spawnPos = world.Properties.GetSpawnPos();
 
                 var chunkList = new List<(int cx, int cz)>();
                 for (int x = -startRegionSize; x <= startRegionSize; x += 16)
@@ -160,7 +157,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                 // Phase 1: Parallel terrain generation
                 var sw1 = Stopwatch.StartNew();
                 var threadLocalGen = new ThreadLocal<IChunkSource>(
-                    () => world.IChunkCache.CreateParallelGenerator(), trackAllValues: false);
+                    () => world.ChunkCache.CreateParallelGenerator(), trackAllValues: false);
                 Parallel.For(0, totalChunks, idx =>
                 {
                     if (!running) return;
@@ -182,8 +179,8 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                         lastTimeLogged = currentTime;
                     }
                     var (cx, cz) = chunkList[idx];
-                    world.IChunkCache.InsertPreGeneratedChunk(cx, cz, preGenerated[idx]);
-                    world.IChunkCache.DecorateIfReady(cx, cz);
+                    world.ChunkCache.InsertPreGeneratedChunk(cx, cz, preGenerated[idx]);
+                    world.ChunkCache.DecorateIfReady(cx, cz);
                 }
                 sw2.Stop();
                 _logger.LogInformation($"  Level {i} decoration: {sw2.ElapsedMilliseconds}ms");
@@ -407,7 +404,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                 ServerWorld world = worlds[i];
                 if (ticks % 20 == 0)
                 {
-                    playerManager.sendToDimension(new WorldTimeUpdateS2CPacket(world.GetTime()), world.dimension.Id);
+                    playerManager.sendToDimension(WorldTimeUpdateS2CPacket.Get(world.GetTime()), world.dimension.Id);
                 }
 
                 world.Tick();

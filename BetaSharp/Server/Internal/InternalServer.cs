@@ -43,7 +43,7 @@ public class InternalServer : BetaSharpServer
             {
                 if (worlds[i] != null)
                 {
-                    worlds[i].difficulty = _initialDifficulty;
+                    worlds[i].SetDifficulty(_initialDifficulty);
                     worlds[i].allowSpawning(_initialDifficulty > 0, true);
                 }
             }
@@ -69,7 +69,7 @@ public class InternalServer : BetaSharpServer
                 {
                     if (worlds[i] != null)
                     {
-                        worlds[i].difficulty = difficulty;
+                        worlds[i].SetDifficulty(difficulty);
                         worlds[i].allowSpawning(difficulty > 0, true);
                     }
                 }
@@ -83,7 +83,7 @@ public class InternalServer : BetaSharpServer
                     _ => "Unknown"
                 };
 
-                playerManager?.sendToAll(new BetaSharp.Network.Packets.Play.ChatMessagePacket($"Difficulty set to {difficultyName}"));
+                playerManager?.sendToAll(BetaSharp.Network.Packets.Play.ChatMessagePacket.Get($"Difficulty set to {difficultyName}"));
             }
         }
     }

@@ -3,7 +3,6 @@ using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Items;
 
@@ -15,13 +14,13 @@ internal class ItemSign : Item
         maxCount = 1;
     }
 
-    public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int meta)
+    public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, IBlockWorldContext world, int x, int y, int z, int meta)
     {
         if (meta == 0)
         {
             return false;
         }
-        else if (!world.getMaterial(x, y, z).IsSolid)
+        else if (!world.BlocksReader.GetMaterial(x, y, z).IsSolid)
         {
             return false;
         }
@@ -52,7 +51,7 @@ internal class ItemSign : Item
                 ++x;
             }
 
-            if (!Block.Sign.canPlaceAt(world.BlocksReader, x, y, z))
+            if (!Block.Sign.canPlaceAt(new CanPlaceAtCtx(world, 0, x, y, z)))
             {
                 return false;
             }
@@ -60,15 +59,15 @@ internal class ItemSign : Item
             {
                 if (meta == 1)
                 {
-                    world.setBlock(x, y, z, Block.Sign.id, MathHelper.Floor((double)((entityPlayer.yaw + 180.0F) * 16.0F / 360.0F) + 0.5D) & 15);
+                    world.BlockWriter.SetBlock(x, y, z, Block.Sign.id, MathHelper.Floor((double)((entityPlayer.yaw + 180.0F) * 16.0F / 360.0F) + 0.5D) & 15);
                 }
                 else
                 {
-                    world.setBlock(x, y, z, Block.WallSign.id, meta);
+                    world.BlockWriter.SetBlock(x, y, z, Block.WallSign.id, meta);
                 }
 
                 --itemStack.count;
-                BlockEntitySign blockEntitySign = (BlockEntitySign)world.getBlockEntity(x, y, z);
+                BlockEntitySign? blockEntitySign = (BlockEntitySign?)world.BlocksReader.GetBlockEntity(x, y, z);
                 if (blockEntitySign != null)
                 {
                     entityPlayer.openEditSignScreen(blockEntitySign);

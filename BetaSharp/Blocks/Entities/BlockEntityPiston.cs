@@ -65,10 +65,10 @@ public class BlockEntityPiston : BlockEntity
             collisionShapeSizeMultiplier = 1.0F - collisionShapeSizeMultiplier;
         }
 
-        Box? pushCollisionBox = Block.MovingPiston.getPushedBlockCollisionShape(Level, X, Y, Z, _pushedBlockId, collisionShapeSizeMultiplier, _facing);
+        Box? pushCollisionBox = Block.MovingPiston.getPushedBlockCollisionShape(Level.BlocksReader, X, Y, Z, _pushedBlockId, collisionShapeSizeMultiplier, _facing);
         if (pushCollisionBox != null)
         {
-            List<Entity> entitiesToPush = Level.getEntities(null!, pushCollisionBox.Value);
+            List<Entity> entitiesToPush = Level.Entities.GetEntities(null!, pushCollisionBox.Value);
             if (entitiesToPush.Count > 0)
             {
                 List<Entity> pushedEntities = s_pushedEntities.Value!;
@@ -94,9 +94,9 @@ public class BlockEntityPiston : BlockEntity
             _progress = _lastProgess = 1.0F;
             Level.Entities.RemoveBlockEntity(X, Y, Z);
             markRemoved();
-            if (Level.getBlockId(X, Y, Z) == Block.MovingPiston.id)
+            if (Level.BlocksReader.GetBlockId(X, Y, Z) == Block.MovingPiston.id)
             {
-                Level.setBlock(X, Y, Z, _pushedBlockId, _pushedBlockData);
+                Level.BlockWriter.SetBlock(X, Y, Z, _pushedBlockId, _pushedBlockData);
             }
         }
     }
@@ -109,9 +109,9 @@ public class BlockEntityPiston : BlockEntity
             pushEntities(1.0F, 0.25F);
             Level.Entities.RemoveBlockEntity(X, Y, Z);
             markRemoved();
-            if (Level.getBlockId(X, Y, Z) == Block.MovingPiston.id)
+            if (Level.BlocksReader.GetBlockId(X, Y, Z) == Block.MovingPiston.id)
             {
-                Level.setBlock(X, Y, Z, _pushedBlockId, _pushedBlockData);
+                Level.BlockWriter.SetBlock(X, Y, Z, _pushedBlockId, _pushedBlockData);
             }
         }
         else

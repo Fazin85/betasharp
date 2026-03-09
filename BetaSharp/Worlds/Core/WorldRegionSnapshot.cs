@@ -1,10 +1,11 @@
 ﻿using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Blocks.Materials;
+using BetaSharp.Entities;
 using BetaSharp.NBT;
+using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Chunks;
-using BetaSharp.Worlds.Core.Systems;
 using BetaSharp.Worlds.Generation.Biomes.Source;
 
 namespace BetaSharp.Worlds.Core;
@@ -20,10 +21,10 @@ public class WorldRegionSnapshot : IBlockReader, IDisposable
     private readonly Dictionary<BlockPos, BlockEntity> _tileEntityCache = [];
     private bool _isLit;
 
-    public WorldRegionSnapshot(World world, int minX, int var3, int minZ, int maxX, int var6, int maxZ)
+    public WorldRegionSnapshot(IBlockWorldContext level, int minX, int var3, int minZ, int maxX, int var6, int maxZ)
     {
         //TODO: OPTIMIZE THIS
-        _biomeSource = new BiomeSource(world);
+        _biomeSource = new BiomeSource(level);
 
         _chunkX = minX >> 4;
         _chunkZ = minZ >> 4;
@@ -43,13 +44,13 @@ public class WorldRegionSnapshot : IBlockReader, IDisposable
         {
             for (int cz = _chunkZ; cz <= maxChunkZ; ++cz)
             {
-                Chunk originalChunk = world.GetChunk(cx, cz);
+                Chunk originalChunk = level.BlockHost.GetChunk(cx, cz);
                 _chunks[cx - _chunkX][cz - _chunkZ] = new ChunkSnapshot(originalChunk);
             }
         }
 
-        _lightTable = (float[])world.dimension.LightLevelToLuminance.Clone();
-        _skylightSubtracted = world.Environment.AmbientDarkness;
+        _lightTable = (float[])level.dimension.LightLevelToLuminance.Clone();
+        _skylightSubtracted = level.Environment.AmbientDarkness;
     }
 
     public int GetBlockId(int x, int y, int z)
@@ -70,24 +71,6 @@ public class WorldRegionSnapshot : IBlockReader, IDisposable
         }
 
         return 0;
-    }
-
-    public Material getMaterial(int x, int y, int z)
-    {
-        int blockId = GetBlockId(x, y, z);
-        return blockId == 0 ? Material.Air : Block.Blocks[blockId].material;
-    }
-
-    public int getBlockMeta(int x, int y, int z)
-    {
-        if (y is < 0 or >= 128)
-        {
-            return 0;
-        }
-
-        int chunkIdxX = (x >> 4) - _chunkX;
-        int chunkIdxZ = (z >> 4) - _chunkZ;
-        return _chunks[chunkIdxX][chunkIdxZ].getBlockMetadata(x & 15, y, z & 15);
     }
 
     public BlockEntity? GetBlockEntity(int x, int y, int z)
@@ -130,14 +113,6 @@ public class WorldRegionSnapshot : IBlockReader, IDisposable
         return null;
     }
 
-    public float GetNaturalBrightness(int x, int y, int z, int minLight)
-    {
-        int light = getLightValue(x, y, z);
-        return _lightTable[Math.Max(light, minLight)];
-    }
-
-    public float GetLuminance(int x, int y, int z) => _lightTable[getLightValue(x, y, z)];
-
     public BiomeSource GetBiomeSource() => _biomeSource;
 
     public bool ShouldSuffocate(int x, int y, int z)
@@ -151,6 +126,25 @@ public class WorldRegionSnapshot : IBlockReader, IDisposable
         Block block = Block.Blocks[GetBlockId(x, y, z)];
         return block != null && block.isOpaque();
     }
+
+    public int GetMeta(int x, int y, int z) => throw new NotImplementedException();
+    public Material GetMaterial(int x, int y, int z) => throw new NotImplementedException();
+    public bool IsAir(int x, int y, int z) => throw new NotImplementedException();
+    public int GetBrightness(int x, int y, int z) => throw new NotImplementedException();
+    public bool IsTopY(int x, int y, int z) => throw new NotImplementedException();
+    public int GetTopY(int x, int z) => throw new NotImplementedException();
+    public int GetTopSolidBlockY(int x, int z) => throw new NotImplementedException();
+    public int GetSpawnPositionValidityY(int x, int z) => throw new NotImplementedException();
+    public float GetVisibilityRatio(Vec3D sourcePosition, Box targetBox) => throw new NotImplementedException();
+    public HitResult Raycast(Vec3D start, Vec3D end) => throw new NotImplementedException();
+    public HitResult Raycast(Vec3D start, Vec3D end, bool includeFluids) => throw new NotImplementedException();
+    public HitResult Raycast(Vec3D start, Vec3D target, bool includeFluids, bool ignoreNonSolid) => throw new NotImplementedException();
+    public bool IsAnyBlockInBox(Box area) => throw new NotImplementedException();
+    public bool IsBoxSubmergedInFluid(Box area) => throw new NotImplementedException();
+    public bool IsFireOrLavaInBox(Box area) => throw new NotImplementedException();
+    public bool IsMaterialInBox(Box area, Material material) => throw new NotImplementedException();
+    public bool IsFluidInBox(Box area, Material fluid) => throw new NotImplementedException();
+    public bool UpdateMovementInFluid(Box entityBox, Material fluidMaterial, Entity entity) => throw new NotImplementedException();
 
     public void Dispose()
     {
@@ -169,6 +163,32 @@ public class WorldRegionSnapshot : IBlockReader, IDisposable
             }
         }
     }
+
+    public Material getMaterial(int x, int y, int z)
+    {
+        int blockId = GetBlockId(x, y, z);
+        return blockId == 0 ? Material.Air : Block.Blocks[blockId].material;
+    }
+
+    public int getBlockMeta(int x, int y, int z)
+    {
+        if (y is < 0 or >= 128)
+        {
+            return 0;
+        }
+
+        int chunkIdxX = (x >> 4) - _chunkX;
+        int chunkIdxZ = (z >> 4) - _chunkZ;
+        return _chunks[chunkIdxX][chunkIdxZ].getBlockMetadata(x & 15, y, z & 15);
+    }
+
+    public float GetNaturalBrightness(int x, int y, int z, int minLight)
+    {
+        int light = getLightValue(x, y, z);
+        return _lightTable[Math.Max(light, minLight)];
+    }
+
+    public float GetLuminance(int x, int y, int z) => _lightTable[getLightValue(x, y, z)];
 
     public int getLightValue(int x, int y, int z) => GetLightValueExt(x, y, z, true);
 
@@ -220,12 +240,5 @@ public class WorldRegionSnapshot : IBlockReader, IDisposable
     }
 
     public bool getIsLit() => _isLit;
-    public int GetBlockMeta(int x, int y, int z) => throw new NotImplementedException();
-    public Material GetMaterial(int x, int y, int z) => throw new NotImplementedException();
-    public bool IsAir(int x, int y, int z) => throw new NotImplementedException();
-    public int GetBrightness(int x, int y, int z) => throw new NotImplementedException();
-    public bool IsTopY(int x, int y, int z) => throw new NotImplementedException();
-    public int GetTopY(int x, int z) => throw new NotImplementedException();
-    public int GetTopSolidBlockY(int x, int z) => throw new NotImplementedException();
-    public int GetSpawnPositionValidityY(int x, int z) => throw new NotImplementedException();
+    public bool IsPosLoaded(int x, int y, int z) => throw new NotImplementedException();
 }

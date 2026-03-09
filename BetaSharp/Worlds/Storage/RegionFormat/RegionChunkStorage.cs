@@ -2,19 +2,19 @@ using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.NBT;
 using BetaSharp.Worlds.Chunks;
+using BetaSharp.Worlds.Chunks.Storage;
 using BetaSharp.Worlds.Core;
 using BetaSharp.Worlds.Core.Systems;
 using Microsoft.Extensions.Logging;
-using File = java.io.File;
 
 namespace BetaSharp.Worlds.Storage.RegionFormat;
 
 internal class RegionChunkStorage : IChunkStorage
 {
     private readonly ILogger<RegionChunkStorage> _logger = Log.Instance.For<RegionChunkStorage>();
-    private readonly File dir;
+    private readonly string dir;
 
-    public RegionChunkStorage(string dir) => this.dir = new File(dir);
+    public RegionChunkStorage(string inputDir) => dir = inputDir;
 
     public Chunk LoadChunk(World world, int chunkX, int chunkZ)
     {
@@ -68,7 +68,7 @@ internal class RegionChunkStorage : IChunkStorage
             storeChunkInCompound(chunk, world, var5);
             NbtIo.Write(tag, stream);
             WorldProperties var6 = world.Properties;
-            var6.SizeOnDisk = var6.SizeOnDisk + RegionIo.getSizeDelta(dir, chunk.X, chunk.Z);
+            var6.SizeOnDisk = var6.SizeOnDisk + (long)RegionIo.GetSizeDelta(dir, chunk.X, chunk.Z);
         }
         catch (Exception var7)
         {

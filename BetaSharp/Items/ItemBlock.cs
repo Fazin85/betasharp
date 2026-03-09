@@ -1,8 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Entities;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Items;
 
@@ -17,9 +15,9 @@ internal class ItemBlock : Item
         setTextureId(Block.Blocks[id + 256].getTexture(2));
     }
 
-    public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int meta)
+    public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, IBlockWorldContext world, int x, int y, int z, int meta)
     {
-        if (world.getBlockId(x, y, z) == Block.Snow.id)
+        if (world.BlocksReader.GetBlockId(x, y, z) == Block.Snow.id)
         {
             meta = 0;
         }
@@ -64,14 +62,14 @@ internal class ItemBlock : Item
         {
             return false;
         }
-        else if (world.canPlace(blockID, x, y, z, false, meta))
+        else if (Block.Blocks[blockID].canPlaceAt(new CanPlaceAtCtx(world, 0, x, y, z)))
         {
             Block block = Block.Blocks[blockID];
-            if (world.setBlock(x, y, z, blockID, getPlacementMetadata(itemStack.getDamage())))
+            if (world.BlockWriter.SetBlock(x, y, z, blockID, getPlacementMetadata(itemStack.getDamage())))
             {
-                Block.Blocks[blockID].onPlaced(world, x, y, z, meta);
-                Block.Blocks[blockID].onPlaced(world, x, y, z, entityPlayer);
-                world.playSound((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), block.soundGroup.StepSound, (block.soundGroup.Volume + 1.0F) / 2.0F, block.soundGroup.Pitch * 0.8F);
+                Block.Blocks[blockID].onPlaced(new OnPlacedEvt(world, null, 0, 0, x, y, z));
+                Block.Blocks[blockID].onPlaced(new OnPlacedEvt(world, entityPlayer, 0, 0, x, y, z));
+                world.Broadcaster.PlaySoundAtPos(x + 0.5F, y + 0.5F, z + 0.5F, block.soundGroup.StepSound, (block.soundGroup.Volume + 1.0F) / 2.0F, block.soundGroup.Pitch * 0.8F);
                 --itemStack.count;
             }
 

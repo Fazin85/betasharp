@@ -6,7 +6,6 @@ using BetaSharp.Server.Internal;
 using BetaSharp.Server.Worlds;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Chunks;
-using BetaSharp.Worlds.Core.Systems;
 using BetaSharp.Worlds.Dimensions;
 using BetaSharp.Worlds.Mechanics;
 using BetaSharp.Worlds.Storage;
@@ -19,14 +18,13 @@ public class ServerWorld : World
     private readonly Dictionary<int, Entity> entitiesById = [];
     private readonly BetaSharpServer server;
     public bool bypassSpawnProtection = false;
-    public ServerIChunkCache IChunkCache;
+    public ServerIChunkCache ChunkCache;
     public bool savingDisabled;
 
     public ServerWorld(BetaSharpServer server, IWorldStorage storage, string name, int dimensionId, long seed) : base(storage, name, seed, Dimension.FromId(dimensionId))
     {
         this.server = server;
 
-        // Wire up all our decoupled managers!
         Environment.OnRainingStateChanged += HandleWeatherChanged;
 
         Entities.OnEntityAdded += HandleEntityAdded;
@@ -37,102 +35,72 @@ public class ServerWorld : World
 
     protected override IChunkSource CreateChunkCache()
     {
-        IChunkStorage chunkStorage = Storage.GetChunkStorage(dimension);
-        IChunkCache = new ServerIChunkCache(this, chunkStorage, dimension.CreateChunkGenerator());
-        return IChunkCache;
+        IChunkStorage? chunkStorage = Storage.GetChunkStorage(dimension);
+        ChunkCache = new ServerIChunkCache(this, chunkStorage, dimension.CreateChunkGenerator());
+        return ChunkCache;
     }
-
-    // --- Entity Event Handlers (Replacing the old overrides) ---
 
     private void HandleEntityAdded(Entity entity) => entitiesById.TryAdd(entity.id, entity);
 
     private void HandleEntityRemoved(Entity entity) => entitiesById.Remove(entity.id);
 
-    private void HandleGlobalEntityAdded(Entity entity) => server.playerManager.sendToAround(entity.x, entity.y, entity.z, 512.0, dimension.Id, new GlobalEntitySpawnS2CPacket(entity));
+    private void HandleGlobalEntityAdded(Entity entity) => server.playerManager.sendToAround(entity.x, entity.y, entity.z, 512.0, dimension.Id, GlobalEntitySpawnS2CPacket.Get(entity));
 
     private bool HandleEntityUpdating(Entity entity)
     {
-        // 1. Cull animals if the server properties say so
         if (!server.spawnAnimals && (entity is EntityAnimal || entity is EntityWaterMob))
         {
             entity.markDead();
-            return false; // Cancel tick
+            return false;
         }
 
-        // 2. If a player is riding this vehicle, the client handles movement, so skip server tick!
         if (entity.passenger != null && entity.passenger is EntityPlayer)
         {
-            return false; // Cancel tick
+            return false;
         }
 
-        return true; // Allow normal ticking
+        return true;
     }
 
-    public Entity getEntity(int id)
+    public Entity? getEntity(int id)
     {
         entitiesById.TryGetValue(id, out Entity? entity);
         return entity;
     }
 
-    // --- standard World/Server methods below ---
+    public List<BlockEntity> getBlockEntities(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) =>
+        Entities.BlockEntities
+            .Where(b => b.X >= minX && b.Y >= minY && b.Z >= minZ && b.X < maxX && b.Y < maxY && b.Z < maxZ)
+            .ToList();
 
-    public List<BlockEntity> getBlockEntities(int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
+    public override bool CanInteract(EntityPlayer player, int x, int y, int z)
     {
-        List<BlockEntity> var7 = [];
+        int absX = Math.Abs(x - Properties.SpawnX);
+        int absZ = Math.Abs(z - Properties.SpawnZ);
+        return absX > 16 || absZ > 16 || server.playerManager.isOperator(player.name) || server is InternalServer;
+    }
 
-        for (int var8 = 0; var8 < Entities.BlockEntities.Count; var8++)
+    public override Explosion CreateExplosion(Entity? source, double x, double y, double z, float power, bool fire)
+    {
+        Explosion var10 = new(this, source, x, y, z, power)
         {
-            BlockEntity var9 = Entities.BlockEntities[var8];
-            if (var9.X >= minX && var9.Y >= minY && var9.Z >= minZ && var9.X < maxX && var9.Y < maxY && var9.Z < maxZ)
-            {
-                var7.Add(var9);
-            }
-        }
-
-        return var7;
-    }
-
-    public override bool canInteract(EntityPlayer player, int x, int y, int z)
-    {
-        int var5 = (int)MathHelper.Abs(x - Properties.SpawnX);
-        int var6 = (int)MathHelper.Abs(z - Properties.SpawnZ);
-        if (var5 > var6)
-        {
-            var6 = var5;
-        }
-
-        return var6 > 16 || server.playerManager.isOperator(player.name) || server is InternalServer;
-    }
-
-    public override void BroadcastEntityEvent(Entity entity, byte @event)
-    {
-        EntityStatusS2CPacket var3 = new(entity.id, @event);
-        server.getEntityTracker(dimension.Id).sendToAround(entity, var3);
-    }
-
-    public override Explosion createExplosion(Entity source, double x, double y, double z, float power, bool fire)
-    {
-        Explosion var10 = new(this, source, x, y, z, power) { isFlaming = fire };
+            isFlaming = fire
+        };
         var10.doExplosionA();
         var10.doExplosionB(false);
-        server.playerManager.sendToAround(x, y, z, 64.0, dimension.Id, new ExplosionS2CPacket(x, y, z, power, var10.destroyedBlockPositions));
+        server.playerManager.sendToAround(x, y, z, 64.0, dimension.Id, ExplosionS2CPacket.Get(x, y, z, power, var10.destroyedBlockPositions));
         return var10;
     }
-
-    // public override void playNoteBlockActionAt(int x, int y, int z, int soundType, int pitch)
-    // {
-    //     base.playNoteBlockActionAt(x, y, z, soundType, pitch);
-    //     server.playerManager.sendToAround(x, y, z, 64.0, dimension.Id, new PlayNoteSoundS2CPacket(x, y, z, soundType, pitch));
-    // }
 
     public void forceSave() => Storage.ForceSave();
 
     private void HandleWeatherChanged(bool isRaining)
     {
         server.playerManager.sendToAll(
-            isRaining ? new GameStateChangeS2CPacket(1) : new GameStateChangeS2CPacket(2)
+            isRaining ? GameStateChangeS2CPacket.Get(1) : GameStateChangeS2CPacket.Get(2)
         );
+
         bool isThundering = Properties.IsThundering;
-        server.playerManager.sendToAll(new GameStateChangeS2CPacket(isThundering ? 7 : 8));
+        server.playerManager.sendToAll(GameStateChangeS2CPacket.Get(isThundering ? 7 : 8));
     }
 }

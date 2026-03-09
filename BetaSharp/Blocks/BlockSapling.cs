@@ -18,7 +18,7 @@ internal class BlockSapling : BlockPlant
             base.onTick(evt);
             if (evt.Level.BlocksReader.GetBrightness(evt.X, evt.Y + 1, evt.Z) >= 9 && Random.Shared.Next(30) == 0)
             {
-                int saplingMeta = evt.Level.BlocksReader.GetBlockMeta(evt.X, evt.Y, evt.Z);
+                int saplingMeta = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
                 if ((saplingMeta & 8) == 0)
                 {
                     evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, saplingMeta | 8);
@@ -39,7 +39,7 @@ internal class BlockSapling : BlockPlant
 
     public void generate(IBlockWorldContext world, int x, int y, int z)
     {
-        int saplingType = world.BlocksReader.GetBlockMeta(x, y, z) & 3;
+        int saplingType = world.BlocksReader.GetMeta(x, y, z) & 3;
         world.BlockWriter.SetBlock(x, y, z, 0);
         object treeFeature = null;
         if (saplingType == 1)

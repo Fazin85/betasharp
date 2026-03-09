@@ -1,31 +1,33 @@
 using BetaSharp.Blocks;
+using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Rules;
 using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Core.Systems;
 
-public class WorldEventBroadcaster 
+public class WorldEventBroadcaster
 {
-    private readonly List<IWorldAccess> _eventListeners;
-    private readonly World _worldContext;
+    private readonly List<IWorldEventListener> _eventListeners;
     private readonly IBlockReader _reader;
+    private readonly World _worldContext;
 
     public bool PauseTicking = false;
-    public bool isRemote => _worldContext.IsRemote;
-    public RuleSet Rules => _worldContext.Rules;
-    public JavaRandom random => _worldContext.random;
 
-    public WorldEventBroadcaster(List<IWorldAccess> eventListeners, IBlockReader reader, World worldContext)
+    public WorldEventBroadcaster(List<IWorldEventListener> eventListeners, IBlockReader reader, World worldContext)
     {
         _eventListeners = eventListeners;
         _worldContext = worldContext;
         _reader = reader;
     }
 
+    public bool isRemote => _worldContext.IsRemote;
+    public RuleSet Rules => _worldContext.Rules;
+    public JavaRandom random => _worldContext.random;
+
     public void PlaySoundAtEntity(Entity entity, string sound, float volume, float pitch)
     {
-        foreach (var t in _eventListeners)
+        foreach (IWorldEventListener t in _eventListeners)
         {
             t.playSound(sound, entity.x, entity.y - entity.standingEyeHeight, entity.z, volume, pitch);
         }
@@ -33,7 +35,7 @@ public class WorldEventBroadcaster
 
     public void PlaySoundAtPos(double x, double y, double z, string sound, float volume, float pitch)
     {
-        foreach (var t in _eventListeners)
+        foreach (IWorldEventListener t in _eventListeners)
         {
             t.playSound(sound, x, y, z, volume, pitch);
         }
@@ -41,7 +43,7 @@ public class WorldEventBroadcaster
 
     public void PlayStreamingAtPos(string? music, int x, int y, int z)
     {
-        foreach (var t in _eventListeners)
+        foreach (IWorldEventListener t in _eventListeners)
         {
             t.playStreaming(music, x, y, z);
         }
@@ -49,7 +51,7 @@ public class WorldEventBroadcaster
 
     public void AddParticle(string particle, double x, double y, double z, double velocityX, double velocityY, double velocityZ)
     {
-        foreach (var t in _eventListeners)
+        foreach (IWorldEventListener t in _eventListeners)
         {
             t.spawnParticle(particle, x, y, z, velocityX, velocityY, velocityZ);
         }
@@ -57,7 +59,7 @@ public class WorldEventBroadcaster
 
     public void BlockUpdateEvent(int x, int y, int z)
     {
-        foreach (var t in _eventListeners)
+        foreach (IWorldEventListener t in _eventListeners)
         {
             t.blockUpdate(x, y, z);
         }
@@ -92,18 +94,18 @@ public class WorldEventBroadcaster
 
             if (block != null)
             {
-                int meta = _reader.GetBlockMeta(x, y, z);
+                int meta = _reader.GetMeta(x, y, z);
 
-                OnTickEvt tickEvent = new OnTickEvt(_worldContext, x, y, z, meta, blockId);
+                OnTickEvt tickEvent = new(_worldContext, x, y, z, meta, blockId);
 
                 block.neighborUpdate(tickEvent);
             }
         }
     }
 
-    public void AddWorldAccess(IWorldAccess worldAccess) => _eventListeners.Add(worldAccess);
+    public void AddWorldAccess(IWorldEventListener worldAccess) => _eventListeners.Add(worldAccess);
 
-    public void RemoveWorldAccess(IWorldAccess worldAccess) => _eventListeners.Remove(worldAccess);
+    public void RemoveWorldAccess(IWorldEventListener worldAccess) => _eventListeners.Remove(worldAccess);
 
     public void SetBlocksDirty(int x, int z, int minY, int maxY)
     {
@@ -122,6 +124,11 @@ public class WorldEventBroadcaster
         {
             Block.Blocks[blockId].onBlockAction(new OnBlockActionEvt(_worldContext, soundType, pitch, x, y, z));
         }
+
+        for (int i = 0; i < _eventListeners.Count; ++i)
+        {
+            _eventListeners[i].playNote(x, y, z, soundType, pitch);
+        }
     }
 
     public void SetBlocksDirty(int x, int y, int z)
@@ -132,11 +139,36 @@ public class WorldEventBroadcaster
         }
     }
 
+    public virtual void BroadcastEntityEvent(Entity entity, byte @event)
+    {
+        for (int i = 0; i < _eventListeners.Count; ++i)
+        {
+            _eventListeners[i].broadcastEntityEvent(entity, @event);
+        }
+    }
+
     public void SetBlocksDirty(int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
     {
         for (int i = 0; i < _eventListeners.Count; ++i)
         {
             _eventListeners[i].setBlocksDirty(minX, minY, minZ, maxX, maxY, maxZ);
+        }
+    }
+
+    public void UpdateBlockEntity(int x, int y, int z, BlockEntity blockEntity)
+    {
+        _worldContext.BlocksReader.MarkChunkDirty(x, z);
+        for (int i = 0; i < _eventListeners.Count; ++i)
+        {
+            _eventListeners[i].updateBlockEntity(x, y, z, blockEntity);
+        }
+    }
+
+    public void NotifyAmbientDarknessChanged()
+    {
+        for (int i = 0; i < _eventListeners.Count; ++i)
+        {
+            _eventListeners[i].notifyAmbientDarknessChanged();
         }
     }
 }

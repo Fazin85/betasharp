@@ -52,7 +52,6 @@ internal static partial class Bootstrapper
     [Transient(typeof(SessionService))]
     [Transient(typeof(StorageService))]
     [Transient(typeof(ClientService))]
-    [Transient(typeof(SkinService))]
     [Transient(typeof(MojangClient))]
     [Transient(typeof(XboxClient))]
     [Transient(typeof(AuthenticationView))]

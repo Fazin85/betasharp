@@ -1,22 +1,21 @@
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Entities;
 
 public class EntityGhast : EntityFlying, Monster
 {
+    private int aggroCooldown;
+    public int attackCounter;
     public int courseChangeCooldown;
+    public int prevAttackCounter;
+    private Entity targetedEntity;
     public double waypointX;
     public double waypointY;
     public double waypointZ;
-    private Entity targetedEntity;
-    private int aggroCooldown;
-    public int prevAttackCounter;
-    public int attackCounter;
 
-    public EntityGhast(World world) : base(world)
+    public EntityGhast(IBlockWorldContext world) : base(world)
     {
         texture = "/mob/ghast.png";
         setBoundingBoxSpacing(4.0F, 4.0F);
@@ -38,7 +37,7 @@ public class EntityGhast : EntityFlying, Monster
 
     public override void tickLiving()
     {
-        if (!_level.isRemote && _level.difficulty == 0)
+        if (!_level.IsRemote && _level.Difficulty == 0)
         {
             markDead();
         }
@@ -48,12 +47,12 @@ public class EntityGhast : EntityFlying, Monster
         double dx1 = waypointX - x;
         double dy1 = waypointY - y;
         double dz1 = waypointZ - z;
-        double distance = (double)MathHelper.Sqrt(dx1 * dx1 + dy1 * dy1 + dz1 * dz1);
+        double distance = MathHelper.Sqrt(dx1 * dx1 + dy1 * dy1 + dz1 * dz1);
         if (distance < 1.0D || distance > 60.0D)
         {
-            waypointX = x + (double)((random.NextFloat() * 2.0F - 1.0F) * 16.0F);
-            waypointY = y + (double)((random.NextFloat() * 2.0F - 1.0F) * 16.0F);
-            waypointZ = z + (double)((random.NextFloat() * 2.0F - 1.0F) * 16.0F);
+            waypointX = x + (random.NextFloat() * 2.0F - 1.0F) * 16.0F;
+            waypointY = y + (random.NextFloat() * 2.0F - 1.0F) * 16.0F;
+            waypointZ = z + (random.NextFloat() * 2.0F - 1.0F) * 16.0F;
         }
 
         if (courseChangeCooldown-- <= 0)
@@ -80,7 +79,7 @@ public class EntityGhast : EntityFlying, Monster
 
         if (targetedEntity == null || aggroCooldown-- <= 0)
         {
-            targetedEntity = _level.getClosestPlayer(this, 100.0D);
+            targetedEntity = _level.Entities.GetClosestPlayer(x, y, z, 100.0D);
             if (targetedEntity != null)
             {
                 aggroCooldown = 20;
@@ -91,25 +90,25 @@ public class EntityGhast : EntityFlying, Monster
         if (targetedEntity != null && targetedEntity.getSquaredDistance(this) < attackRange * attackRange)
         {
             double dx2 = targetedEntity.x - x;
-            double dy2 = targetedEntity.boundingBox.MinY + (double)(targetedEntity.height / 2.0F) - (y + (double)(height / 2.0F));
+            double dy2 = targetedEntity.boundingBox.MinY + targetedEntity.height / 2.0F - (y + height / 2.0F);
             double dz2 = targetedEntity.z - z;
-            bodyYaw = yaw = -((float)System.Math.Atan2(dx2, dz2)) * 180.0F / (float)System.Math.PI;
+            bodyYaw = yaw = -(float)Math.Atan2(dx2, dz2) * 180.0F / (float)Math.PI;
             if (canSee(targetedEntity))
             {
                 if (attackCounter == 10)
                 {
-                    _level.playSound(this, "mob.ghast.charge", getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
+                    _level.Broadcaster.PlaySoundAtEntity(this, "mob.ghast.charge", getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
                 }
 
                 ++attackCounter;
                 if (attackCounter == 20)
                 {
-                    _level.playSound(this, "mob.ghast.fireball", getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
-                    EntityFireball fireball = new EntityFireball(_level, this, dx2, dy2, dz2);
+                    _level.Broadcaster.PlaySoundAtEntity(this, "mob.ghast.fireball", getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
+                    EntityFireball fireball = new(_level, this, dx2, dy2, dz2);
                     double spawnOffset = 4.0D;
                     Vec3D lookDir = getLook(1.0F);
                     fireball.x = x + lookDir.x * spawnOffset;
-                    fireball.y = y + (double)(height / 2.0F) + 0.5D;
+                    fireball.y = y + height / 2.0F + 0.5D;
                     fireball.z = z + lookDir.z * spawnOffset;
                     _level.SpawnEntity(fireball);
                     attackCounter = -40;
@@ -122,23 +121,22 @@ public class EntityGhast : EntityFlying, Monster
         }
         else
         {
-            bodyYaw = yaw = -((float)System.Math.Atan2(velocityX, velocityZ)) * 180.0F / (float)System.Math.PI;
+            bodyYaw = yaw = -(float)Math.Atan2(velocityX, velocityZ) * 180.0F / (float)Math.PI;
             if (attackCounter > 0)
             {
                 --attackCounter;
             }
         }
 
-        if (!_level.isRemote)
+        if (!_level.IsRemote)
         {
             sbyte data = dataWatcher.getWatchableObjectByte(16);
             byte isCharging = (byte)(attackCounter > 10 ? 1 : 0);
             if (data != isCharging)
             {
-                dataWatcher.UpdateObject(16, (byte)isCharging);
+                dataWatcher.UpdateObject(16, isCharging);
             }
         }
-
     }
 
     private bool isCourseTraversable(double targetX, double targety, double targetZ, double distance)
@@ -148,10 +146,10 @@ public class EntityGhast : EntityFlying, Monster
         double stepZ = (waypointZ - z) / distance;
         Box box = boundingBox;
 
-        for (int i = 1; (double)i < distance; ++i)
+        for (int i = 1; i < distance; ++i)
         {
             box.Translate(stepX, stepY, stepZ);
-            if (_level.getEntityCollisionsScratch(this, box).Count > 0)
+            if (_level.Entities.GetEntityCollisionsScratch(this, box).Count > 0)
             {
                 return false;
             }
@@ -160,38 +158,17 @@ public class EntityGhast : EntityFlying, Monster
         return true;
     }
 
-    protected override String getLivingSound()
-    {
-        return "mob.ghast.moan";
-    }
+    protected override string getLivingSound() => "mob.ghast.moan";
 
-    protected override String getHurtSound()
-    {
-        return "mob.ghast.scream";
-    }
+    protected override string getHurtSound() => "mob.ghast.scream";
 
-    protected override String getDeathSound()
-    {
-        return "mob.ghast.death";
-    }
+    protected override string getDeathSound() => "mob.ghast.death";
 
-    protected override int getDropItemId()
-    {
-        return Item.Gunpowder.id;
-    }
+    protected override int getDropItemId() => Item.Gunpowder.id;
 
-    protected override float getSoundVolume()
-    {
-        return 10.0F;
-    }
+    protected override float getSoundVolume() => 10.0F;
 
-    public override bool canSpawn()
-    {
-        return random.NextInt(20) == 0 && base.canSpawn() && _level.difficulty > 0;
-    }
+    public override bool canSpawn() => random.NextInt(20) == 0 && base.canSpawn() && _level.Difficulty > 0;
 
-    public override int getMaxSpawnedInChunk()
-    {
-        return 1;
-    }
+    public override int getMaxSpawnedInChunk() => 1;
 }

@@ -15,7 +15,7 @@ internal class ItemBoat : Item
         maxCount = 1;
     }
 
-    public override ItemStack use(ItemStack itemStack, World world, EntityPlayer entityPlayer)
+    public override ItemStack use(ItemStack itemStack, IBlockWorldContext world, EntityPlayer entityPlayer)
     {
         float partialTick = 1.0F;
         float pitch = entityPlayer.prevPitch + (entityPlayer.pitch - entityPlayer.prevPitch) * partialTick;
@@ -32,7 +32,7 @@ internal class ItemBoat : Item
         float dirZ = cosYaw * cosPitch;
         double rayLength = 5.0D;
         Vec3D rayEnd = rayStart + new Vec3D((double)dirX * rayLength, (double)sinPitch * rayLength, (double)dirZ * rayLength);
-        HitResult hitResult = world.raycast(rayStart, rayEnd, true);
+        HitResult hitResult = world.BlocksReader.Raycast(rayStart, rayEnd, true);
         if (hitResult.Type == HitResultType.MISS)
         {
             return itemStack;
@@ -46,7 +46,7 @@ internal class ItemBoat : Item
                 int hitZ = hitResult.BlockZ;
                 if (!world.IsRemote)
                 {
-                    if (world.getBlockId(hitX, hitY, hitZ) == Block.Snow.id)
+                    if (world.BlocksReader.GetBlockId(hitX, hitY, hitZ) == Block.Snow.id)
                     {
                         --hitY;
                     }

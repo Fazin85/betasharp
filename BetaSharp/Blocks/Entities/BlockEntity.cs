@@ -1,7 +1,6 @@
 using BetaSharp.NBT;
 using BetaSharp.Network.Packets;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Blocks.Entities;
@@ -11,8 +10,8 @@ public class BlockEntity
     private static readonly Dictionary<string, Type> s_idToClass = new();
     private static readonly Dictionary<Type, string> s_classToId = new();
     private static readonly ILogger<BlockEntity> s_logger = Log.Instance.For<BlockEntity>();
-    protected bool Removed;
     public IBlockWorldContext Level;
+    protected bool Removed;
     public int X;
     public int Y;
     public int Z;
@@ -97,13 +96,13 @@ public class BlockEntity
         return blockEntity;
     }
 
-    public virtual int getPushedBlockData() => Level.BlocksReader.GetBlockMeta(X, Y, Z);
+    public virtual int getPushedBlockData() => Level.BlocksReader.GetMeta(X, Y, Z);
 
     public void markDirty()
     {
         if (Level != null)
         {
-            Level.BlockWriter.UpdateBlockEntity(X, Y, Z, this);
+            Level.Broadcaster.UpdateBlockEntity(X, Y, Z, this);
         }
     }
 

@@ -51,5 +51,5 @@ internal class BlockLockedChest : Block
 
     public override bool canPlaceAt(CanPlaceAtCtx ctx) => true;
 
-    public override void onTick(OnTickEvt ctx) => ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
+    public override void onTick(OnTickEvt evt) => evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, 0);
 }

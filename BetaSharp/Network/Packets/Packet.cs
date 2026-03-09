@@ -14,9 +14,14 @@ public abstract class Packet
 
     private static readonly Dictionary<int, PacketTracker> s_trackers = new();
 
-    public readonly long CreationTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+    public long CreationTime;
 
     public readonly byte Id;
+
+    /// <summary>
+    /// When sending to multiple clients, we only want to return when all packages have been sent
+    /// </summary>
+    public short UseCount;
 
     protected Packet(byte id)
     {
@@ -30,22 +35,35 @@ public abstract class Packet
 
     public void Return()
     {
+        if (--UseCount > 0) return;
+
         if (Registry.TryGet(Id, out PacketRegisterItem? item))
         {
             item.Return(this);
             return;
         }
+
         s_logger.LogError("Packet id " + Id + " not found");
     }
 
     public static void Return(Packet packet)
     {
-        if (Registry.TryGet(packet.Id, out PacketRegisterItem? item))
+        packet.Return();
+    }
+
+    public static T Get<T>(PacketId id) where T : Packet => (T)Get((byte)id);
+
+    public Packet Get() => Get(Id);
+    public static Packet Get(PacketId id) => Get((byte)id);
+
+    public static Packet Get(byte id)
+    {
+        if (!Registry.TryGet(id, out PacketRegisterItem? packetR))
         {
-            item.Return(packet);
-            return;
+            throw new Exception("Unable to get packet id " + id);
         }
-        s_logger.LogError("Packet id " + packet.Id + " not found");
+
+        return packetR.Get();
     }
 
     public static Packet? Read(NetworkStream stream, bool server)
@@ -99,6 +117,7 @@ public abstract class Packet
     {
         stream.WriteByte((byte)packet.Id);
         packet.Write(stream);
+        packet.Return();
     }
 
     public abstract void Read(NetworkStream stream);
@@ -169,6 +188,7 @@ public abstract class Packet
             New(PacketId.ScreenHandlerAcknowledgement, true, true, false, () => new ScreenHandlerAcknowledgementPacket()),
             New(PacketId.UpdateSign, true, true, true, () => new UpdateSignPacket()),
             New(PacketId.MapUpdateS2C, true, false, true, () => new MapUpdateS2CPacket()),
+            New(PacketId.PlayerConnectionUpdateS2C, true, false, false, () => new PlayerConnectionUpdateS2CPacket()),
             New(PacketId.IncreaseStatS2C, true, false, false, () => new IncreaseStatS2CPacket()),
             New(PacketId.Disconnect, true, true, false, () => new DisconnectPacket())
         ]);
@@ -176,6 +196,15 @@ public abstract class Packet
 
     public class PacketRegisterItem(byte rawId, bool clientBound, bool serverBound, bool worldPacket, Func<Packet> factory) : FactoryPoolItem<Packet>(rawId, item: factory)
     {
+        public override Packet Get()
+        {
+            var p = Item.Get();
+            // note. DateTimeOffset.UtcNow.UtcTicks would be slightly faster as no conversion would be needed
+            p.CreationTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            p.UseCount = 0;
+            return p;
+        }
+
         public readonly bool ClientBound = clientBound;
         public readonly bool ServerBound = serverBound;
         public readonly bool WorldPacket = worldPacket;

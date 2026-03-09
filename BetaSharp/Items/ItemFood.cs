@@ -17,7 +17,7 @@ internal class ItemFood : Item
         maxCount = 1;
     }
 
-    public override ItemStack use(ItemStack itemStack, World world, EntityPlayer entityPlayer)
+    public override ItemStack use(ItemStack itemStack, IBlockWorldContext world, EntityPlayer entityPlayer)
     {
         --itemStack.count;
         entityPlayer.heal(healAmount);

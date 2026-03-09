@@ -1,25 +1,20 @@
 using BetaSharp.PathFinding;
-using BetaSharp.Profiling;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Entities;
 
 public class EntityCreature : EntityLiving
 {
-    private PathEntity pathToEntity;
-    protected Entity playerToAttack;
     protected bool hasAttacked;
+    private PathEntity? pathToEntity;
+    protected Entity? playerToAttack;
 
-    public EntityCreature(World world) : base(world)
+    public EntityCreature(IBlockWorldContext level) : base(level)
     {
     }
 
-    protected virtual bool isMovementCeased()
-    {
-        return false;
-    }
+    protected virtual bool isMovementCeased() => false;
 
     public override void tickLiving()
     {
@@ -30,7 +25,7 @@ public class EntityCreature : EntityLiving
             playerToAttack = findPlayerToAttack();
             if (playerToAttack != null)
             {
-                pathToEntity = _level.findPath(this, playerToAttack, range);
+                pathToEntity = _level.Pathing.findPath(this, playerToAttack, range);
             }
         }
         else if (!playerToAttack.isAlive())
@@ -50,26 +45,26 @@ public class EntityCreature : EntityLiving
             }
         }
 
-        if (hasAttacked || playerToAttack == null || pathToEntity != null && random.NextInt(20) != 0)
+        if (hasAttacked || playerToAttack == null || (pathToEntity != null && random.NextInt(20) != 0))
         {
-            if (!hasAttacked && (pathToEntity == null && random.NextInt(80) == 0 || random.NextInt(80) == 0))
+            if (!hasAttacked && ((pathToEntity == null && random.NextInt(80) == 0) || random.NextInt(80) == 0))
             {
                 findRandomWanderTarget();
             }
         }
         else
         {
-            pathToEntity = _level.findPath(this, playerToAttack, range);
+            pathToEntity = _level.Pathing.findPath(this, playerToAttack, range);
         }
 
         int floorY = MathHelper.Floor(boundingBox.MinY + 0.5D);
         bool isInWater = base.isInWater();
-        bool isTouchingLava = base.isTouchingLava();
+        bool isTouchingLava = this.isTouchingLava();
         pitch = 0.0F;
         if (pathToEntity != null && random.NextInt(100) != 0)
         {
             Vec3D? pos = pathToEntity.GetPosition(this);
-            double distance = (double)(width * 2.0F);
+            double distance = width * 2.0F;
 
             while (pos != null && pos.Value.squareDistanceTo(new Vec3D(x, pos.Value.y, z)) < distance * distance)
             {
@@ -90,8 +85,8 @@ public class EntityCreature : EntityLiving
             {
                 double dx = pos.Value.x - x;
                 double dz = pos.Value.z - z;
-                double verticalOffset = pos.Value.y - (double)floorY;
-                float targetYaw = (float)(System.Math.Atan2(dz, dx) * 180.0D / (double)((float)System.Math.PI)) - 90.0F;
+                double verticalOffset = pos.Value.y - floorY;
+                float targetYaw = (float)(Math.Atan2(dz, dx) * 180.0D / Math.PI) - 90.0F;
                 float yawDelta = targetYaw - yaw;
 
                 for (forwardSpeed = movementSpeed; yawDelta < -180.0F; yawDelta += 360.0F)
@@ -119,8 +114,8 @@ public class EntityCreature : EntityLiving
                     double targetDeltaX = playerToAttack.x - x;
                     double targetDeltaZ = playerToAttack.z - z;
                     float previousYaw = yaw;
-                    yaw = (float)(System.Math.Atan2(targetDeltaZ, targetDeltaX) * 180.0D / (double)((float)System.Math.PI)) - 90.0F;
-                    yawDelta = (previousYaw - yaw + 90.0F) * (float)System.Math.PI / 180.0F;
+                    yaw = (float)(Math.Atan2(targetDeltaZ, targetDeltaX) * 180.0D / Math.PI) - 90.0F;
+                    yawDelta = (previousYaw - yaw + 90.0F) * (float)Math.PI / 180.0F;
                     sidewaysSpeed = -MathHelper.Sin(yawDelta) * forwardSpeed * 1.0F;
                     forwardSpeed = MathHelper.Cos(yawDelta) * forwardSpeed * 1.0F;
                 }
@@ -145,7 +140,6 @@ public class EntityCreature : EntityLiving
             {
                 jumping = true;
             }
-
         }
         else
         {
@@ -164,9 +158,9 @@ public class EntityCreature : EntityLiving
 
         for (int _ = 0; _ < 10; ++_)
         {
-            int floorX = MathHelper.Floor(x + (double)random.NextInt(13) - 6.0D);
-            int floorY = MathHelper.Floor(y + (double)random.NextInt(7) - 3.0D);
-            int floorZ = MathHelper.Floor(z + (double)random.NextInt(13) - 6.0D);
+            int floorX = MathHelper.Floor(x + random.NextInt(13) - 6.0D);
+            int floorY = MathHelper.Floor(y + random.NextInt(7) - 3.0D);
+            int floorZ = MathHelper.Floor(z + random.NextInt(13) - 6.0D);
             float cost = getBlockPathWeight(floorX, floorY, floorZ);
             if (cost > bestCost)
             {
@@ -180,7 +174,7 @@ public class EntityCreature : EntityLiving
 
         if (foundWanderTarget)
         {
-            pathToEntity = _level.findPath(this, bestX, bestY, bestZ, 10.0F);
+            pathToEntity = _level.Pathing.findPath(this, bestX, bestY, bestZ, 10.0F);
         }
     }
 
@@ -192,15 +186,9 @@ public class EntityCreature : EntityLiving
     {
     }
 
-    protected virtual float getBlockPathWeight(int x, int y, int z)
-    {
-        return 0.0F;
-    }
+    protected virtual float getBlockPathWeight(int x, int y, int z) => 0.0F;
 
-    protected virtual Entity findPlayerToAttack()
-    {
-        return null;
-    }
+    protected virtual Entity? findPlayerToAttack() => null;
 
     public override bool canSpawn()
     {
@@ -210,23 +198,11 @@ public class EntityCreature : EntityLiving
         return base.canSpawn() && getBlockPathWeight(floorX, floorY, floorZ) >= 0.0F;
     }
 
-    public bool hasPath()
-    {
-        return pathToEntity != null;
-    }
+    public bool hasPath() => pathToEntity != null;
 
-    internal void setPathToEntity(PathEntity pathToEntity)
-    {
-        this.pathToEntity = pathToEntity;
-    }
+    internal void setPathToEntity(PathEntity? pathToEntity) => this.pathToEntity = pathToEntity;
 
-    public Entity getTarget()
-    {
-        return playerToAttack;
-    }
+    public Entity getTarget() => playerToAttack;
 
-    public void setTarget(Entity playerToAttack)
-    {
-        this.playerToAttack = playerToAttack;
-    }
+    public void setTarget(Entity playerToAttack) => this.playerToAttack = playerToAttack;
 }

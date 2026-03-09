@@ -1,7 +1,6 @@
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Entities;
 
@@ -9,10 +8,7 @@ public class EntityMonster : EntityCreature, Monster
 {
     protected int attackStrength = 2;
 
-    public EntityMonster(World world) : base(world)
-    {
-        health = 20;
-    }
+    public EntityMonster(IBlockWorldContext world) : base(world) => health = 20;
 
     public override void tickMovement()
     {
@@ -28,20 +24,19 @@ public class EntityMonster : EntityCreature, Monster
     public override void tick()
     {
         base.tick();
-        if (!_level.isRemote && _level.difficulty == 0)
+        if (!_level.IsRemote && _level.Difficulty == 0)
         {
             markDead();
         }
-
     }
 
-    protected override Entity findPlayerToAttack()
+    protected override Entity? findPlayerToAttack()
     {
-        EntityPlayer player = _level.getClosestPlayer(this, 16.0D);
+        EntityPlayer? player = _level.Entities.GetClosestPlayer(x, y, z, 16.0D);
         return player != null && canSee(player) ? player : null;
     }
 
-    public override bool damage(Entity entity, int amount)
+    public override bool damage(Entity? entity, int amount)
     {
         if (base.damage(entity, amount))
         {
@@ -54,15 +49,11 @@ public class EntityMonster : EntityCreature, Monster
 
                 return true;
             }
-            else
-            {
-                return true;
-            }
+
+            return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
     protected override void attackEntity(Entity entity, float distance)
@@ -72,45 +63,33 @@ public class EntityMonster : EntityCreature, Monster
             attackTime = 20;
             entity.damage(this, attackStrength);
         }
-
     }
 
-    protected override float getBlockPathWeight(int x, int y, int z)
-    {
-        return 0.5F - _level.getLuminance(x, y, z);
-    }
+    protected override float getBlockPathWeight(int x, int y, int z) => 0.5F - _level.Lighting.GetLuminance(x, y, z);
 
-    public override void writeNbt(NBTTagCompound nbt)
-    {
-        base.writeNbt(nbt);
-    }
+    public override void writeNbt(NBTTagCompound nbt) => base.writeNbt(nbt);
 
-    public override void readNbt(NBTTagCompound nbt)
-    {
-        base.readNbt(nbt);
-    }
+    public override void readNbt(NBTTagCompound nbt) => base.readNbt(nbt);
 
     public override bool canSpawn()
     {
-        int x = MathHelper.Floor(base.x);
+        int x = MathHelper.Floor(this.x);
         int y = MathHelper.Floor(boundingBox.MinY);
-        int z = MathHelper.Floor(base.z);
-        if (_level.getBrightness(LightType.Sky, x, y, z) > random.NextInt(32))
+        int z = MathHelper.Floor(this.z);
+        if (_level.Lighting.GetBrightness(LightType.Sky, x, y, z) > random.NextInt(32))
         {
             return false;
         }
-        else
-        {
-            int lightLevel = _level.getLightLevel(x, y, z);
-            if (_level.isThundering())
-            {
-                int ambientDarkness = _level.ambientDarkness;
-                _level.ambientDarkness = 10;
-                lightLevel = _level.getLightLevel(x, y, z);
-                _level.ambientDarkness = ambientDarkness;
-            }
 
-            return lightLevel <= random.NextInt(8) && base.canSpawn();
+        int lightLevel = _level.Lighting.GetLightLevel(x, y, z);
+        if (_level.Environment.IsThundering())
+        {
+            int ambientDarkness = _level.Environment.AmbientDarkness;
+            _level.Environment.AmbientDarkness = 10;
+            lightLevel = _level.Lighting.GetLightLevel(x, y, z);
+            _level.Environment.AmbientDarkness = ambientDarkness;
         }
+
+        return lightLevel <= random.NextInt(8) && base.canSpawn();
     }
 }

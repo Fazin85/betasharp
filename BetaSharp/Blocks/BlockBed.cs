@@ -13,61 +13,60 @@ public class BlockBed : Block
 
     public BlockBed(int id) : base(id, 134, Material.Wool) => setDefaultShape();
 
-    public override bool onUse(OnUseEvt ctx)
+    public override bool onUse(OnUseEvt evt)
     {
-        if (ctx.Level.IsRemote)
+        if (evt.Level.IsRemote)
         {
             return true;
         }
 
         // Extract to local variables so we don't mutate the event struct
-        int x = ctx.X;
-        int y = ctx.Y;
-        int z = ctx.Z;
+        int x = evt.X;
+        int y = evt.Y;
+        int z = evt.Z;
 
-        int meta = ctx.Level.BlocksReader.GetBlockMeta(x, y, z);
+        int meta = evt.Level.BlocksReader.GetMeta(x, y, z);
         if (!isHeadOfBed(meta))
         {
             int direction = getDirection(meta);
             x += BED_OFFSETS[direction][0];
             z += BED_OFFSETS[direction][1];
 
-            if (ctx.Level.BlocksReader.GetBlockId(x, y, z) != id)
+            if (evt.Level.BlocksReader.GetBlockId(x, y, z) != id)
             {
                 return true;
             }
 
-            meta = ctx.Level.BlocksReader.GetBlockMeta(x, y, z);
+            meta = evt.Level.BlocksReader.GetMeta(x, y, z);
         }
 
-        if (!ctx.Level.dimension.HasWorldSpawn)
+        if (!evt.Level.dimension.HasWorldSpawn)
         {
             double posX = x + 0.5D;
             double posY = y + 0.5D;
             double posZ = z + 0.5D;
-            ctx.Level.BlockWriter.SetBlock(x, y, z, 0);
+            evt.Level.BlockWriter.SetBlock(x, y, z, 0);
 
             int direction = getDirection(meta);
             x += BED_OFFSETS[direction][0];
             z += BED_OFFSETS[direction][1];
 
-            if (ctx.Level.BlocksReader.GetBlockId(x, y, z) == id)
+            if (evt.Level.BlocksReader.GetBlockId(x, y, z) == id)
             {
-                ctx.Level.BlockWriter.SetBlock(x, y, z, 0);
+                evt.Level.BlockWriter.SetBlock(x, y, z, 0);
                 posX = (posX + x + 0.5D) / 2.0D;
                 posY = (posY + y + 0.5D) / 2.0D;
                 posZ = (posZ + z + 0.5D) / 2.0D;
             }
 
-// TODO: Implement this
-            //ctx.Level.CreateExplosion(null, x + 0.5F, y + 0.5F, z + 0.5F, 5.0F, true);
+            evt.Level.CreateExplosion(null, x + 0.5F, y + 0.5F, z + 0.5F, 5.0F, true);
             return true;
         }
 
         if (isBedOccupied(meta))
         {
             EntityPlayer? occupant = null;
-            foreach (EntityPlayer otherPlayer in ctx.Level.Entities.Players)
+            foreach (EntityPlayer otherPlayer in evt.Level.Entities.Players)
             {
                 if (otherPlayer.isSleeping())
                 {
@@ -81,23 +80,23 @@ public class BlockBed : Block
 
             if (occupant != null)
             {
-                ctx.Player.sendMessage("tile.bed.occupied");
+                evt.Player.sendMessage("tile.bed.occupied");
                 return true;
             }
 
-            updateState(ctx.Level.BlockWriter, x, y, z, meta, false);
+            updateState(evt.Level.BlockWriter, x, y, z, meta, false);
         }
 
-        SleepAttemptResult result = ctx.Player.trySleep(x, y, z);
+        SleepAttemptResult result = evt.Player.trySleep(x, y, z);
         if (result == SleepAttemptResult.OK)
         {
-            updateState(ctx.Level.BlockWriter, x, y, z, meta, true);
+            updateState(evt.Level.BlockWriter, x, y, z, meta, true);
             return true;
         }
 
         if (result == SleepAttemptResult.NOT_POSSIBLE_NOW)
         {
-            ctx.Player.sendMessage("tile.bed.noSleep");
+            evt.Player.sendMessage("tile.bed.noSleep");
         }
 
         return true;
@@ -127,7 +126,7 @@ public class BlockBed : Block
 
     public override void neighborUpdate(OnTickEvt ctx)
     {
-        int blockMeta = ctx.Level.BlocksReader.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+        int blockMeta = ctx.Level.BlocksReader.GetMeta(ctx.X, ctx.Y, ctx.Z);
         int direction = getDirection(blockMeta);
 
         if (isHeadOfBed(blockMeta))
@@ -157,7 +156,6 @@ public class BlockBed : Block
 
     public static bool isBedOccupied(int meta) => (meta & 4) != 0;
 
-    // Changed signature to take specific coordinates and writers instead of the OnUseEvt context
     public static void updateState(WorldBlockWrite worldWrite, int x, int y, int z, int meta, bool occupied)
     {
         if (occupied)
@@ -173,9 +171,9 @@ public class BlockBed : Block
     }
 
     // Updated 'World' to 'IBlockReader'
-    public static Vec3i? findWakeUpPosition(IBlockReader world, int x, int y, int z, int skip)
+    public static Vec3i? findWakeUpPosition(IBlockReader reader, int x, int y, int z, int skip)
     {
-        int blockMeta = world.GetBlockMeta(x, y, z);
+        int blockMeta = reader.GetMeta(x, y, z);
         int direction = getDirection(blockMeta);
 
         for (int bedHalf = 0; bedHalf <= 1; ++bedHalf)
@@ -189,7 +187,7 @@ public class BlockBed : Block
             {
                 for (int checkZ = searchMinZ; checkZ <= searchMaxZ; ++checkZ)
                 {
-                    if (world.ShouldSuffocate(checkX, y - 1, checkZ) && world.IsAir(checkX, y, checkZ) && world.IsAir(checkX, y + 1, checkZ))
+                    if (reader.ShouldSuffocate(checkX, y - 1, checkZ) && reader.IsAir(checkX, y, checkZ) && reader.IsAir(checkX, y + 1, checkZ))
                     {
                         if (skip <= 0)
                         {
@@ -205,11 +203,11 @@ public class BlockBed : Block
         return null;
     }
 
-    public override void dropStacks(OnDropEvt ctx)
+    public override void dropStacks(OnDropEvt evt)
     {
-        if (!isHeadOfBed(ctx.Meta))
+        if (!isHeadOfBed(evt.Meta))
         {
-            base.dropStacks(ctx);
+            base.dropStacks(evt);
         }
     }
 

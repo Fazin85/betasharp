@@ -1,6 +1,4 @@
 using BetaSharp.Blocks.Materials;
-using BetaSharp.Entities;
-using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Blocks;
 
@@ -12,7 +10,7 @@ internal class BlockWorkbench : Block
 
     public override bool onUse(OnUseEvt ctx)
     {
-        if (ctx.IsRemote)
+        if (ctx.Level.IsRemote)
         {
             return true;
         }

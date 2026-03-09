@@ -20,7 +20,7 @@ public class BlockLeaves : BlockLeavesBase
 
     public override int getColorMultiplier(IBlockReader reader, int x, int y, int z)
     {
-        int meta = reader.GetBlockMeta(x, y, z);
+        int meta = reader.GetMeta(x, y, z);
         if ((meta & 1) == 1)
         {
             return FoliageColors.getSpruceColor();
@@ -37,11 +37,11 @@ public class BlockLeaves : BlockLeavesBase
         return FoliageColors.getFoliageColor(temperature, downfall);
     }
 
-    public override void onBreak(OnBreakEvt ctx)
+    public override void onBreak(OnBreakEvt evt)
     {
         sbyte searchRadius = 1;
         int loadCheckExtent = searchRadius + 1;
-        if (ctx.Level.BlockHost.IsRegionLoaded(ctx.X - loadCheckExtent, ctx.Y - loadCheckExtent, ctx.Z - loadCheckExtent, ctx.X + loadCheckExtent, ctx.Y + loadCheckExtent, ctx.Z + loadCheckExtent))
+        if (evt.Level.BlockHost.IsRegionLoaded(evt.X - loadCheckExtent, evt.Y - loadCheckExtent, evt.Z - loadCheckExtent, evt.X + loadCheckExtent, evt.Y + loadCheckExtent, evt.Z + loadCheckExtent))
         {
             for (int offsetX = -searchRadius; offsetX <= searchRadius; ++offsetX)
             {
@@ -49,11 +49,11 @@ public class BlockLeaves : BlockLeavesBase
                 {
                     for (int offsetZ = -searchRadius; offsetZ <= searchRadius; ++offsetZ)
                     {
-                        int blockId = ctx.Level.BlocksReader.GetBlockId(ctx.X + offsetX, ctx.Y + offsetY, ctx.Z + offsetZ);
+                        int blockId = evt.Level.BlocksReader.GetBlockId(evt.X + offsetX, evt.Y + offsetY, evt.Z + offsetZ);
                         if (blockId == Leaves.id)
                         {
-                            int leavesMeta = ctx.Level.BlocksReader.GetBlockMeta(ctx.X + offsetX, ctx.Y + offsetY, ctx.Z + offsetZ);
-                            ctx.Level.BlockWriter.SetBlockMetaWithoutNotifyingNeighbors(ctx.X + offsetX, ctx.Y + offsetY, ctx.Z + offsetZ, leavesMeta | 8);
+                            int leavesMeta = evt.Level.BlocksReader.GetMeta(evt.X + offsetX, evt.Y + offsetY, evt.Z + offsetZ);
+                            evt.Level.BlockWriter.SetBlockMetaWithoutNotifyingNeighbors(evt.X + offsetX, evt.Y + offsetY, evt.Z + offsetZ, leavesMeta | 8);
                         }
                     }
                 }
@@ -61,11 +61,11 @@ public class BlockLeaves : BlockLeavesBase
         }
     }
 
-    public override void onTick(OnTickEvt ctx)
+    public override void onTick(OnTickEvt evt)
     {
-        if (!ctx.Level.IsRemote)
+        if (!evt.Level.IsRemote)
         {
-            int meta = ctx.Level.BlocksReader.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+            int meta = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
             if ((meta & 8) != 0)
             {
                 sbyte decayRadius = 4;
@@ -81,7 +81,7 @@ public class BlockLeaves : BlockLeavesBase
                 int[] decayRegion = s_decayRegion.Value;
 
                 int distanceToLog;
-                if (ctx.Level.BlockHost.IsRegionLoaded(ctx.X - loadCheckExtent, ctx.Y - loadCheckExtent, ctx.Z - loadCheckExtent, ctx.X + loadCheckExtent, ctx.Y + loadCheckExtent, ctx.Z + loadCheckExtent))
+                if (evt.Level.BlockHost.IsRegionLoaded(evt.X - loadCheckExtent, evt.Y - loadCheckExtent, evt.Z - loadCheckExtent, evt.X + loadCheckExtent, evt.Y + loadCheckExtent, evt.Z + loadCheckExtent))
                 {
                     distanceToLog = -decayRadius;
 
@@ -95,7 +95,7 @@ public class BlockLeaves : BlockLeavesBase
                         {
                             for (dy = -decayRadius; dy <= decayRadius; ++dy)
                             {
-                                dz = ctx.Level.BlocksReader.GetBlockId(ctx.X + distanceToLog, ctx.Y + dx, ctx.Z + dy);
+                                dz = evt.Level.BlocksReader.GetBlockId(evt.X + distanceToLog, evt.Y + dx, evt.Z + dy);
                                 if (dz == Log.id)
                                 {
                                     decayRegion[(distanceToLog + centerOffset) * planeSize + (dx + centerOffset) * regionSize + dy + centerOffset] = 0;
@@ -167,11 +167,11 @@ public class BlockLeaves : BlockLeavesBase
                 distanceToLog = decayRegion[centerOffset * planeSize + centerOffset * regionSize + centerOffset];
                 if (distanceToLog >= 0)
                 {
-                    ctx.Level.BlockWriter.SetBlockMetaWithoutNotifyingNeighbors(ctx.X, ctx.Y, ctx.Z, meta & -9);
+                    evt.Level.BlockWriter.SetBlockMetaWithoutNotifyingNeighbors(evt.X, evt.Y, evt.Z, meta & -9);
                 }
                 else
                 {
-                    breakLeaves(ctx.Level, ctx.X, ctx.Y, ctx.Z);
+                    breakLeaves(evt.Level, evt.X, evt.Y, evt.Z);
                 }
             }
         }
@@ -179,7 +179,7 @@ public class BlockLeaves : BlockLeavesBase
 
     private void breakLeaves(IBlockWorldContext level, int x, int y, int z)
     {
-        dropStacks(new OnDropEvt(level, x, y, z, level.BlocksReader.GetBlockMeta(x, y, z)));
+        dropStacks(new OnDropEvt(level, x, y, z, level.BlocksReader.GetMeta(x, y, z)));
         level.BlockWriter.SetBlock(x, y, z, 0);
     }
 
@@ -187,7 +187,7 @@ public class BlockLeaves : BlockLeavesBase
 
     public override int getDroppedItemId(int blockMeta) => Sapling.id;
 
-    public override void afterBreak(OnAfterBreakEvt ctx)
+    public override void onAfterBreak(OnAfterBreakEvt ctx)
     {
         if (!ctx.Level.IsRemote && ctx.Player.getHand() != null && ctx.Player.getHand().itemId == Item.Shears.id)
         {
@@ -196,7 +196,7 @@ public class BlockLeaves : BlockLeavesBase
         }
         else
         {
-            base.afterBreak(ctx);
+            base.onAfterBreak(ctx);
         }
     }
 

@@ -1,6 +1,4 @@
 using BetaSharp.Blocks.Materials;
-using BetaSharp.Entities;
-using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Blocks;
 
@@ -12,13 +10,13 @@ internal class BlockLog : Block
 
     public override int getDroppedItemId(int blockMeta) => Log.id;
 
-    public override void afterBreak(OnAfterBreakEvt ctx) => base.afterBreak(ctx);
+    public override void onAfterBreak(OnAfterBreakEvt evt) => base.onAfterBreak(evt);
 
-    public override void onBreak(OnBreakEvt ctx)
+    public override void onBreak(OnBreakEvt evt)
     {
         sbyte searchRadius = 4;
         int regionExtent = searchRadius + 1;
-        if (ctx.world.IsRegionLoaded(ctx.X - regionExtent, ctx.Y - regionExtent, ctx.Z - regionExtent, ctx.X + regionExtent, ctx.Y + regionExtent, ctx.Z + regionExtent))
+        if (evt.Level.BlockHost.IsRegionLoaded(evt.X - regionExtent, evt.Y - regionExtent, evt.Z - regionExtent, evt.X + regionExtent, evt.Y + regionExtent, evt.Z + regionExtent))
         {
             for (int offsetX = -searchRadius; offsetX <= searchRadius; ++offsetX)
             {
@@ -26,13 +24,13 @@ internal class BlockLog : Block
                 {
                     for (int offsetZ = -searchRadius; offsetZ <= searchRadius; ++offsetZ)
                     {
-                        int neighborBlockId = ctx.WorldRead.GetBlockId(ctx.X + offsetX, ctx.Y + offsetY, ctx.Z + offsetZ);
+                        int neighborBlockId = evt.Level.BlocksReader.GetBlockId(evt.X + offsetX, evt.Y + offsetY, evt.Z + offsetZ);
                         if (neighborBlockId == Leaves.id)
                         {
-                            int leavesMeta = ctx.WorldRead.GetBlockMeta(ctx.X + offsetX, ctx.Y + offsetY, ctx.Z + offsetZ);
+                            int leavesMeta = evt.Level.BlocksReader.GetMeta(evt.X + offsetX, evt.Y + offsetY, evt.Z + offsetZ);
                             if ((leavesMeta & 8) == 0)
                             {
-                                ctx.WorldWrite.SetBlockMetaWithoutNotifyingNeighbors(ctx.X + offsetX, ctx.Y + offsetY, ctx.Z + offsetZ, leavesMeta | 8);
+                                evt.Level.BlockWriter.SetBlockMetaWithoutNotifyingNeighbors(evt.X + offsetX, evt.Y + offsetY, evt.Z + offsetZ, leavesMeta | 8);
                             }
                         }
                     }

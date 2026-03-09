@@ -1,7 +1,6 @@
 using BetaSharp.Util.Maths;
 using BetaSharp.Util.Maths.Noise;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Worlds.Generation.Biomes.Source;
 
@@ -15,15 +14,11 @@ public class BiomeSource
     public double[] TemperatureMap;
     public double[] WeirdnessMap;
 
-    protected BiomeSource()
+    public BiomeSource(IBlockWorldContext level)
     {
-    }
-
-    public BiomeSource(World world)
-    {
-        _temperatureSampler = new OctaveSimplexNoiseSampler(new JavaRandom(world.GetSeed() * 9871L), 4);
-        _downfallSampler = new OctaveSimplexNoiseSampler(new JavaRandom(world.GetSeed() * 39811L), 4);
-        _weirdnessSampler = new OctaveSimplexNoiseSampler(new JavaRandom(world.GetSeed() * 543321L), 2);
+        _temperatureSampler = new OctaveSimplexNoiseSampler(new JavaRandom(level.Seed * 9871L), 4);
+        _downfallSampler = new OctaveSimplexNoiseSampler(new JavaRandom(level.Seed * 39811L), 4);
+        _weirdnessSampler = new OctaveSimplexNoiseSampler(new JavaRandom(level.Seed * 543321L), 2);
     }
 
     public virtual Biome GetBiome(ChunkPos chunkPos) => GetBiome(chunkPos.X << 4, chunkPos.Z << 4);

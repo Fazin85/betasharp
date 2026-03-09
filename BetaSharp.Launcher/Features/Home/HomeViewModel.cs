@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using BetaSharp.Launcher.Features.Shell;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Launcher.Features.Home;
 
@@ -16,9 +18,6 @@ internal sealed partial class HomeViewModel : ObservableObject
 {
     [ObservableProperty]
     public partial Session? Session { get; set; }
-
-    [ObservableProperty]
-    public partial CroppedBitmap? Face { get; set; }
 
     private readonly NavigationService _navigationService;
     private readonly StorageService _storageService;
@@ -38,17 +37,20 @@ internal sealed partial class HomeViewModel : ObservableObject
     [RelayCommand]
     private async Task PlayAsync()
     {
-        if (Session?.HasExpired is true)
+        if (Session?.HasExpired ?? true)
         {
             _navigationService.Navigate<AuthenticationViewModel>();
             return;
         }
 
-        ArgumentNullException.ThrowIfNull(Session);
-
         await _clientService.DownloadAsync();
 
-        var info = new ProcessStartInfo { Arguments = $"{Session.Name} {Session.Token} {Session.Skin}", CreateNoWindow = true, FileName = Path.Combine(AppContext.BaseDirectory, "Client", "BetaSharp.Client") };
+        var info = new ProcessStartInfo
+        {
+            Arguments = $"{Session.Name} {Session.Token}",
+            CreateNoWindow = true,
+            FileName = Path.Combine(AppContext.BaseDirectory, "Client", "BetaSharp.Client")
+        };
 
         // Probably should move this into a service/view-model.
         using var process = Process.Start(info);
@@ -63,7 +65,5 @@ internal sealed partial class HomeViewModel : ObservableObject
     {
         _navigationService.Navigate<AuthenticationViewModel>();
         _storageService.Delete(nameof(Session));
-
-        Face?.Dispose();
     }
 }

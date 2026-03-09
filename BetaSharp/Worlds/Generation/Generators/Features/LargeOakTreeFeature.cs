@@ -10,6 +10,7 @@ internal class LargeOakTreeFeature : Feature
     private readonly int[] origin = [0, 0, 0];
     private readonly double trunkScale = 0.618D;
     private readonly int trunkWidth = 1;
+    private IBlockWorldContext _level;
     private int[][] branches;
     private double branchLengthScale = 1.0D;
     private int foliageClusterHeight = 4;
@@ -17,7 +18,6 @@ internal class LargeOakTreeFeature : Feature
     private int height;
     private int maxTrunkHeight = 12;
     private int trunkHeight;
-    private IBlockWorldContext _level;
 
     private void makeBranches()
     {

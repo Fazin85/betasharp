@@ -39,7 +39,7 @@ internal class BlockTrapDoor : Block
         return base.getCollisionShape(world, x, y, z);
     }
 
-    public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z) => updateBoundingBox(iBlockReader.GetBlockMeta(x, y, z));
+    public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z) => updateBoundingBox(iBlockReader.GetMeta(x, y, z));
 
     public override void setupRenderBoundingBox()
     {
@@ -82,33 +82,33 @@ internal class BlockTrapDoor : Block
             return true;
         }
 
-        int meta = worldRead.GetBlockMeta(x, y, z);
+        int meta = worldRead.GetMeta(x, y, z);
         worldWrite.SetBlockMeta(x, y, z, meta ^ 4);
         broadcaster.WorldEvent(1003, x, y, z, 0);
         return true;
     }
 
-    public override void onBlockBreakStart(OnBlockBreakStartEvt ctx) => UpdateState(ctx.WorldRead, ctx.WorldWrite, ctx.Broadcaster, ctx.X, ctx.Y, ctx.Z);
+    public override void onBlockBreakStart(OnBlockBreakStartEvt ctx) => UpdateState(ctx.Level.BlocksReader, ctx.Level.BlockWriter, ctx.Level.Broadcaster, ctx.X, ctx.Y, ctx.Z);
 
 
-    public override bool onUse(OnUseEvt ctx) => UpdateState(ctx.WorldRead, ctx.WorldWrite, ctx.Broadcaster, ctx.X, ctx.Y, ctx.Z);
+    public override bool onUse(OnUseEvt ctx) => UpdateState(ctx.Level.BlocksReader, ctx.Level.BlockWriter, ctx.Level.Broadcaster, ctx.X, ctx.Y, ctx.Z);
 
     public void setOpen(OnTickEvt ctx, bool open)
     {
-        int meta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+        int meta = ctx.Level.BlocksReader.GetMeta(ctx.X, ctx.Y, ctx.Z);
         bool isOpen = (meta & 4) > 0;
         if (isOpen != open)
         {
-            ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, meta ^ 4);
-            ctx.Broadcaster.WorldEvent(1003, ctx.X, ctx.Y, ctx.Z, 0);
+            ctx.Level.BlockWriter.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, meta ^ 4);
+            ctx.Level.Broadcaster.WorldEvent(1003, ctx.X, ctx.Y, ctx.Z, 0);
         }
     }
 
     public override void neighborUpdate(OnTickEvt ctx)
     {
-        if (!ctx.IsRemote)
+        if (!ctx.Level.IsRemote)
         {
-            int meta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+            int meta = ctx.Level.BlocksReader.GetMeta(ctx.X, ctx.Y, ctx.Z);
             int xPos = ctx.X;
             int zPos = ctx.Z;
             if ((meta & 3) == 0)
@@ -131,16 +131,15 @@ internal class BlockTrapDoor : Block
                 --xPos;
             }
 
-            if (!ctx.WorldRead.ShouldSuffocate(xPos, ctx.Y, zPos))
+            if (!ctx.Level.BlocksReader.ShouldSuffocate(xPos, ctx.Y, zPos))
             {
-                ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
-                // TODO: Implement this
-                // dropStacks(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z, meta);
+                ctx.Level.BlockWriter.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
+                dropStacks(new OnDropEvt(ctx.Level, ctx.X, ctx.Y, ctx.Z, meta));
             }
 
             if (id > 0 && Blocks[id].canEmitRedstonePower())
             {
-                bool isPowered = ctx.Redstone.IsPowered(ctx.X, ctx.Y, ctx.Z);
+                bool isPowered = ctx.Level.Redstone.IsPowered(ctx.X, ctx.Y, ctx.Z);
                 setOpen(ctx, isPowered);
             }
         }
@@ -175,7 +174,7 @@ internal class BlockTrapDoor : Block
             meta = 3;
         }
 
-        ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, meta);
+        ctx.Level.BlockWriter.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, meta);
     }
 
     public override bool canPlaceAt(CanPlaceAtCtx ctx)
@@ -210,7 +209,7 @@ internal class BlockTrapDoor : Block
             --ctx.X;
         }
 
-        return ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z);
+        return ctx.Level.BlocksReader.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z);
     }
 
     public static bool isOpen(int meta) => (meta & 4) != 0;

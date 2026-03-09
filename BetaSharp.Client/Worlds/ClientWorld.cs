@@ -5,7 +5,6 @@ using BetaSharp.Network.Packets.Play;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Chunks;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 using BetaSharp.Worlds.Dimensions;
 using BetaSharp.Worlds.Storage;
 
@@ -23,27 +22,30 @@ public class ClientWorld : World
     {
         _networkHandler = netHandler;
         SetSpawnPos(new Vec3i(8, 64, 8));
-        PersistentStateManager = netHandler.clientPersistentStateManager;
 
+        StateManager = netHandler.clientPersistentStateManager;
         Entities.OnEntityAdded += HandleEntityAdded;
         Entities.OnEntityRemoved += HandleEntityRemoved;
+        BlockWriter.OnBlockChanged += HandleBlockChanged;
+        Environment.OnTickWeather += ClientWeatherTick;
     }
 
     public override void Tick()
     {
+        // 1. Update Core Time (Moved to base, but we increment here for client-side sync)
         SetTime(GetTime() + 1L);
-        Environment.UpdateWeatherCycles();
-        int ambient = Environment.GetAmbientDarkness(1.0F);
 
+        // 2. Weather & Environment
+        Environment.UpdateWeatherCycles();
+
+        int ambient = Environment.GetAmbientDarkness(1.0F);
         if (ambient != Environment.AmbientDarkness)
         {
             Environment.AmbientDarkness = ambient;
-            for (int j = 0; j < EventListeners.Count; ++j)
-            {
-                EventListeners[j].notifyAmbientDarknessChanged();
-            }
+            Broadcaster.NotifyAmbientDarknessChanged();
         }
 
+        // 3. Entity Management
         for (int i = 0; i < 10 && _pendingEntities.Count > 0; ++i)
         {
             Entity entity = _pendingEntities.First();
@@ -53,15 +55,22 @@ public class ClientWorld : World
             }
         }
 
+        // 4. Network Processing
         _networkHandler.tick();
 
+        // 5. Block Prediction Resets
         for (int i = 0; i < _blockResets.Count; ++i)
         {
             BlockReset blockReset = _blockResets[i];
             if (--blockReset.Delay == 0)
             {
-                base.setBlockWithoutNotifyingNeighbors(blockReset.X, blockReset.Y, blockReset.Z, blockReset.BlockId, blockReset.Meta);
-                blockUpdateEvent(blockReset.X, blockReset.Y, blockReset.Z);
+                BlockWriter.OnBlockChanged -= HandleBlockChanged;
+
+                BlockWriter.SetBlockWithoutNotifyingNeighbors(blockReset.X, blockReset.Y, blockReset.Z, blockReset.BlockId, blockReset.Meta);
+                Broadcaster.BlockUpdateEvent(blockReset.X, blockReset.Y, blockReset.Z);
+
+                BlockWriter.OnBlockChanged += HandleBlockChanged;
+
                 _blockResets.RemoveAt(i--);
             }
         }
@@ -109,7 +118,7 @@ public class ClientWorld : World
         }
     }
 
-    private bool SpawnEntity(Entity entity) // Issue here
+    private bool SpawnEntity(Entity entity)
     {
         bool spawned = Entities.SpawnEntity(entity);
         _forcedEntities.Add(entity);
@@ -141,6 +150,11 @@ public class ClientWorld : World
         {
             _pendingEntities.Add(ent);
         }
+    }
+
+    private void HandleBlockChanged(int x, int y, int z, int previousId, int previousMeta, int newId, int newMeta)
+    {
+        _blockResets.Add(new BlockReset(this, x, y, z, previousId, previousMeta));
     }
 
     public void ForceEntity(int networkId, Entity ent)
@@ -176,49 +190,10 @@ public class ClientWorld : World
         return ent;
     }
 
-    public override bool SetBlockMetaWithoutNotifyingNeighbors(int x, int y, int z, int meta)
-    {
-        int blockId = getBlockId(x, y, z);
-        int previousMeta = getBlockMeta(x, y, z);
-        if (base.SetBlockMetaWithoutNotifyingNeighbors(x, y, z, meta))
-        {
-            _blockResets.Add(new BlockReset(this, x, y, z, blockId, previousMeta));
-            return true;
-        }
-
-        return false;
-    }
-
-    public override bool setBlockWithoutNotifyingNeighbors(int x, int y, int z, int blockId, int meta)
-    {
-        int previousBlockId = getBlockId(x, y, z);
-        int previousMeta = getBlockMeta(x, y, z);
-        if (base.setBlockWithoutNotifyingNeighbors(x, y, z, blockId, meta))
-        {
-            _blockResets.Add(new BlockReset(this, x, y, z, previousBlockId, previousMeta));
-            return true;
-        }
-
-        return false;
-    }
-
-    public override bool setBlockWithoutNotifyingNeighbors(int x, int y, int z, int blockId)
-    {
-        int previousBlockId = getBlockId(x, y, z);
-        int previousMeta = getBlockMeta(x, y, z);
-        if (base.setBlockWithoutNotifyingNeighbors(x, y, z, blockId))
-        {
-            _blockResets.Add(new BlockReset(this, x, y, z, previousBlockId, previousMeta));
-            return true;
-        }
-
-        return false;
-    }
-
     public bool SetBlockWithMetaFromPacket(int minX, int minY, int minZ, int blockId, int meta)
     {
         ClearBlockResets(minX, minY, minZ, minX, minY, minZ);
-        if (base.setBlockWithoutNotifyingNeighbors(minX, minY, minZ, blockId, meta))
+        if (BlockWriter.SetBlockWithoutNotifyingNeighbors(minX, minY, minZ, blockId, meta))
         {
             BlockUpdate(minX, minY, minZ, blockId);
             return true;
@@ -227,5 +202,21 @@ public class ClientWorld : World
         return false;
     }
 
-    public override void Disconnect() => _networkHandler.sendPacketAndDisconnect(new DisconnectPacket("Quitting"));
+    public override void Disconnect() => _networkHandler.sendPacketAndDisconnect(DisconnectPacket.Get("Quitting"));
+
+
+    private bool ClientWeatherTick()
+    {
+        if (dimension.HasCeiling) return false;
+
+        if (Environment.TicksSinceLightning > 0) --Environment.TicksSinceLightning;
+
+        Environment.PrevRainingStrength = Environment.RainingStrength;
+        Environment.RainingStrength = MathHelper.Clamp(Environment.RainingStrength + (Properties.IsRaining ? 0.01f : -0.01f), 0.0f, 1.0f);
+
+        Environment.PrevThunderingStrength = Environment.ThunderingStrength;
+        Environment.ThunderingStrength = MathHelper.Clamp(Environment.ThunderingStrength + (Properties.IsThundering ? 0.01f : -0.01f), 0.0f, 1.0f);
+
+        return false;
+    }
 }

@@ -4,7 +4,6 @@ using BetaSharp.Util.Maths;
 using BetaSharp.Util.Maths.Noise;
 using BetaSharp.Worlds.Chunks;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 using BetaSharp.Worlds.Generation.Biomes;
 using BetaSharp.Worlds.Generation.Generators.Carvers;
 using BetaSharp.Worlds.Generation.Generators.Features;
@@ -18,12 +17,12 @@ internal class SkyIChunkGenerator : IChunkSource
     private readonly OctavePerlinNoiseSampler _floatingIslandNoise;
     private readonly OctavePerlinNoiseSampler _floatingIslandScale;
     private readonly OctavePerlinNoiseSampler _forestNoise;
+    private readonly IBlockWorldContext _level;
     private readonly OctavePerlinNoiseSampler _maxLimitPerlinNoise;
     private readonly OctavePerlinNoiseSampler _minLimitPerlinNoise;
     private readonly JavaRandom _random;
     private readonly OctavePerlinNoiseSampler _sandGravelNoise;
     private readonly OctavePerlinNoiseSampler _selectorNoise;
-    private readonly World _world;
     private Biome[] _biomes;
     private double[] _depthBuffer = new double[256];
     private double[] _depthNoiseBuffer;
@@ -36,9 +35,9 @@ internal class SkyIChunkGenerator : IChunkSource
     private double[] _selectorNoiseBuffer;
     private double[] _temperatures;
 
-    public SkyIChunkGenerator(World world, long seed)
+    public SkyIChunkGenerator(IBlockWorldContext level, long seed)
     {
-        _world = world;
+        _level = level;
         _random = new JavaRandom(seed);
         _minLimitPerlinNoise = new OctavePerlinNoiseSampler(_random, 16);
         _maxLimitPerlinNoise = new OctavePerlinNoiseSampler(_random, 16);
@@ -56,12 +55,12 @@ internal class SkyIChunkGenerator : IChunkSource
     {
         _random.SetSeed(chunkX * 341873128712L + chunkZ * 132897987541L);
         byte[] blocks = new byte[-short.MinValue];
-        Chunk chunk = new(_world, blocks, chunkX, chunkZ);
-        _biomes = _world.GetBiomeSource().GetBiomesInArea(_biomes, chunkX * 16, chunkZ * 16, 16, 16);
-        double[] temperatureMap = _world.GetBiomeSource().TemperatureMap;
+        Chunk chunk = new(_level, blocks, chunkX, chunkZ);
+        _biomes = _level.BlocksReader.GetBiomeSource().GetBiomesInArea(_biomes, chunkX * 16, chunkZ * 16, 16, 16);
+        double[] temperatureMap = _level.BlocksReader.GetBiomeSource().TemperatureMap;
         BuildTerrain(chunkX, chunkZ, blocks, _biomes, temperatureMap);
         BuildSurfaces(chunkX, chunkZ, blocks, _biomes);
-        _carver.carve(this, _world, chunkX, chunkZ, blocks);
+        _carver.carve(this, _level, chunkX, chunkZ, blocks);
         chunk.PopulateHeightMap();
         return chunk;
     }
@@ -73,11 +72,11 @@ internal class SkyIChunkGenerator : IChunkSource
         BlockSand.fallInstantly = true;
         int blockX = chunkX * 16;
         int blockZ = chunkZ * 16;
-        Biome chunkBiome = _world.GetBiomeSource().GetBiome(blockX + 16, blockZ + 16);
-        _random.SetSeed(_world.GetSeed());
+        Biome chunkBiome = _level.BlocksReader.GetBiomeSource().GetBiome(blockX + 16, blockZ + 16);
+        _random.SetSeed(_level.Seed);
         long xOffset = _random.NextLong() / 2L * 2L + 1L;
         long zOffset = _random.NextLong() / 2L * 2L + 1L;
-        _random.SetSeed((chunkX * xOffset + chunkZ * zOffset) ^ _world.GetSeed());
+        _random.SetSeed((chunkX * xOffset + chunkZ * zOffset) ^ _level.Seed);
         double fraction = 0.25D;
         int featureX;
         int featureY;
@@ -88,7 +87,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            new LakeFeature(Block.Water.id).Generate(_world, _random, featureX, featureY, featureZ);
+            new LakeFeature(Block.Water.id).Generate(_level, featureX, featureY, featureZ);
         }
 
         if (_random.NextInt(8) == 0)
@@ -98,7 +97,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureZ = blockZ + _random.NextInt(16) + 8;
             if (featureY < 64 || _random.NextInt(10) == 0)
             {
-                new LakeFeature(Block.Lava.id).Generate(_world, _random, featureX, featureY, featureZ);
+                new LakeFeature(Block.Lava.id).Generate(_level, featureX, featureY, featureZ);
             }
         }
 
@@ -107,7 +106,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            new DungeonFeature().Generate(_world, _random, featureX, featureY, featureZ);
+            new DungeonFeature().Generate(_level, featureX, featureY, featureZ);
         }
 
         for (int i = 0; i < 10; ++i)
@@ -115,7 +114,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16);
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16);
-            new ClayOreFeature(32).Generate(_world, _random, featureX, featureY, featureZ);
+            new ClayOreFeature(32).Generate(_level, featureX, featureY, featureZ);
         }
 
         for (int i = 0; i < 20; ++i)
@@ -123,7 +122,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16);
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16);
-            new OreFeature(Block.Dirt.id, 32).Generate(_world, _random, featureX, featureY, featureZ);
+            new OreFeature(Block.Dirt.id, 32).Generate(_level, featureX, featureY, featureZ);
         }
 
         for (int i = 0; i < 10; ++i)
@@ -131,7 +130,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16);
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16);
-            new OreFeature(Block.Gravel.id, 32).Generate(_world, _random, featureX, featureY, featureZ);
+            new OreFeature(Block.Gravel.id, 32).Generate(_level, featureX, featureY, featureZ);
         }
 
         for (int i = 0; i < 20; ++i)
@@ -139,7 +138,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16);
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16);
-            new OreFeature(Block.CoalOre.id, 16).Generate(_world, _random, featureX, featureY, featureZ);
+            new OreFeature(Block.CoalOre.id, 16).Generate(_level, featureX, featureY, featureZ);
         }
 
         for (int i = 0; i < 20; ++i)
@@ -147,7 +146,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16);
             featureY = _random.NextInt(64);
             featureZ = blockZ + _random.NextInt(16);
-            new OreFeature(Block.IronOre.id, 8).Generate(_world, _random, featureX, featureY, featureZ);
+            new OreFeature(Block.IronOre.id, 8).Generate(_level, featureX, featureY, featureZ);
         }
 
         for (int i = 0; i < 2; ++i)
@@ -155,7 +154,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16);
             featureY = _random.NextInt(32);
             featureZ = blockZ + _random.NextInt(16);
-            new OreFeature(Block.GoldOre.id, 8).Generate(_world, _random, featureX, featureY, featureZ);
+            new OreFeature(Block.GoldOre.id, 8).Generate(_level, featureX, featureY, featureZ);
         }
 
         for (int i = 0; i < 8; ++i)
@@ -163,7 +162,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16);
             featureY = _random.NextInt(16);
             featureZ = blockZ + _random.NextInt(16);
-            new OreFeature(Block.RedstoneOre.id, 7).Generate(_world, _random, featureX, featureY, featureZ);
+            new OreFeature(Block.RedstoneOre.id, 7).Generate(_level, featureX, featureY, featureZ);
         }
 
         for (int i = 0; i < 1; ++i)
@@ -171,7 +170,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16);
             featureY = _random.NextInt(16);
             featureZ = blockZ + _random.NextInt(16);
-            new OreFeature(Block.DiamondOre.id, 7).Generate(_world, _random, featureX, featureY, featureZ);
+            new OreFeature(Block.DiamondOre.id, 7).Generate(_level, featureX, featureY, featureZ);
         }
 
         for (int i = 0; i < 1; ++i)
@@ -179,7 +178,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16);
             featureY = _random.NextInt(16) + _random.NextInt(16);
             featureZ = blockZ + _random.NextInt(16);
-            new OreFeature(Block.LapisOre.id, 6).Generate(_world, _random, featureX, featureY, featureZ);
+            new OreFeature(Block.LapisOre.id, 6).Generate(_level, featureX, featureY, featureZ);
         }
 
         fraction = 0.5D;
@@ -232,7 +231,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureZ = blockZ + _random.NextInt(16) + 8;
             Feature treeFeature = chunkBiome.GetRandomWorldGenForTrees(_random);
             treeFeature.prepare(1.0D, 1.0D, 1.0D);
-            treeFeature.Generate(_world, _random, featureX, _world.getTopY(featureX, featureZ), featureZ);
+            treeFeature.Generate(_level, featureX, _level.BlocksReader.GetTopY(featureX, featureZ), featureZ);
         }
 
         for (int i = 0; i < 2; ++i)
@@ -240,7 +239,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            new PlantPatchFeature(Block.Dandelion.id).Generate(_world, _random, featureX, featureY, featureZ);
+            new PlantPatchFeature(Block.Dandelion.id).Generate(_level, featureX, featureY, featureZ);
         }
 
         if (_random.NextInt(2) == 0)
@@ -248,7 +247,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            new PlantPatchFeature(Block.Rose.id).Generate(_world, _random, featureX, featureY, featureZ);
+            new PlantPatchFeature(Block.Rose.id).Generate(_level, featureX, featureY, featureZ);
         }
 
         if (_random.NextInt(4) == 0)
@@ -256,7 +255,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            new PlantPatchFeature(Block.BrownMushroom.id).Generate(_world, _random, featureX, featureY, featureZ);
+            new PlantPatchFeature(Block.BrownMushroom.id).Generate(_level, featureX, featureY, featureZ);
         }
 
         if (_random.NextInt(8) == 0)
@@ -264,7 +263,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            new PlantPatchFeature(Block.RedMushroom.id).Generate(_world, _random, featureX, featureY, featureZ);
+            new PlantPatchFeature(Block.RedMushroom.id).Generate(_level, featureX, featureY, featureZ);
         }
 
         for (int i = 0; i < 10; ++i)
@@ -272,7 +271,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            new SugarCanePatchFeature().Generate(_world, _random, featureX, featureY, featureZ);
+            new SugarCanePatchFeature().Generate(_level, featureX, featureY, featureZ);
         }
 
         if (_random.NextInt(32) == 0)
@@ -280,7 +279,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            new PumpkinPatchFeature().Generate(_world, _random, featureX, featureY, featureZ);
+            new PumpkinPatchFeature().Generate(_level, featureX, featureY, featureZ);
         }
 
         int amountOfCacti = 0;
@@ -294,7 +293,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(128);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            new CactusPatchFeature().Generate(_world, _random, featureX, featureY, featureZ);
+            new CactusPatchFeature().Generate(_level, featureX, featureY, featureZ);
         }
 
         for (int i = 0; i < 50; ++i)
@@ -302,7 +301,7 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(_random.NextInt(120) + 8);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            new SpringFeature(Block.FlowingWater.id).Generate(_world, _random, featureX, featureY, featureZ);
+            new SpringFeature(Block.FlowingWater.id).Generate(_level, featureX, featureY, featureZ);
         }
 
         for (int i = 0; i < 20; ++i)
@@ -310,10 +309,10 @@ internal class SkyIChunkGenerator : IChunkSource
             featureX = blockX + _random.NextInt(16) + 8;
             featureY = _random.NextInt(_random.NextInt(_random.NextInt(112) + 8) + 8);
             featureZ = blockZ + _random.NextInt(16) + 8;
-            new SpringFeature(Block.FlowingLava.id).Generate(_world, _random, featureX, featureY, featureZ);
+            new SpringFeature(Block.FlowingLava.id).Generate(_level, featureX, featureY, featureZ);
         }
 
-        _temperatures = _world.GetBiomeSource().GetTemperatures(_temperatures, blockX + 8, blockZ + 8, 16, 16);
+        _temperatures = _level.BlocksReader.GetBiomeSource().GetTemperatures(_temperatures, blockX + 8, blockZ + 8, 16, 16);
 
         for (int x = blockX + 8; x < blockX + 8 + 16; ++x)
         {
@@ -321,12 +320,13 @@ internal class SkyIChunkGenerator : IChunkSource
             {
                 int offsetX = x - (blockX + 8);
                 int offsetZ = z - (blockZ + 8);
-                int topBlockY = _world.getTopSolidBlockY(x, z);
+                int topBlockY = _level.BlocksReader.GetTopSolidBlockY(x, z);
                 double temperatureSample = _temperatures[offsetX * 16 + offsetZ] - (topBlockY - 64) / 64.0D * 0.3D;
 
-                if (temperatureSample < 0.5D && topBlockY > 0 && topBlockY < 128 && _world.isAir(x, topBlockY, z) && _world.getMaterial(x, topBlockY - 1, z).BlocksMovement && _world.getMaterial(x, topBlockY - 1, z) != Material.Ice)
+                if (temperatureSample < 0.5D && topBlockY > 0 && topBlockY < 128 && _level.BlocksReader.IsAir(x, topBlockY, z) && _level.BlocksReader.GetMaterial(x, topBlockY - 1, z).BlocksMovement &&
+                    _level.BlocksReader.GetMaterial(x, topBlockY - 1, z) != Material.Ice)
                 {
-                    _world.setBlock(x, topBlockY, z, Block.Snow.id);
+                    _level.BlockWriter.SetBlock(x, topBlockY, z, Block.Snow.id);
                 }
             }
         }
@@ -479,8 +479,8 @@ internal class SkyIChunkGenerator : IChunkSource
 
         double horizontalScale = 684.412D;
         double verticalScale = 684.412D;
-        double[] temperatureBuffer = _world.GetBiomeSource().TemperatureMap;
-        double[] downfallBuffer = _world.GetBiomeSource().DownfallMap;
+        double[] temperatureBuffer = _level.BlocksReader.GetBiomeSource().TemperatureMap;
+        double[] downfallBuffer = _level.BlocksReader.GetBiomeSource().DownfallMap;
         _scaleNoiseBuffer = _floatingIslandScale.create(_scaleNoiseBuffer, x, z, sizeX, sizeZ, 1.121D, 1.121D, 0.5D);
         _depthNoiseBuffer = _floatingIslandNoise.create(_depthNoiseBuffer, x, z, sizeX, sizeZ, 200.0D, 200.0D, 0.5D);
         horizontalScale *= 2.0D;

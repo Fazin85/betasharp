@@ -28,14 +28,15 @@ public class BlockPlant : Block
 
     protected void breakIfCannotGrow(IBlockWorldContext level, int x, int y, int z)
     {
-        if (!canGrow(new OnTickEvt(level, x, y, z, level.BlocksReader.GetBlockMeta(x, y, z), level.BlocksReader.GetBlockId(x, y, z))))
+        if (!canGrow(new OnTickEvt(level, x, y, z, level.BlocksReader.GetMeta(x, y, z), level.BlocksReader.GetBlockId(x, y, z))))
         {
-            dropStacks(new OnDropEvt(level, x, y, z, level.BlocksReader.GetBlockMeta(x, y, z)));
+            dropStacks(new OnDropEvt(level, x, y, z, level.BlocksReader.GetMeta(x, y, z)));
             level.BlockWriter.SetBlock(x, y, z, 0);
         }
     }
 
-    public override bool canGrow(OnTickEvt ctx) => (ctx.Level.BlocksReader.GetBrightness(ctx.X, ctx.Y, ctx.Z) >= 8 || ctx.Level.Lighting.HasSkyLight(ctx.X, ctx.Y, ctx.Z)) && canPlantOnTop(ctx.Level.BlocksReader.GetBlockId(ctx.X, ctx.Y - 1, ctx.Z));
+    public override bool canGrow(OnTickEvt ctx) =>
+        (ctx.Level.BlocksReader.GetBrightness(ctx.X, ctx.Y, ctx.Z) >= 8 || ctx.Level.Lighting.HasSkyLight(ctx.X, ctx.Y, ctx.Z)) && canPlantOnTop(ctx.Level.BlocksReader.GetBlockId(ctx.X, ctx.Y - 1, ctx.Z));
 
     public override Box? getCollisionShape(IBlockReader world, int x, int y, int z) => null;
 

@@ -1,5 +1,6 @@
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Blocks.Materials;
+
 namespace BetaSharp.Blocks;
 
 internal class BlockNote : BlockWithEntity
@@ -12,20 +13,22 @@ internal class BlockNote : BlockWithEntity
 
     public override void neighborUpdate(OnTickEvt evt)
     {
-        if (!(evt.BlockId > 0 && Blocks[evt.BlockId].canEmitRedstonePower())) return;
-        
-            bool isPowered = evt.Level.Redstone.IsStrongPowered(evt.X, evt.Y, evt.Z);
-            BlockEntityNote? blockEntity = (BlockEntityNote?)evt.Level.Entities.GetBlockEntity(evt.X, evt.Y, evt.Z);
-            if (blockEntity != null && blockEntity.powered != isPowered)
-            {
-                if (isPowered)
-                {
-                    blockEntity.playNote(evt.Level, evt.X, evt.Y, evt.Z);
-                }
+        if (!(evt.BlockId > 0 && Blocks[evt.BlockId].canEmitRedstonePower()))
+        {
+            return;
+        }
 
-                blockEntity.powered = isPowered;
+        bool isPowered = evt.Level.Redstone.IsStrongPowered(evt.X, evt.Y, evt.Z);
+        BlockEntityNote? blockEntity = (BlockEntityNote?)evt.Level.Entities.GetBlockEntity(evt.X, evt.Y, evt.Z);
+        if (blockEntity != null && blockEntity.powered != isPowered)
+        {
+            if (isPowered)
+            {
+                blockEntity.playNote(evt.Level, evt.X, evt.Y, evt.Z);
             }
-        
+
+            blockEntity.powered = isPowered;
+        }
     }
 
     public override bool onUse(OnUseEvt evt)
@@ -36,7 +39,11 @@ internal class BlockNote : BlockWithEntity
         }
 
         BlockEntityNote? blockEntity = (BlockEntityNote?)evt.Level.Entities.GetBlockEntity(evt.X, evt.Y, evt.Z);
-        if(blockEntity == null) return false;
+        if (blockEntity == null)
+        {
+            return false;
+        }
+
         blockEntity.cycleNote();
         blockEntity.playNote(evt.Level, evt.X, evt.Y, evt.Z);
         return true;

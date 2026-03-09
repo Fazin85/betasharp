@@ -1,6 +1,5 @@
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
-using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Blocks;
 
@@ -18,37 +17,34 @@ internal class BlockSand : Block
         set => s_fallInstantly.Value = value;
     }
 
-    // TODO: Implement this
-    // public override void onPlaced(OnPlacedEvt ctx) => ctx.WorldWrite.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, id, getTickRate());
+    public override void onPlaced(OnPlacedEvt ctx) => ctx.Level.TickScheduler.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, id, getTickRate());
 
-    // TODO: Implement this
-    //public override void neighborUpdate(OnTickEvt ctx) => ctx.WorldRead.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, id, getTickRate());
+    public override void neighborUpdate(OnTickEvt ctx) => ctx.Level.TickScheduler.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, id, getTickRate());
 
-    public override void onTick(OnTickEvt ctx) => processFall(ctx);
+    public override void onTick(OnTickEvt evt) => processFall(evt);
 
-    private void processFall(OnTickEvt ctx)
+    private void processFall(OnTickEvt evt)
     {
-        if (canFallThrough(ctx) && ctx.Y >= 0)
+        if (canFallThrough(evt) && evt.Y >= 0)
         {
             sbyte checkRadius = 32;
-            // TODO: Implement this
-            // if (!fallInstantly && ctx.WorldRead.IsRegionLoaded(ctx.X - checkRadius, ctx.Y - checkRadius, ctx.Z - checkRadius, ctx.X + checkRadius, ctx.Y + checkRadius, ctx.Z + checkRadius))
-            // {
-            //     EntityFallingSand fallingSand = new EntityFallingSand(ctx.WorldRead, (double)(ctx.X + 0.5F), (double)(ctx.Y + 0.5F), (double)(ctx.Z + 0.5F), id);
-            //     ctx.Entities.SpawnEntity(fallingSand);
-            // }
-            // else
+            if (!fallInstantly && evt.Level.BlockHost.IsRegionLoaded(evt.X - checkRadius, evt.Y - checkRadius, evt.Z - checkRadius, evt.X + checkRadius, evt.Y + checkRadius, evt.Z + checkRadius))
             {
-                ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
+                EntityFallingSand fallingSand = new(evt.Level, evt.X + 0.5F, evt.Y + 0.5F, evt.Z + 0.5F, id);
+                evt.Level.Entities.SpawnEntity(fallingSand);
+            }
+            else
+            {
+                evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, 0);
 
-                while (canFallThrough(ctx) && ctx.Y > 0)
+                while (canFallThrough(evt) && evt.Y > 0)
                 {
-                    --ctx.Y;
+                    --evt.Y;
                 }
 
-                if (ctx.Y > 0)
+                if (evt.Y > 0)
                 {
-                    ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, id);
+                    evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, id);
                 }
             }
         }
@@ -58,7 +54,7 @@ internal class BlockSand : Block
 
     public static bool canFallThrough(OnTickEvt ctx)
     {
-        int blockId = ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z);
+        int blockId = ctx.Level.BlocksReader.GetBlockId(ctx.X, ctx.Y, ctx.Z);
         if (blockId == 0)
         {
             return true;

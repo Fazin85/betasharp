@@ -1,5 +1,4 @@
 using BetaSharp.Blocks.Materials;
-using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
 
@@ -9,26 +8,26 @@ internal class BlockCactus : Block
 {
     public BlockCactus(int id, int textureId) : base(id, textureId, Material.Cactus) => setTickRandomly(true);
 
-    public override void onTick(OnTickEvt ctx)
+    public override void onTick(OnTickEvt evt)
     {
-        if (ctx.WorldRead.IsAir(ctx.X, ctx.Y + 1, ctx.Z))
+        if (evt.Level.BlocksReader.IsAir(evt.X, evt.Y + 1, evt.Z))
         {
             int heightBelow;
-            for (heightBelow = 1; ctx.WorldRead.GetBlockId(ctx.X, ctx.Y - heightBelow, ctx.Z) == id; ++heightBelow)
+            for (heightBelow = 1; evt.Level.BlocksReader.GetBlockId(evt.X, evt.Y - heightBelow, evt.Z) == id; ++heightBelow)
             {
             }
 
             if (heightBelow < 3)
             {
-                int growthStage = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+                int growthStage = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
                 if (growthStage == 15)
                 {
-                    ctx.WorldWrite.SetBlock(ctx.X, ctx.Y + 1, ctx.Z, id);
-                    ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, 0);
+                    evt.Level.BlockWriter.SetBlock(evt.X, evt.Y + 1, evt.Z, id);
+                    evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, 0);
                 }
                 else
                 {
-                    ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, growthStage + 1);
+                    evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, growthStage + 1);
                 }
             }
         }
@@ -54,21 +53,20 @@ internal class BlockCactus : Block
 
     public override BlockRendererType getRenderType() => BlockRendererType.Cactus;
 
-    public override bool canPlaceAt(CanPlaceAtCtx ctx) => !base.canPlaceAt(ctx) ? false : canGrow(new CanPlaceAtCtx(ctx.WorldRead, ctx.WorldWrite, 0, ctx.X, ctx.Y, ctx.Z));
+    public override bool canPlaceAt(CanPlaceAtCtx evt) => !base.canPlaceAt(evt) ? false : canGrow(evt.Level.BlocksReader, evt.X, evt.Y, evt.Z);
 
-    public override void neighborUpdate(OnTickEvt ctx)
+    public override void neighborUpdate(OnTickEvt evt)
     {
-        if (!canGrow(ctx))
+        if (!canGrow(evt))
         {
-            // TODO: Implement this
-            // dropStacks(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z, ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z));
-            ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
+            dropStacks(new OnDropEvt(evt.Level, evt.X, evt.Y, evt.Z, evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z)));
+            evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, 0);
         }
     }
 
-    public override bool canGrow(OnTickEvt ctx) => canGrow(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z);
+    public override bool canGrow(OnTickEvt evt) => canGrow(evt.Level.BlocksReader, evt.X, evt.Y, evt.Z);
 
-    private static bool canGrow(WorldBlockView world, int x, int y, int z)
+    private static bool canGrow(WorldBlockReader world, int x, int y, int z)
     {
         if (world.GetMaterial(x - 1, y, z).IsSolid)
         {

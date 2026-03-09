@@ -3,27 +3,26 @@ using BetaSharp.Client.Rendering.Core.OpenGL;
 using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Client.Entities.FX;
 
 public class EntityFootStepFX : EntityFX
 {
-
-    private int localAge;
     private readonly int maxAge;
     private readonly TextureManager textureManager;
 
-    public EntityFootStepFX(TextureManager textureManager, World world, double x, double y, double z) : base(world, x, y, z, 0.0D, 0.0D, 0.0D)
+    private int localAge;
+
+    public EntityFootStepFX(TextureManager textureManager, IBlockWorldContext world, double x, double y, double z) : base(world, x, y, z, 0.0D, 0.0D, 0.0D)
     {
         this.textureManager = textureManager;
-        velocityX = velocityY = velocityZ = 0.0D;
+        velocityX = velocityY = velocityZ = 0.0;
         maxAge = 200;
     }
 
     public override void renderParticle(Tessellator t, float partialTick, float rotX, float rotY, float rotZ, float upX, float upZ)
     {
-        float lifeProgress = ((float)localAge + partialTick) / (float)maxAge;
+        float lifeProgress = (localAge + partialTick) / maxAge;
         lifeProgress *= lifeProgress;
         float alpha = 2.0F - lifeProgress * 2.0F;
         if (alpha > 1.0F)
@@ -37,16 +36,16 @@ public class EntityFootStepFX : EntityFX
         float renderX = (float)(x - interpPosX);
         float renderY = (float)(y - interpPosY);
         float renderZ = (float)(z - interpPosZ);
-        float brightness = _ctx.GetLuminance(MathHelper.Floor(x), MathHelper.Floor(y), MathHelper.Floor(z));
+        float brightness = _level.Lighting.GetLuminance(MathHelper.Floor(x), MathHelper.Floor(y), MathHelper.Floor(z));
         textureManager.BindTexture(textureManager.GetTextureId("/misc/footprint.png"));
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
         t.startDrawingQuads();
         t.setColorRGBA_F(brightness, brightness, brightness, alpha);
-        t.addVertexWithUV((double)(renderX - footprintSize), (double)renderY, (double)(renderZ + footprintSize), 0.0D, 1.0D);
-        t.addVertexWithUV((double)(renderX + footprintSize), (double)renderY, (double)(renderZ + footprintSize), 1.0D, 1.0D);
-        t.addVertexWithUV((double)(renderX + footprintSize), (double)renderY, (double)(renderZ - footprintSize), 1.0D, 0.0D);
-        t.addVertexWithUV((double)(renderX - footprintSize), (double)renderY, (double)(renderZ - footprintSize), 0.0D, 0.0D);
+        t.addVertexWithUV(renderX - footprintSize, renderY, renderZ + footprintSize, 0.0, 1.0);
+        t.addVertexWithUV(renderX + footprintSize, renderY, renderZ + footprintSize, 1.0, 1.0);
+        t.addVertexWithUV(renderX + footprintSize, renderY, renderZ - footprintSize, 1.0, 0.0);
+        t.addVertexWithUV(renderX - footprintSize, renderY, renderZ - footprintSize, 0.0, 0.0);
         t.draw();
         GLManager.GL.Disable(GLEnum.Blend);
         GLManager.GL.Enable(GLEnum.Lighting);
@@ -59,11 +58,7 @@ public class EntityFootStepFX : EntityFX
         {
             markDead();
         }
-
     }
 
-    public override int getFXLayer()
-    {
-        return 3;
-    }
+    public override int getFXLayer() => 3;
 }

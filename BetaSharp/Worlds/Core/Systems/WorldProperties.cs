@@ -135,4 +135,6 @@ public class WorldProperties
         SpawnY = y;
         SpawnZ = z;
     }
+
+    public Util.Maths.Vec3i GetSpawnPos() => new(SpawnX, SpawnY, SpawnZ);
 }

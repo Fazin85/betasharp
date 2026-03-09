@@ -8,14 +8,13 @@ namespace BetaSharp.Worlds.Core.Systems;
 
 public class EnvironmentManager
 {
-    private readonly WorldProperties _props;
+    private readonly WorldBlockReader _blockView;
     private readonly Dimension _dimension;
+    private readonly WorldProperties _props;
     private readonly JavaRandom _random;
-    private readonly WorldBlockView _blockView;
     private readonly long _worldTimeMask = 0xFFFFFFL;
-    public event Action<bool>? OnRainingStateChanged;
 
-    public EnvironmentManager(WorldProperties props, Dimension dimension, WorldBlockView blockView, JavaRandom random)
+    public EnvironmentManager(WorldProperties props, Dimension dimension, WorldBlockReader blockView, JavaRandom random)
     {
         _props = props;
         _dimension = dimension;
@@ -33,6 +32,7 @@ public class EnvironmentManager
 
     public int AmbientDarkness { get; set; }
     public bool IsRaining => GetRainGradient(1.0F) > 0.2D;
+    public event Action<bool>? OnRainingStateChanged;
 
     public void PrepareWeather()
     {
@@ -162,7 +162,7 @@ public class EnvironmentManager
     public void SkipNightAndClearWeather()
     {
         long nextWorldTime = _props.WorldTime + 24000L;
-        _props.WorldTime = nextWorldTime - (nextWorldTime % 24000L);
+        _props.WorldTime = nextWorldTime - nextWorldTime % 24000L;
         ClearWeather();
     }
 
@@ -265,4 +265,6 @@ public class EnvironmentManager
 
         return new Vector3D<double>(red, green, blue);
     }
+
+    public bool CanMonsterSpawn() => AmbientDarkness < 4;
 }

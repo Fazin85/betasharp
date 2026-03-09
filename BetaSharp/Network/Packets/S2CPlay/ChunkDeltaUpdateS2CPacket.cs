@@ -15,25 +15,28 @@ public class ChunkDeltaUpdateS2CPacket() : Packet(PacketId.ChunkDeltaUpdateS2C)
     public byte[] blockMetadata;
     public int _size;
 
-    public ChunkDeltaUpdateS2CPacket(int x, int z, short[] positions, int size, World world) : this()
+    public static ChunkDeltaUpdateS2CPacket Get(int x, int z, short[] positions, int size, IBlockWorldContext world)
     {
-        this.x = x;
-        this.z = z;
-        this._size = size;
-        this.positions = new short[size];
-        blockRawIds = new byte[size];
-        blockMetadata = new byte[size];
-        Chunk chunk = world.GetChunk(x, z);
+        var p = Get<ChunkDeltaUpdateS2CPacket>(PacketId.ChunkDeltaUpdateS2C);
+        p.x = x;
+        p.z = z;
+        p._size = size;
+        p.positions = new short[size];
+        p.blockRawIds = new byte[size];
+        p.blockMetadata = new byte[size];
+        Chunk chunk = world.BlockHost.GetChunk(x, z);
 
         for (int i = 0; i < size; i++)
         {
             int blockX = positions[i] >> 12 & 15;
             int blockZ = positions[i] >> 8 & 15;
             int blockY = positions[i] & 255;
-            this.positions[i] = positions[i];
-            blockRawIds[i] = (byte)chunk.GetBlockId(blockX, blockY, blockZ);
-            blockMetadata[i] = (byte)chunk.GetBlockMeta(blockX, blockY, blockZ);
+            p.positions[i] = positions[i];
+            p.blockRawIds[i] = (byte)chunk.GetBlockId(blockX, blockY, blockZ);
+            p.blockMetadata[i] = (byte)chunk.GetBlockMeta(blockX, blockY, blockZ);
         }
+
+        return p;
     }
 
     public override void Read(NetworkStream stream)

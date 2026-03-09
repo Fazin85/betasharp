@@ -1,7 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Entities;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Items;
 
@@ -15,7 +14,7 @@ internal class ItemSeeds : Item
         this.blockId = blockId;
     }
 
-    public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int meta)
+    public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, IBlockWorldContext world, int x, int y, int z, int meta)
     {
         if (meta != 1)
         {
@@ -23,10 +22,10 @@ internal class ItemSeeds : Item
         }
         else
         {
-            int blockId = world.getBlockId(x, y, z);
-            if (blockId == Block.Farmland.id && world.isAir(x, y + 1, z))
+            int blockId = world.BlocksReader.GetBlockId(x, y, z);
+            if (blockId == Block.Farmland.id && world.BlocksReader.IsAir(x, y + 1, z))
             {
-                world.setBlock(x, y + 1, z, this.blockId);
+                world.BlockWriter.SetBlock(x, y + 1, z, this.blockId);
                 --itemStack.count;
                 return true;
             }

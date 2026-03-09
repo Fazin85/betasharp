@@ -2,6 +2,7 @@ using BetaSharp.Blocks.Entities;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;
 using BetaSharp.Network.Packets;
+using BetaSharp.Network.Packets.C2SPlay;
 using BetaSharp.Network.Packets.Play;
 using BetaSharp.Network.Packets.S2CPlay;
 using BetaSharp.Screens;
@@ -12,43 +13,40 @@ using BetaSharp.Server.Network;
 using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
-using java.util;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Entities;
 
 public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 {
-    private static readonly ILogger s_logger = Log.Instance.For<ServerPlayerEntity>();
-
     private const int MaxChunkPackets = 16;
-
-    public ServerPlayNetworkHandler networkHandler;
-    public BetaSharpServer server;
+    private static readonly ILogger s_logger = Log.Instance.For<ServerPlayerEntity>();
+    private readonly ItemStack?[] equipment = [null, null, null, null, null];
+    public HashSet<ChunkPos> activeChunks = new();
     public ServerPlayerInteractionManager interactionManager;
+    private int joinInvulnerabilityTicks = 60;
+    private int lastHealthScore = -99999999;
     public double lastX;
     public double lastZ;
+
+    public ServerPlayNetworkHandler networkHandler;
     public Queue<ChunkPos> PendingChunkUpdates = new();
-    public HashSet<ChunkPos> activeChunks = new();
-    private int lastHealthScore = -99999999;
-    private int joinInvulnerabilityTicks = 60;
-    private ItemStack[] equipment = [null, null, null, null, null];
     private int screenHandlerSyncId;
+    public BetaSharpServer server;
     public bool skipPacketSlotUpdates;
 
-    public ServerPlayerEntity(BetaSharpServer server, World world, String name, ServerPlayerInteractionManager interactionManager) : base(world)
+    public ServerPlayerEntity(BetaSharpServer server, IBlockWorldContext world, string name, ServerPlayerInteractionManager interactionManager) : base(world)
     {
         interactionManager.player = this;
         this.interactionManager = interactionManager;
-        Vec3i spawnPos = world.GetSpawnPos();
+        Vec3i spawnPos = world.Properties.GetSpawnPos();
         int x = spawnPos.X;
         int y = spawnPos.Z;
         int z = spawnPos.Y;
         if (!world.dimension.HasCeiling)
         {
             x += random.NextInt(20) - 10;
-            z = world.getSpawnPositionValidityY(x, y);
+            z = world.BlocksReader.GetSpawnPositionValidityY(x, y);
             y += random.NextInt(20) - 10;
         }
 
@@ -60,33 +58,42 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     }
 
 
-    public override void setWorld(World world)
+    public void onSlotUpdate(ScreenHandler handler, int slot, ItemStack? stack)
+    {
+        if (handler.GetSlot(slot) is not CraftingResultSlot)
+        {
+            if (!skipPacketSlotUpdates)
+            {
+                networkHandler.sendPacket(ScreenHandlerSlotUpdateS2CPacket.Get(handler.SyncId, slot, stack));
+            }
+        }
+    }
+
+
+    public void onContentsUpdate(ScreenHandler handler, List<ItemStack> stacks)
+    {
+        networkHandler.sendPacket(InventoryS2CPacket.Get(handler.SyncId, stacks));
+        networkHandler.sendPacket(ScreenHandlerSlotUpdateS2CPacket.Get(-1, -1, inventory.getCursorStack()));
+    }
+
+    public void onPropertyUpdate(ScreenHandler handler, int syncId, int trackedValue) => networkHandler.sendPacket(ScreenHandlerPropertyUpdateS2CPacket.Get(handler.SyncId, syncId, trackedValue));
+
+
+    public override void setWorld(IBlockWorldContext world)
     {
         base.setWorld(world);
         interactionManager = new ServerPlayerInteractionManager((ServerWorld)world);
         interactionManager.player = this;
     }
 
-    public void initScreenHandler()
-    {
-        currentScreenHandler.AddListener(this);
-    }
+    public void initScreenHandler() => currentScreenHandler.AddListener(this);
 
-    public override ItemStack[] getEquipment()
-    {
-        return equipment;
-    }
+    public override ItemStack[] getEquipment() => equipment;
 
-    protected override void resetEyeHeight()
-    {
-        standingEyeHeight = 0.0F;
-    }
+    protected override void resetEyeHeight() => standingEyeHeight = 0.0F;
 
 
-    public override float getEyeHeight()
-    {
-        return 1.62F;
-    }
+    public override float getEyeHeight() => 1.62F;
 
     public override void tick()
     {
@@ -101,16 +108,13 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
             ItemStack itemStack = getEquipment(i);
             if (itemStack != equipment[i])
             {
-                server.getEntityTracker(dimensionId).sendToListeners(this, new EntityEquipmentUpdateS2CPacket(id, i, itemStack));
+                server.getEntityTracker(dimensionId).sendToListeners(this, EntityEquipmentUpdateS2CPacket.Get(id, i, itemStack));
                 equipment[i] = itemStack;
             }
         }
     }
 
-    public ItemStack getEquipment(int slot)
-    {
-        return slot == 0 ? inventory.getSelectedItem() : inventory.armor[slot - 1];
-    }
+    public ItemStack getEquipment(int slot) => slot == 0 ? inventory.getSelectedItem() : inventory.armor[slot - 1];
 
     public override bool damage(Entity damageSource, int amount)
     {
@@ -118,32 +122,27 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
         {
             return false;
         }
-        else
+
+        if (!server.pvpEnabled)
         {
-            if (!server.pvpEnabled)
+            if (damageSource is EntityPlayer)
             {
-                if (damageSource is EntityPlayer)
+                return false;
+            }
+
+            if (damageSource is EntityArrow arrow)
+            {
+                if (arrow.owner is EntityPlayer)
                 {
                     return false;
                 }
-
-                if (damageSource is EntityArrow arrow)
-                {
-                    if (arrow.owner is EntityPlayer)
-                    {
-                        return false;
-                    }
-                }
             }
-
-            return base.damage(damageSource, amount);
         }
+
+        return base.damage(damageSource, amount);
     }
 
-    protected override bool isPvpEnabled()
-    {
-        return server.pvpEnabled;
-    }
+    protected override bool isPvpEnabled() => server.pvpEnabled;
 
     public void playerTick(bool shouldSendChunkUpdates)
     {
@@ -167,7 +166,11 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
             while (CanSendMoreChunkData() && PendingChunkUpdates.TryDequeue(out ChunkPos chunkPos))
             {
                 ServerWorld world = server.getWorld(dimensionId);
-                if (!activeChunks.Contains(chunkPos)) continue;
+                if (!activeChunks.Contains(chunkPos))
+                {
+                    continue;
+                }
+
                 SendChunkData(world, chunkPos);
                 SendBlockEntityUpdates(world, chunkPos);
             }
@@ -220,31 +223,28 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
         if (health != lastHealthScore)
         {
-            networkHandler.sendPacket(new HealthUpdateS2CPacket(health));
+            networkHandler.sendPacket(HealthUpdateS2CPacket.Get(health));
             lastHealthScore = health;
         }
     }
 
-    private bool CanSendMoreChunkData()
-    {
-        return networkHandler.getBlockDataSendQueueSize() < MaxChunkPackets;
-    }
+    private bool CanSendMoreChunkData() => networkHandler.getBlockDataSendQueueSize() < MaxChunkPackets;
 
-    private void SendChunkData(ServerWorld world, ChunkPos chunkPos)
+    private void SendChunkData(IBlockWorldContext world, ChunkPos chunkPos)
     {
         int worldX = chunkPos.X * 16;
         int worldZ = chunkPos.Z * 16;
-        networkHandler.sendPacket(new ChunkDataS2CPacket(worldX, 0, worldZ, 16, 128, 16, world));
+        networkHandler.sendPacket(ChunkDataS2CPacket.Get(worldX, 0, worldZ, 16, 128, 16, world));
     }
 
-    private void SendBlockEntityUpdates(ServerWorld world, ChunkPos chunkPos)
+    private void SendBlockEntityUpdates(IBlockWorldContext world, ChunkPos chunkPos)
     {
         int startX = chunkPos.X * 16;
         int startZ = chunkPos.Z * 16;
         int endX = startX + 16;
         int endZ = startZ + 16;
 
-        var blockEntities = world.getBlockEntities(startX, 0, startZ, endX, 128, endZ);
+        var blockEntities = world.Entities.GetBlockEntities(startX, 0, startZ, endX, 128, endZ);
         foreach (BlockEntity blockEntity in blockEntities)
         {
             updateBlockEntity(blockEntity);
@@ -270,12 +270,12 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
             EntityTracker et = server.getEntityTracker(dimensionId);
             if (item is EntityItem)
             {
-                et.sendToListeners(item, new ItemPickupAnimationS2CPacket(item.id, id));
+                et.sendToListeners(item, ItemPickupAnimationS2CPacket.Get(item.id, id));
             }
 
             if (item is EntityArrow)
             {
-                et.sendToListeners(item, new ItemPickupAnimationS2CPacket(item.id, id));
+                et.sendToListeners(item, ItemPickupAnimationS2CPacket.Get(item.id, id));
             }
         }
 
@@ -300,7 +300,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
         if (sleepAttemptResult == SleepAttemptResult.OK)
         {
             EntityTracker et = server.getEntityTracker(dimensionId);
-            PlayerSleepUpdateS2CPacket packet = new(this, 0, x, y, z);
+            PlayerSleepUpdateS2CPacket packet = PlayerSleepUpdateS2CPacket.Get(this, 0, x, y, z);
             et.sendToListeners(this, packet);
             networkHandler.teleport(x, y, z, yaw, pitch);
             networkHandler.sendPacket(packet);
@@ -328,7 +328,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public override void setVehicle(Entity entity)
     {
         base.setVehicle(entity);
-        networkHandler.sendPacket(new EntityVehicleSetS2CPacket(this, vehicle));
+        networkHandler.sendPacket(EntityVehicleSetS2CPacket.Get(this, vehicle));
         networkHandler.teleport(x, y, z, yaw, pitch);
     }
 
@@ -337,21 +337,15 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     {
     }
 
-    public void handleFall(double heightDifference, bool onGround)
-    {
-        base.fall(heightDifference, onGround);
-    }
+    public void handleFall(double heightDifference, bool onGround) => base.fall(heightDifference, onGround);
 
-    private void incrementScreenHandlerSyncId()
-    {
-        screenHandlerSyncId = screenHandlerSyncId % 100 + 1;
-    }
+    private void incrementScreenHandlerSyncId() => screenHandlerSyncId = screenHandlerSyncId % 100 + 1;
 
 
     public override void openCraftingScreen(int x, int y, int z)
     {
         incrementScreenHandlerSyncId();
-        networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandlerSyncId, 1, "Crafting", 9));
+        networkHandler.sendPacket(OpenScreenS2CPacket.Get(screenHandlerSyncId, 1, "Crafting", 9));
         currentScreenHandler = new CraftingScreenHandler(inventory, _level, x, y, z);
         currentScreenHandler.SyncId = screenHandlerSyncId;
         currentScreenHandler.AddListener(this);
@@ -361,7 +355,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public override void openChestScreen(IInventory inventory)
     {
         incrementScreenHandlerSyncId();
-        networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandlerSyncId, 0, inventory.getName(), inventory.size()));
+        networkHandler.sendPacket(OpenScreenS2CPacket.Get(screenHandlerSyncId, 0, inventory.getName(), inventory.size()));
         currentScreenHandler = new GenericContainerScreenHandler(this.inventory, inventory);
         currentScreenHandler.SyncId = screenHandlerSyncId;
         currentScreenHandler.AddListener(this);
@@ -371,7 +365,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public override void openFurnaceScreen(BlockEntityFurnace furnace)
     {
         incrementScreenHandlerSyncId();
-        networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandlerSyncId, 2, furnace.getName(), furnace.size()));
+        networkHandler.sendPacket(OpenScreenS2CPacket.Get(screenHandlerSyncId, 2, furnace.getName(), furnace.size()));
         currentScreenHandler = new FurnaceScreenHandler(inventory, furnace);
         currentScreenHandler.SyncId = screenHandlerSyncId;
         currentScreenHandler.AddListener(this);
@@ -381,40 +375,13 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public override void openDispenserScreen(BlockEntityDispenser dispenser)
     {
         incrementScreenHandlerSyncId();
-        networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandlerSyncId, 3, dispenser.getName(), dispenser.size()));
+        networkHandler.sendPacket(OpenScreenS2CPacket.Get(screenHandlerSyncId, 3, dispenser.getName(), dispenser.size()));
         currentScreenHandler = new DispenserScreenHandler(inventory, dispenser);
         currentScreenHandler.SyncId = screenHandlerSyncId;
         currentScreenHandler.AddListener(this);
     }
 
-
-    public void onSlotUpdate(ScreenHandler handler, int slot, ItemStack? stack)
-    {
-        if (handler.GetSlot(slot) is not CraftingResultSlot)
-        {
-            if (!skipPacketSlotUpdates)
-            {
-                networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(handler.SyncId, slot, stack));
-            }
-        }
-    }
-
-    public void onContentsUpdate(ScreenHandler screenHandler)
-    {
-        onContentsUpdate(screenHandler, screenHandler.GetStacks());
-    }
-
-
-    public void onContentsUpdate(ScreenHandler handler, List<ItemStack> stacks)
-    {
-        networkHandler.sendPacket(new InventoryS2CPacket(handler.SyncId, stacks));
-        networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, inventory.getCursorStack()));
-    }
-
-    public void onPropertyUpdate(ScreenHandler handler, int syncId, int trackedValue)
-    {
-        networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(handler.SyncId, syncId, trackedValue));
-    }
+    public void onContentsUpdate(ScreenHandler screenHandler) => onContentsUpdate(screenHandler, screenHandler.GetStacks());
 
     public override void onCursorStackChanged(ItemStack? stack)
     {
@@ -422,7 +389,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
     public override void closeHandledScreen()
     {
-        networkHandler.sendPacket(new CloseScreenS2CPacket(currentScreenHandler.SyncId));
+        networkHandler.sendPacket(CloseScreenS2CPacket.Get(currentScreenHandler.SyncId));
         onHandledScreenClosed();
     }
 
@@ -430,7 +397,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     {
         if (!skipPacketSlotUpdates)
         {
-            networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, inventory.getCursorStack()));
+            networkHandler.sendPacket(ScreenHandlerSlotUpdateS2CPacket.Get(-1, -1, inventory.getCursorStack()));
         }
     }
 
@@ -450,6 +417,16 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
         this.yaw = yaw;
     }
 
+    public void updateInput(PlayerInputC2SPacket packet)
+    {
+        sidewaysSpeed = packet.getSideways();
+        forwardSpeed = packet.getForward();
+        jumping = packet.isJumping();
+        setSneaking(packet.isSneaking());
+        pitch = packet.getPitch();
+        yaw = packet.getYaw();
+    }
+
 
     public override void increaseStat(StatBase stat, int amount)
     {
@@ -464,11 +441,11 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
                 while (amount > 100)
                 {
-                    networkHandler.sendPacket(new IncreaseStatS2CPacket(stat.Id, 100));
+                    networkHandler.sendPacket(IncreaseStatS2CPacket.Get(stat.Id, 100));
                     amount -= 100;
                 }
 
-                networkHandler.sendPacket(new IncreaseStatS2CPacket(stat.Id, amount));
+                networkHandler.sendPacket(IncreaseStatS2CPacket.Get(stat.Id, amount));
             }
         }
     }
@@ -491,21 +468,16 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
         }
     }
 
-    public void markHealthDirty()
-    {
-        lastHealthScore = -99999999;
-    }
+    public void markHealthDirty() => lastHealthScore = -99999999;
 
     public override void sendMessage(string message)
     {
         TranslationStorage ts = TranslationStorage.Instance;
         string translatedMessage = ts.TranslateKey(message);
-        networkHandler.sendPacket(new ChatMessagePacket(translatedMessage));
+        networkHandler.sendPacket(ChatMessagePacket.Get(translatedMessage));
     }
 
-    public override void spawn()
-    {
+    public override void spawn() => throw
         //client only
-        throw new NotImplementedException();
-    }
+        new NotImplementedException();
 }

@@ -22,23 +22,23 @@ public class BlockRedstoneRepeater : Block
 
     public override bool canPlaceAt(CanPlaceAtCtx ctx) => !ctx.Level.BlocksReader.ShouldSuffocate(ctx.X, ctx.Y - 1, ctx.Z) ? false : base.canPlaceAt(ctx);
 
-    public override bool canGrow(OnTickEvt ctx) => !ctx.Level.BlocksReader.ShouldSuffocate(ctx.X, ctx.Y - 1, ctx.Z) ? false : base.canGrow(ctx);
+    public override bool canGrow(OnTickEvt evt) => !evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y - 1, evt.Z) ? false : base.canGrow(evt);
 
-    public override void onTick(OnTickEvt ctx)
+    public override void onTick(OnTickEvt evt)
     {
-        int meta = ctx.Level.BlocksReader.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
-        bool powered = isPowered(ctx.Level.BlocksReader, ctx.Level.Redstone, ctx.X, ctx.Y, ctx.Z, meta);
+        int meta = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
+        bool powered = isPowered(evt.Level.BlocksReader, evt.Level.Redstone, evt.X, evt.Y, evt.Z, meta);
         if (lit && !powered)
         {
-            ctx.Level.BlockWriter.SetBlock(ctx.X, ctx.Y, ctx.Z, Repeater.id, meta);
+            evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, Repeater.id, meta);
         }
         else if (!lit)
         {
-            ctx.Level.BlockWriter.SetBlock(ctx.X, ctx.Y, ctx.Z, PoweredRepeater.id, meta);
+            evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, PoweredRepeater.id, meta);
             if (!powered)
             {
                 int delaySetting = (meta & 12) >> 2;
-                ctx.Level.BlockWriter.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, PoweredRepeater.id, DELAY[delaySetting] * 2);
+                evt.Level.TickScheduler.ScheduleBlockUpdate(evt.X, evt.Y, evt.Z, PoweredRepeater.id, DELAY[delaySetting] * 2);
             }
         }
     }
@@ -60,29 +60,29 @@ public class BlockRedstoneRepeater : Block
             return false;
         }
 
-        int facing = reader.GetBlockMeta(x, y, z) & 3;
+        int facing = reader.GetMeta(x, y, z) & 3;
         return facing == 0 && side == 3 ? true : facing == 1 && side == 4 ? true : facing == 2 && side == 2 ? true : facing == 3 && side == 5;
     }
 
-    public override void neighborUpdate(OnTickEvt ctx)
+    public override void neighborUpdate(OnTickEvt evt)
     {
-        if (!canGrow(ctx))
+        if (!canGrow(evt))
         {
-            dropStacks(new OnDropEvt(ctx.Level, ctx.X, ctx.Y, ctx.Z, ctx.Meta, ctx.BlockId ));
-            ctx.Level.BlockWriter.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
+            dropStacks(new OnDropEvt(evt.Level, evt.X, evt.Y, evt.Z, evt.Meta, evt.BlockId));
+            evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, 0);
         }
         else
         {
-            int meta = ctx.Level.BlocksReader.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
-            bool powered = isPowered(ctx.Level.BlocksReader, ctx.Level.Redstone, ctx.X, ctx.Y, ctx.Z, meta);
+            int meta = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
+            bool powered = isPowered(evt.Level.BlocksReader, evt.Level.Redstone, evt.X, evt.Y, evt.Z, meta);
             int delaySetting = (meta & 12) >> 2;
             if (lit && !powered)
             {
-                ctx.Level.BlockWriter.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, id, DELAY[delaySetting] * 2);
+                evt.Level.TickScheduler.ScheduleBlockUpdate(evt.X, evt.Y, evt.Z, id, DELAY[delaySetting] * 2);
             }
             else if (!lit && powered)
             {
-                ctx.Level.BlockWriter.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, id, DELAY[delaySetting] * 2);
+                evt.Level.TickScheduler.ScheduleBlockUpdate(evt.X, evt.Y, evt.Z, id, DELAY[delaySetting] * 2);
             }
         }
     }
@@ -93,13 +93,13 @@ public class BlockRedstoneRepeater : Block
         switch (facing)
         {
             case 0:
-                return redstoneEngine.IsPoweringSide(x, y, z + 1, 3) || (world.GetBlockId(x, y, z + 1) == RedstoneWire.id && world.GetBlockMeta(x, y, z + 1) > 0);
+                return redstoneEngine.IsPoweringSide(x, y, z + 1, 3) || (world.GetBlockId(x, y, z + 1) == RedstoneWire.id && world.GetMeta(x, y, z + 1) > 0);
             case 1:
-                return redstoneEngine.IsPoweringSide(x - 1, y, z, 4) || (world.GetBlockId(x - 1, y, z) == RedstoneWire.id && world.GetBlockMeta(x - 1, y, z) > 0);
+                return redstoneEngine.IsPoweringSide(x - 1, y, z, 4) || (world.GetBlockId(x - 1, y, z) == RedstoneWire.id && world.GetMeta(x - 1, y, z) > 0);
             case 2:
-                return redstoneEngine.IsPoweringSide(x, y, z - 1, 2) || (world.GetBlockId(x, y, z - 1) == RedstoneWire.id && world.GetBlockMeta(x, y, z - 1) > 0);
+                return redstoneEngine.IsPoweringSide(x, y, z - 1, 2) || (world.GetBlockId(x, y, z - 1) == RedstoneWire.id && world.GetMeta(x, y, z - 1) > 0);
             case 3:
-                return redstoneEngine.IsPoweringSide(x + 1, y, z, 5) || (world.GetBlockId(x + 1, y, z) == RedstoneWire.id && world.GetBlockMeta(x + 1, y, z) > 0);
+                return redstoneEngine.IsPoweringSide(x + 1, y, z, 5) || (world.GetBlockId(x + 1, y, z) == RedstoneWire.id && world.GetMeta(x + 1, y, z) > 0);
             default:
                 return false;
         }
@@ -107,31 +107,31 @@ public class BlockRedstoneRepeater : Block
 
     public override bool onUse(OnUseEvt ctx)
     {
-        int meta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+        int meta = ctx.Level.BlocksReader.GetMeta(ctx.X, ctx.Y, ctx.Z);
         int newDelaySetting = (meta & 12) >> 2;
         newDelaySetting = ((newDelaySetting + 1) << 2) & 12;
-        ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, newDelaySetting | (meta & 3));
+        ctx.Level.BlockWriter.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, newDelaySetting | (meta & 3));
         return true;
     }
 
     public override bool canEmitRedstonePower() => false;
 
-    public override void onPlaced(OnPlacedEvt ctx)
+    public override void onPlaced(OnPlacedEvt evt)
     {
-        int facing = ((MathHelper.Floor(ctx.Placer.yaw * 4.0F / 360.0F + 0.5D) & 3) + 2) % 4;
-        ctx.Level.BlockWriter.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, facing);
-        bool powered = isPowered(ctx.Level.BlocksReader, ctx.Level.Redstone, ctx.X, ctx.Y, ctx.Z, facing);
+        int facing = ((MathHelper.Floor(evt.Placer.yaw * 4.0F / 360.0F + 0.5D) & 3) + 2) % 4;
+        evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, facing);
+        bool powered = isPowered(evt.Level.BlocksReader, evt.Level.Redstone, evt.X, evt.Y, evt.Z, facing);
         if (powered)
         {
-            ctx.Level.BlockWriter.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, id, 1);
+            evt.Level.TickScheduler.ScheduleBlockUpdate(evt.X, evt.Y, evt.Z, id, 1);
         }
 
-        ctx.Level.Broadcaster.NotifyNeighbors(ctx.X + 1, ctx.Y, ctx.Z, id);
-        ctx.Level.Broadcaster.NotifyNeighbors(ctx.X - 1, ctx.Y, ctx.Z, id);
-        ctx.Level.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z + 1, id);
-        ctx.Level.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z - 1, id);
-        ctx.Level.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y - 1, ctx.Z, id);
-        ctx.Level.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y + 1, ctx.Z, id);
+        evt.Level.Broadcaster.NotifyNeighbors(evt.X + 1, evt.Y, evt.Z, id);
+        evt.Level.Broadcaster.NotifyNeighbors(evt.X - 1, evt.Y, evt.Z, id);
+        evt.Level.Broadcaster.NotifyNeighbors(evt.X, evt.Y, evt.Z + 1, id);
+        evt.Level.Broadcaster.NotifyNeighbors(evt.X, evt.Y, evt.Z - 1, id);
+        evt.Level.Broadcaster.NotifyNeighbors(evt.X, evt.Y - 1, evt.Z, id);
+        evt.Level.Broadcaster.NotifyNeighbors(evt.X, evt.Y + 1, evt.Z, id);
     }
 
     public override bool isOpaque() => false;
@@ -145,7 +145,7 @@ public class BlockRedstoneRepeater : Block
             return;
         }
 
-        int meta = ctx.Level.BlocksReader.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+        int meta = ctx.Level.BlocksReader.GetMeta(ctx.X, ctx.Y, ctx.Z);
         double particleX = ctx.X + 0.5F + (Random.Shared.NextSingle() - 0.5F) * 0.2D;
         double particleY = ctx.Y + 0.4F + (Random.Shared.NextSingle() - 0.5F) * 0.2D;
         double particleZ = ctx.Z + 0.5F + (Random.Shared.NextSingle() - 0.5F) * 0.2D;
