@@ -273,7 +273,7 @@ public partial class BetaSharp
 
         Keyboard.create(Display.getGlfw(), Display.getWindowHandle());
         Mouse.create(Display.getGlfw(), Display.getWindowHandle(), Display.getWidth(), Display.getHeight());
-        Controller.create(Display.getGlfw(), Display.getWindowHandle());
+        Controller.Create(Display.getGlfw(), Display.getWindowHandle());
         mouseHelper = new MouseHelper();
 
         checkGLError("Pre startup");
@@ -560,10 +560,10 @@ public partial class BetaSharp
                         float lx = Controller.LeftStickX;
                         float ly = Controller.LeftStickY;
 
-                        if (Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.DPadLeft)) lx = -1.0f;
-                        if (Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.DPadRight)) lx = 1.0f;
-                        if (Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.DPadUp)) ly = -1.0f;
-                        if (Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.DPadDown)) ly = 1.0f;
+                        if (Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.DPadLeft)) lx = -0.2f;
+                        if (Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.DPadRight)) lx = 0.2f;
+                        if (Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.DPadUp)) ly = -0.2f;
+                        if (Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.DPadDown)) ly = 0.2f;
 
                         const float speed = 600f; // Pixels per second
 

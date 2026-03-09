@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Input;
@@ -7,6 +8,7 @@ public static class Controller
     private static bool s_created;
     private static Glfw? s_glfw;
     private static unsafe WindowHandle* s_window;
+    private static readonly ILogger s_logger = Log.Instance.For("BetaSharp.Client.Input.Controller");
 
     private static int s_gamepadJoystickIndex = -1;
 
@@ -18,7 +20,7 @@ public static class Controller
     private static readonly Queue<ControllerEvent> s_eventQueue = new();
     private static ControllerEvent s_current_event = new();
 
-    public static unsafe void create(Glfw glfwApi, WindowHandle* windowHandle)
+    public static unsafe void Create(Glfw glfwApi, WindowHandle* windowHandle)
     {
         if (s_created) return;
         s_glfw = glfwApi;
@@ -37,6 +39,7 @@ public static class Controller
                     if (s_gamepadJoystickIndex == -1 || name.Contains("Xbox", StringComparison.OrdinalIgnoreCase))
                     {
                         s_gamepadJoystickIndex = i;
+                        s_logger.LogInformation("Selected gamepad: {}", name);
                     }
                 }
             }
@@ -80,7 +83,7 @@ public static class Controller
                 {
                     Button = i,
                     State = isDown,
-                    Nanos = GetNanos()
+                    Nanos = DateTime.UtcNow.Ticks * 100
                 });
             }
         }
@@ -93,7 +96,6 @@ public static class Controller
         if (s_eventQueue.Count > 0)
         {
             s_current_event = s_eventQueue.Dequeue();
-            Console.WriteLine(s_current_event);
             return true;
         }
 
@@ -102,7 +104,6 @@ public static class Controller
 
     public static int GetEventButton() => s_current_event.Button;
     public static bool GetEventButtonState() => s_current_event.State;
-    public static long GetEventNanoseconds() => s_current_event.Nanos;
 
     public static bool IsButtonDown(GamepadButton button)
     {
@@ -166,20 +167,6 @@ public static class Controller
         }
 
         return false;
-    }
-
-    public static bool IsCreated() => s_created;
-
-    public static void Destroy()
-    {
-        if (!s_created) return;
-        s_created = false;
-        s_eventQueue.Clear();
-    }
-
-    private static long GetNanos()
-    {
-        return DateTime.UtcNow.Ticks * 100;
     }
 
     private struct ControllerEvent
