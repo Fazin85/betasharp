@@ -538,18 +538,13 @@ public partial class BetaSharp
                         isControllerMode = true;
                     }
 
-                    while (Controller.Next())
-                    {
-                        // can be expanded later
-                    }
-
                     if (isControllerMode && currentScreen != null)
                     {
                         float lx = Controller.LeftStickX;
                         float ly = Controller.LeftStickY;
                         //TODO: don't hardcode these
                         const float deadzone = 0.25f;
-                        const float speed = 400f; // Pixels per second
+                        const float speed = 600f; // Pixels per second
 
                         if (Math.Abs(lx) > deadzone) virtualCursorX += lx * speed * Timer.DeltaTime;
                         if (Math.Abs(ly) > deadzone) virtualCursorY += ly * speed * Timer.DeltaTime;

@@ -253,8 +253,18 @@ public class GameRenderer
             ScaledResolution var13 = new(_client.options, _client.displayWidth, _client.displayHeight);
             int scaledWidth = var13.ScaledWidth;
             int scaledHeight = var13.ScaledHeight;
-            int scaledMouseX = Mouse.getX() * scaledWidth / _client.displayWidth;
-            int scaledMouseY = scaledHeight - Mouse.getY() * scaledHeight / _client.displayHeight - 1;
+            int scaledMouseX;
+            int scaledMouseY;
+            if (_client.isControllerMode)
+            {
+                scaledMouseX = (int)(_client.virtualCursorX * scaledWidth / _client.displayWidth);
+                scaledMouseY = (int)(_client.virtualCursorY * scaledHeight / _client.displayHeight);
+            }
+            else
+            {
+                scaledMouseX = Mouse.getX() * scaledWidth / _client.displayWidth;
+                scaledMouseY = scaledHeight - Mouse.getY() * scaledHeight / _client.displayHeight - 1;
+            }
             int var7 = 30 + (int)(_client.options.LimitFramerate * 210.0f);
 
             if (var7 < 240)
@@ -295,7 +305,7 @@ public class GameRenderer
 
                 if (_client.isControllerMode)
                 {
-                    DrawVirtualCursor();
+                    DrawVirtualCursor(scaledMouseX, scaledMouseY);
                 }
             }
 
@@ -674,7 +684,7 @@ public class GameRenderer
         GLManager.GL.Translate(0.0F, 0.0F, -2000.0F);
     }
 
-    public void DrawVirtualCursor()
+    public void DrawVirtualCursor(int x, int y)
     {
         if (_client.isControllerMode)
         {
@@ -687,10 +697,11 @@ public class GameRenderer
             TextureHandle textureId = _client.textureManager.GetTextureId("/gui/Pointer.png");
             _client.textureManager.BindTexture(textureId);
 
-            int x = (int)_client.virtualCursorX;
-            int y = (int)_client.virtualCursorY;
-            int width = 32;
-            int height = 32;
+            const int width = 32;
+            const int height = 32;
+
+            x -= width / 2;
+            y -= height / 2;
 
             const float zLevel = 10.0f;
             Tessellator tess = Tessellator.instance;

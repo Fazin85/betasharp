@@ -124,6 +124,11 @@ public class GuiScreen : Gui
         {
             HandleKeyboardInput();
         }
+
+        while (Controller.Next())
+        {
+            HandleControllerInput();
+        }
     }
 
     public virtual void HandleMouseInput()
@@ -137,6 +142,24 @@ public class GuiScreen : Gui
         else
         {
             MouseMovedOrUp(x, y, Mouse.getEventButton());
+        }
+    }
+
+    public virtual void HandleControllerInput()
+    {
+        if (Controller.GetEventButton() == 0) // A on Xbox layout
+        {
+            int scaledMouseX = (int)(Game.virtualCursorX * Width / Game.displayWidth);
+            int scaledMouseY = (int)(Game.virtualCursorY * Height / Game.displayHeight);
+
+            if (Controller.GetEventButtonState())
+            {
+                MouseClicked(scaledMouseX, scaledMouseY, 0);
+            }
+            else
+            {
+                MouseMovedOrUp(scaledMouseX, scaledMouseY, 0);
+            }
         }
     }
 
