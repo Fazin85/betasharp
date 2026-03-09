@@ -548,7 +548,11 @@ public partial class BetaSharp
                     Controller.PollEvents();
                     if (Controller.IsActive())
                     {
-                        isControllerMode = true;
+                        if (!isControllerMode)
+                        {
+                            Mouse.setCursorVisible(false);
+                            isControllerMode = true;
+                        }
                     }
 
                     if (isControllerMode && currentScreen != null)
@@ -992,6 +996,7 @@ public partial class BetaSharp
             inGameHasFocus = false;
             GCSettings.LatencyMode = GCLatencyMode.Batch;
             mouseHelper.ungrabMouseCursor();
+            Mouse.setCursorVisible(!isControllerMode);
         }
     }
 
@@ -1397,6 +1402,7 @@ public partial class BetaSharp
             if (Mouse.getEventDX() != 0 || Mouse.getEventDY() != 0)
             {
                 isControllerMode = false;
+                Mouse.setCursorVisible(true);
             }
 
             if (timeSinceLastMouseEvent <= 200L)
@@ -1405,6 +1411,7 @@ public partial class BetaSharp
                 if (mouseWheelDelta != 0)
                 {
                     isControllerMode = false;
+                    Mouse.setCursorVisible(true);
                     player.inventory.changeCurrentItem(mouseWheelDelta);
                     if (options.InvertScrolling)
                     {

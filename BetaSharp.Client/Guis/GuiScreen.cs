@@ -133,6 +133,12 @@ public class GuiScreen : Gui
 
     public virtual void HandleMouseInput()
     {
+        if (Mouse.getEventDX() != 0 || Mouse.getEventDY() != 0 || Mouse.getEventButton() != -1)
+        {
+            Game.isControllerMode = false;
+            Mouse.setCursorVisible(true);
+        }
+
         int x = Mouse.getEventX() * Width / Game.displayWidth;
         int y = Height - Mouse.getEventY() * Height / Game.displayHeight - 1;
         if (Mouse.getEventButtonState())
@@ -174,6 +180,9 @@ public class GuiScreen : Gui
     {
         if (Keyboard.getEventKeyState())
         {
+            Game.isControllerMode = false;
+            Mouse.setCursorVisible(true);
+
             int key = Keyboard.getEventKey();
             char c = Keyboard.getEventCharacter();
 
