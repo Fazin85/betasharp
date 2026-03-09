@@ -80,7 +80,7 @@ public class GuiScreen : Gui
                 if (control.MousePressed(Game, mouseX, mouseY))
                 {
                     SelectedButton = control;
-                    Game.sndManager.PlaySoundFX("random.click", 1.0F, 1.0F);
+                    Game.sndManager.PlaySoundFX(Game.isControllerMode ? "random.wood click" : "random.click", 1.0F, 1.0F);
                     ActionPerformed(control);
                 }
             }
