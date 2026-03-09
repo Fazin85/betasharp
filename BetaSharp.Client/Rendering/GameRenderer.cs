@@ -5,6 +5,7 @@ using BetaSharp.Client.Entities.FX;
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Items;
 using BetaSharp.Entities;
 using BetaSharp.Profiling;
@@ -91,7 +92,7 @@ public class GameRenderer
                 Vec3D var8 = var6 + var2 * var7;
                 _targetedEntity = null;
                 float var9 = 1.0F;
-                var var10 = _client.world.getEntities(_client.camera, _client.camera.boundingBox.Stretch(var7.x * var2, var7.y * var2, var7.z * var2).Expand((double)var9, (double)var9, (double)var9));
+                List<Entity> var10 = _client.world.getEntities(_client.camera, _client.camera.boundingBox.Stretch(var7.x * var2, var7.y * var2, var7.z * var2).Expand((double)var9, (double)var9, (double)var9));
                 double var11 = 0.0D;
 
                 for (int var13 = 0; var13 < var10.Count; ++var13)
@@ -290,6 +291,11 @@ public class GameRenderer
                 if (_client.currentScreen != null && _client.currentScreen.ParticlesGui != null)
                 {
                     _client.currentScreen.ParticlesGui.render(tickDelta);
+                }
+
+                if (_client.isControllerMode)
+                {
+                    DrawVirtualCursor();
                 }
             }
 
@@ -666,6 +672,38 @@ public class GameRenderer
         GLManager.GL.MatrixMode(GLEnum.Modelview);
         GLManager.GL.LoadIdentity();
         GLManager.GL.Translate(0.0F, 0.0F, -2000.0F);
+    }
+
+    public void DrawVirtualCursor()
+    {
+        if (_client.isControllerMode)
+        {
+            GLManager.GL.Disable(GLEnum.Lighting);
+            GLManager.GL.Disable(GLEnum.DepthTest);
+            GLManager.GL.Enable(GLEnum.Blend);
+            GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
+            GLManager.GL.Color4(1.0f, 1.0f, 1.0f, 1.0f);
+
+            TextureHandle textureId = _client.textureManager.GetTextureId("/gui/Pointer.png");
+            _client.textureManager.BindTexture(textureId);
+
+            int x = (int)_client.virtualCursorX;
+            int y = (int)_client.virtualCursorY;
+            int width = 32;
+            int height = 32;
+
+            const float zLevel = 10.0f;
+            Tessellator tess = Tessellator.instance;
+            tess.startDrawingQuads();
+            tess.addVertexWithUV(x, y + height, zLevel, 0.0, 1.0);
+            tess.addVertexWithUV(x + width, y + height, zLevel, 1.0, 1.0);
+            tess.addVertexWithUV(x + width, y, zLevel, 1.0, 0.0);
+            tess.addVertexWithUV(x, y, zLevel, 0.0, 0.0);
+            tess.draw();
+
+            GLManager.GL.Disable(GLEnum.Blend);
+            GLManager.GL.Enable(GLEnum.DepthTest);
+        }
     }
 
     private void updateSkyAndFogColors(float tickDelta)

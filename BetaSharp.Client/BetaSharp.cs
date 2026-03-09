@@ -103,6 +103,10 @@ public partial class BetaSharp
     public InternalServer? internalServer;
     private GLErrorHandler _glErrorHandler;
 
+    public bool isControllerMode;
+    public float virtualCursorX;
+    public float virtualCursorY;
+
     public BetaSharp(int width, int height, bool isFullscreen)
     {
         loadingScreen = new LoadingScreenRenderer(this);
@@ -262,6 +266,7 @@ public partial class BetaSharp
 
         Keyboard.create(Display.getGlfw(), Display.getWindowHandle());
         Mouse.create(Display.getGlfw(), Display.getWindowHandle(), Display.getWidth(), Display.getHeight());
+        Controller.create(Display.getGlfw(), Display.getWindowHandle());
         mouseHelper = new MouseHelper();
 
         checkGLError("Pre startup");
@@ -525,6 +530,34 @@ public partial class BetaSharp
                     if (Display.isCloseRequested())
                     {
                         shutdown();
+                    }
+
+                    Controller.PollEvents();
+                    if (Controller.IsActive())
+                    {
+                        isControllerMode = true;
+                    }
+
+                    while (Controller.Next())
+                    {
+                        // can be expanded later
+                    }
+
+                    if (isControllerMode && currentScreen != null)
+                    {
+                        float lx = Controller.LeftStickX;
+                        float ly = Controller.LeftStickY;
+                        //TODO: don't hardcode these
+                        const float deadzone = 0.25f;
+                        const float speed = 400f; // Pixels per second
+
+                        if (Math.Abs(lx) > deadzone) virtualCursorX += lx * speed * Timer.DeltaTime;
+                        if (Math.Abs(ly) > deadzone) virtualCursorY += ly * speed * Timer.DeltaTime;
+
+                        if (virtualCursorX < 0) virtualCursorX = 0;
+                        if (virtualCursorX > displayWidth) virtualCursorX = displayWidth;
+                        if (virtualCursorY < 0) virtualCursorY = 0;
+                        if (virtualCursorY > displayHeight) virtualCursorY = displayHeight;
                     }
 
                     if (isGamePaused && world != null)
@@ -1349,11 +1382,17 @@ public partial class BetaSharp
         {
             long timeSinceLastMouseEvent = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
  - systemTime;
+            if (Mouse.getEventDX() != 0 || Mouse.getEventDY() != 0)
+            {
+                isControllerMode = false;
+            }
+
             if (timeSinceLastMouseEvent <= 200L)
             {
                 int mouseWheelDelta = Mouse.getEventDWheel();
                 if (mouseWheelDelta != 0)
                 {
+                    isControllerMode = false;
                     player.inventory.changeCurrentItem(mouseWheelDelta);
                     if (options.InvertScrolling)
                     {
