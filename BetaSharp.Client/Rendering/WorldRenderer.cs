@@ -998,6 +998,6 @@ public class WorldRenderer : IWorldEventListener
 
     }
 
-    public void playNote(int x, int y, int z, int soundType, int pitch) => throw new NotImplementedException();
-    public void broadcastEntityEvent(Entity entity, byte @event) => throw new NotImplementedException();
+    public void playNote(int x, int y, int z, int soundType, int pitch) { }
+    public void broadcastEntityEvent(Entity entity, byte @event) { }
 }

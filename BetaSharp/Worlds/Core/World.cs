@@ -61,6 +61,7 @@ public abstract class World : IBlockWorldContext
         Storage = worldStorage;
         StateManager = new PersistentStateManager(worldStorage);
         Properties = new WorldProperties(seed, levelName);
+        dimension = dim;
         dim.SetWorld(this);
 
         IChunkSource chunkSource = CreateChunkCache();
@@ -70,10 +71,10 @@ public abstract class World : IBlockWorldContext
             : new RuleSet(RuleRegistry.Instance);
 
         BlockHost = new BlockHost(chunkSource);
+        BlocksReader = new WorldBlockReader(this, dim, null);
         BlockWriter = new WorldBlockWrite(BlockHost, BlocksReader);
         BlockWriter.OnBlockChanged += BlockUpdate;
 
-        BlocksReader = new WorldBlockReader(this, dim, BlockWriter);
         Broadcaster = new WorldEventBroadcaster(EventListeners, BlocksReader, this);
 
         BlockWriter.OnNeighborsShouldUpdate += (x, y, z, id) => Broadcaster.NotifyNeighbors(x, y, z, id);
@@ -126,7 +127,7 @@ public abstract class World : IBlockWorldContext
             Properties.LevelName = levelName;
         }
 
-        Dimension dimension = dim ?? Dimension.FromId(Properties.Dimension == -1 ? -1 : 0);
+        dimension = dim ?? Dimension.FromId(Properties.Dimension == -1 ? -1 : 0);
         dimension.SetWorld(this);
 
         IChunkSource chunkSource = CreateChunkCache();
@@ -136,10 +137,10 @@ public abstract class World : IBlockWorldContext
             : new RuleSet(RuleRegistry.Instance);
 
         BlockHost = new BlockHost(chunkSource);
+        BlocksReader = new WorldBlockReader(this, dimension, null);
         BlockWriter = new WorldBlockWrite(BlockHost, BlocksReader);
         BlockWriter.OnBlockChanged += BlockUpdate;
 
-        BlocksReader = new WorldBlockReader(this, dimension, BlockWriter);
         Broadcaster = new WorldEventBroadcaster(EventListeners, BlocksReader, this);
 
         BlockWriter.OnNeighborsShouldUpdate += (x, y, z, id) => Broadcaster.NotifyNeighbors(x, y, z, id);

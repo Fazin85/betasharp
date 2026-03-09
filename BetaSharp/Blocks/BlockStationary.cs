@@ -28,7 +28,7 @@ internal class BlockStationary : BlockFluid
         int meta = evt.Level.BlocksReader.GetMeta(evt.X, evt.Y, evt.Z);
         evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, id - 1, meta);
         evt.Level.Broadcaster.SetBlocksDirty(evt.X, evt.Y, evt.Z, evt.X, evt.Y, evt.Z);
-        evt.Level.TickScheduler.ScheduleBlockUpdate(evt.X, evt.Y, evt.Z, id - 1, getTickRate(), true);
+        evt.Level.TickScheduler.ScheduleBlockUpdate(evt.X, evt.Y, evt.Z, id - 1, getTickRate());
     }
 
     public override void onTick(OnTickEvt evt)
