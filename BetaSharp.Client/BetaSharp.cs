@@ -542,6 +542,12 @@ public partial class BetaSharp
                     {
                         float lx = Controller.LeftStickX;
                         float ly = Controller.LeftStickY;
+
+                        if (Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.DPadLeft)) lx = -1.0f;
+                        if (Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.DPadRight)) lx = 1.0f;
+                        if (Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.DPadUp)) ly = -1.0f;
+                        if (Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.DPadDown)) ly = 1.0f;
+
                         //TODO: don't hardcode these
                         const float deadzone = 0.25f;
                         const float speed = 600f; // Pixels per second

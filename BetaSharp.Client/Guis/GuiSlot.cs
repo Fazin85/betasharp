@@ -124,6 +124,15 @@ public abstract class GuiSlot
         int scrollbarXStart = _width / 2 + 124;
         int scrollbarXEnd = scrollbarXStart + 6;
 
+        if (_game.isControllerMode)
+        {
+            float ry = Controller.RightStickY;
+            if (Math.Abs(ry) > 0.3f)
+            {
+                _amountScrolled += ry;
+            }
+        }
+
         if (Mouse.isButtonDown(0) || (_game.isControllerMode && Controller.IsButtonDown(GamepadButton.A)))
         {
             if (_initialClickY == -1.0f)
