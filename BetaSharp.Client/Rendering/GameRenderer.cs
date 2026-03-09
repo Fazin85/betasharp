@@ -240,19 +240,14 @@ public class GameRenderer
             {
                 float rx = Controller.RightStickX;
                 float ry = Controller.RightStickY;
-                const float deadzone = 0.05f;
+                float deadzone = Controller.RightStickDeadzone;
 
                 // quadratic curve
-                if (Math.Abs(rx) > deadzone)
-                {
-                    float activeRx = (Math.Abs(rx) - deadzone) / (1.0f - deadzone);
-                    var4 += activeRx * activeRx * Math.Sign(rx) * 10f * var3;
-                }
-                if (Math.Abs(ry) > deadzone)
-                {
-                    float activeRy = (Math.Abs(ry) - deadzone) / (1.0f - deadzone);
-                    var5 += activeRy * activeRy * Math.Sign(ry) * 10f * var3;
-                }
+                float activeRx = (Math.Abs(rx) - deadzone) / (1.0f - deadzone);
+                var4 += activeRx * activeRx * Math.Sign(rx) * 10f * var3;
+
+                float activeRy = (Math.Abs(ry) - deadzone) / (1.0f - deadzone);
+                var5 += activeRy * activeRy * Math.Sign(ry) * 10f * var3;
             }
             int var6 = -1;
             if (_client.options.InvertMouse)

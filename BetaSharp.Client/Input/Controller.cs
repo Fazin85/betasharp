@@ -114,7 +114,25 @@ public static class Controller
     public static float GetAxis(int axisIdx)
     {
         if (!s_created || axisIdx < 0 || axisIdx >= 6) return 0f;
-        return s_axes[axisIdx];
+
+        float axisValue = s_axes[axisIdx];
+
+        if (axisIdx == 0 || axisIdx == 1)
+        {
+            if (Math.Abs(axisValue) > LeftStickDeadzone)
+            {
+                return axisValue;
+            }
+        }
+        else if (axisIdx == 2 || axisIdx == 3)
+        {
+            if (Math.Abs(axisValue) > RightStickDeadzone)
+            {
+                return axisValue;
+            }
+        }
+
+        return 0.0f;
     }
 
     public static float LeftStickX => GetAxis(0);
@@ -122,13 +140,16 @@ public static class Controller
     public static float RightStickX => GetAxis(2);
     public static float RightStickY => GetAxis(3);
 
+    public static float LeftStickDeadzone => 0.1f;
+    public static float RightStickDeadzone => 0.1f;
+
     public static bool IsActive()
     {
         if (!IsGamepadConnected()) return false;
 
         float deadzone = 0.2f;
-        if (Math.Abs(LeftStickX) > deadzone || Math.Abs(LeftStickY) > deadzone ||
-            Math.Abs(RightStickX) > deadzone || Math.Abs(RightStickY) > deadzone)
+        if (Math.Abs(GetAxis(0)) > deadzone || Math.Abs(GetAxis(1)) > deadzone ||
+            Math.Abs(GetAxis(2)) > deadzone || Math.Abs(GetAxis(3)) > deadzone)
         {
             return true;
         }

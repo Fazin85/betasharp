@@ -91,9 +91,9 @@ public class MovementInputFromOptions : MovementInput
         {
             float lx = Controller.LeftStickX;
             float ly = Controller.LeftStickY;
-            //TODO: DON'T HARDCODE DEADZONES
-            if (Math.Abs(lx) > 0.2f) moveStrafe -= lx;
-            if (Math.Abs(ly) > 0.2f) moveForward -= ly;
+
+            moveStrafe -= lx;
+            moveForward -= ly;
         }
 
         jump = _movementKeyStates[4] || Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.A);

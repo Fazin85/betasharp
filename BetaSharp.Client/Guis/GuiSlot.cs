@@ -126,11 +126,7 @@ public abstract class GuiSlot
 
         if (_game.isControllerMode)
         {
-            float ry = Controller.RightStickY;
-            if (Math.Abs(ry) > 0.3f)
-            {
-                _amountScrolled += ry;
-            }
+            _amountScrolled += Controller.RightStickY;
         }
 
         if (Mouse.isButtonDown(0) || (_game.isControllerMode && Controller.IsButtonDown(GamepadButton.A)))

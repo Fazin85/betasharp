@@ -548,12 +548,10 @@ public partial class BetaSharp
                         if (Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.DPadUp)) ly = -1.0f;
                         if (Controller.IsButtonDown(Silk.NET.GLFW.GamepadButton.DPadDown)) ly = 1.0f;
 
-                        //TODO: don't hardcode these
-                        const float deadzone = 0.25f;
                         const float speed = 600f; // Pixels per second
 
-                        if (Math.Abs(lx) > deadzone) virtualCursorX += lx * speed * Timer.DeltaTime;
-                        if (Math.Abs(ly) > deadzone) virtualCursorY += ly * speed * Timer.DeltaTime;
+                        virtualCursorX += lx * speed * Timer.DeltaTime;
+                        virtualCursorY += ly * speed * Timer.DeltaTime;
 
                         if (virtualCursorX < 0) virtualCursorX = 0;
                         if (virtualCursorX > displayWidth) virtualCursorX = displayWidth;
