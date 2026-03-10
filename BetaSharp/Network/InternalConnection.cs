@@ -33,6 +33,7 @@ public class InternalConnection : Connection
 
         if (packet.SkipCloneForInternal)
         {
+            Interlocked.Increment(ref packet.UseCount);
             RemoteConnection.ReceivePacket(packet);
             return;
         }
@@ -47,8 +48,7 @@ public class InternalConnection : Connection
 
             if (clonedPacket != null)
             {
-                Interlocked.Increment(ref packet.UseCount);
-                RemoteConnection.ReceivePacket(packet);
+                RemoteConnection.ReceivePacket(clonedPacket);
             }
         }
     }
