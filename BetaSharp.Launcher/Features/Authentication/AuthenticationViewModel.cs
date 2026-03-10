@@ -24,6 +24,8 @@ internal sealed partial class AuthenticationViewModel(
     {
         try
         {
+            await authenticationService.InitializeAsync();
+
             string token = await authenticationService.AuthenticateAsync();
 
             var session = await sessionService.TryCreateAsync(token);
@@ -33,6 +35,8 @@ internal sealed partial class AuthenticationViewModel(
                 await alertService.ShowAsync(
                     "License Required",
                     "The selected Microsoft account does not own a copy of Minecraft Java edition");
+
+                await authenticationService.RemoveAsync();
 
                 return;
             }
@@ -45,14 +49,11 @@ internal sealed partial class AuthenticationViewModel(
         catch (Exception exception)
         {
             logger.LogError(exception, "An exception occurred while trying to authenticate");
-
             storageService.Delete(nameof(Session));
-
-            await authenticationService.RemoveAsync();
 
             await alertService.ShowAsync(
                 "Uh-oh!",
-                "Try again shortly. If the issue persists, create a GitHub issue."
+                "Something went wrong, please try again shortly. If the issue persists, create a GitHub issue."
                 + Environment.NewLine
                 + "https://github.com/Fazin85/betasharp/issues");
         }
