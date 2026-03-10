@@ -16,35 +16,36 @@ internal sealed class App : Application
 
     private readonly IServiceProvider _services = Bootstrapper.Build();
 
-    // Taken from BetaSharp.Client, should a .Shared project be created?
     static App()
     {
-        string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        string path = ResolveAppDataPath(nameof(BetaSharp));
+        Folder = Path.Combine(path, "launcher");
+        Directory.CreateDirectory(Folder);
+    }
 
+    private static string ResolveAppDataPath(string appName)
+    {
+        string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         if (string.IsNullOrEmpty(home))
         {
             home = ".";
         }
 
-        string path;
-
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "." + nameof(BetaSharp));
-        }
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            path = Path.Combine(home, "Library", "Application Support", nameof(BetaSharp));
-        }
-        else
-        {
-            string? xdg = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
-            path = !string.IsNullOrEmpty(xdg) ? Path.Combine(xdg, nameof(BetaSharp)) : Path.Combine(home, ".local", "share", nameof(BetaSharp));
+            string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            return Path.Combine(appData, "." + appName);
         }
 
-        Folder = Path.Combine(path, "launcher");
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            return Path.Combine(home, "Library", "Application Support", appName);
+        }
 
-        Directory.CreateDirectory(Folder);
+        string? xdg = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
+        return !string.IsNullOrEmpty(xdg)
+            ? Path.Combine(xdg, appName)
+            : Path.Combine(home, ".local", "share", appName);
     }
 
     public override void Initialize()

@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
@@ -61,8 +64,15 @@ internal sealed class AuthenticationService
                 .WithMacKeyChain("betasharp.launcher", "betasharp")
                 .Build();
 
-            var helper = await MsalCacheHelper.CreateAsync(properties);
-            helper.RegisterCache(_application.UserTokenCache);
+            try
+            {
+                var helper = await MsalCacheHelper.CreateAsync(properties);
+                helper.RegisterCache(_application.UserTokenCache);
+            }
+            catch (MsalCachePersistenceException exception)
+            {
+                _logger.LogWarning(exception, "Unable to initialize persistent authentication cache, continuing with in-memory cache");
+            }
 
             _initialized = true;
         }
@@ -82,6 +92,7 @@ internal sealed class AuthenticationService
         catch (MsalUiRequiredException)
         {
             _logger.LogInformation("Authenticated interactively for Microsoft account");
+            EnsureInteractiveAuthPrerequisites();
 
             // Find a way to use system brokers.
             var result = await _application
@@ -92,5 +103,91 @@ internal sealed class AuthenticationService
 
             return result.AccessToken;
         }
+    }
+
+    private static void EnsureInteractiveAuthPrerequisites()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            List<string> missing = [];
+
+            if (!IsCommandAvailable("xdg-open"))
+            {
+                missing.Add("The `xdg-open` command is not available.");
+            }
+
+            AddIfLibraryMissing(missing, "webkit2gtk and/or libsoup");
+
+            if (missing.Count == 0)
+            {
+                return;
+            }
+
+            string message = BuildMissingDependencyMessage(
+                "Microsoft sign-in is missing required Linux dependencies.",
+                missing,
+                "Install WebKitGTK and/or libsoup packages for your distro, then try again.");
+
+            throw new AuthenticationPreflightException(message);
+        }
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && !File.Exists("/usr/bin/open"))
+        {
+            throw new AuthenticationPreflightException(
+                "Microsoft sign-in requires the macOS `open` command at `/usr/bin/open`.");
+        }
+    }
+
+    private static void AddIfLibraryMissing(ICollection<string> missing, string libraryName)
+    {
+        if (!TryLoadLibrary(libraryName))
+        {
+            missing.Add($"Missing native library `{libraryName}`.");
+        }
+    }
+
+    private static bool TryLoadLibrary(string libraryName)
+    {
+        if (NativeLibrary.TryLoad(libraryName, out nint handle))
+        {
+            NativeLibrary.Free(handle);
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool IsCommandAvailable(string command)
+    {
+        string? path = Environment.GetEnvironmentVariable("PATH");
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return false;
+        }
+
+        foreach (string segment in path.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries))
+        {
+            string candidate = Path.Combine(segment, command);
+            if (File.Exists(candidate))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static string BuildMissingDependencyMessage(string title, IEnumerable<string> missing, string help)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine(title);
+
+        foreach (string item in missing)
+        {
+            builder.Append("- ").AppendLine(item);
+        }
+
+        builder.Append(help);
+        return builder.ToString();
     }
 }

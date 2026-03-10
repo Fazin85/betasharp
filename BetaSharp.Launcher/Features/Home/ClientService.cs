@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -14,6 +14,8 @@ internal sealed class ClientService(IHttpClientFactory clientFactory)
 
     public async Task DownloadAsync(string directory)
     {
+        Directory.CreateDirectory(directory);
+
         using var sha256 = SHA256.Create();
 
         await using var file = File.Open(Path.Combine(directory, "b1.7.3.jar"), FileMode.OpenOrCreate);

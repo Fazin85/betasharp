@@ -37,6 +37,35 @@ cd BetaSharp.(Launcher/Client/Server)
 dotnet build
 ```
 
+## Publishing
+
+Cross-platform support in v1 targets `win-x64`, `linux-x64`, and `osx-x64`.
+
+For native-host publishes, Native AOT is enabled automatically:
+
+```
+dotnet publish BetaSharp.Launcher/BetaSharp.Launcher.csproj -c Release -r <host-rid>
+```
+
+For cross-OS publishes, use IL fallback:
+
+```
+dotnet publish BetaSharp.Launcher/BetaSharp.Launcher.csproj -c Release -r <target-rid> -p:PublishAot=false
+```
+
+Launcher artifacts include RID-scoped client payloads at:
+
+```
+BetaSharp.Launcher/bin/Release/net10.0/<target-rid>/publish/Client/<target-rid>/
+```
+
+The launcher first resolves the client from `Client/<rid>/`, then falls back to `Client/` for local development runs.
+
+## Linux Authentication Notes
+
+Launcher Microsoft sign-in on Linux requires `xdg-open` and WebKitGTK/libsoup runtime libraries.
+If prerequisites are missing, the launcher will show a dependency error before interactive sign-in starts.
+
 ## Contributing
 
 Contributions are welcome! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests.

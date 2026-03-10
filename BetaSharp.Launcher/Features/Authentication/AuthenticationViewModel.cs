@@ -42,6 +42,13 @@ internal sealed partial class AuthenticationViewModel(
 
             await storageService.SetAsync(session, SessionSerializerContext.Default.Session);
         }
+        catch (AuthenticationPreflightException exception)
+        {
+            logger.LogWarning(exception, "Authentication prerequisites are not available");
+            storageService.Delete(nameof(Session));
+
+            await alertService.ShowAsync("Missing Dependencies", exception.Message);
+        }
         catch (Exception exception)
         {
             logger.LogError(exception, "An exception occurred while trying to authenticate");

@@ -24,3 +24,107 @@ jobs:
         run: dotnet restore
       - name: Build with .NET
         run: dotnet build --no-restore
+
+  publish-native:
+    strategy:
+      matrix:
+        include:
+          - on: ubuntu-24.04
+            rid: linux-x64
+            launcher_binary: BetaSharp.Launcher
+          - on: windows-2025
+            rid: win-x64
+            launcher_binary: BetaSharp.Launcher.exe
+          - on: macos-26-intel
+            rid: osx-x64
+            launcher_binary: BetaSharp.Launcher
+    runs-on: ${{ matrix.on }}
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # 6.0.2
+        with:
+          persist-credentials: false
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@baa11fbfe1d6520db94683bd5c7a3818018e4309 # 5.1.0
+        with:
+          dotnet-version: '10.0.x'
+          dotnet-quality: 'ga'
+      - name: Restore dependencies for .NET
+        run: dotnet restore
+      - name: Publish launcher (Native AOT on host RID)
+        run: dotnet publish BetaSharp.Launcher/BetaSharp.Launcher.csproj -c Release -r ${{ matrix.rid }}
+      - name: Validate published artifact layout
+        shell: pwsh
+        run: |
+          $publishDir = Join-Path "BetaSharp.Launcher/bin/Release/net10.0" "${{ matrix.rid }}/publish"
+          $launcherBinary = Join-Path $publishDir "${{ matrix.launcher_binary }}"
+          $clientRidDir = Join-Path $publishDir "Client/${{ matrix.rid }}"
+          $clientBinary = if ("${{ matrix.rid }}".StartsWith("win-")) { "BetaSharp.Client.exe" } else { "BetaSharp.Client" }
+          $clientPath = Join-Path $clientRidDir $clientBinary
+
+          if (-not (Test-Path $launcherBinary)) {
+            throw "Missing launcher binary: $launcherBinary"
+          }
+
+          if (-not (Test-Path $clientRidDir)) {
+            throw "Missing RID-specific client directory: $clientRidDir"
+          }
+
+          if (-not (Test-Path $clientPath)) {
+            throw "Missing client binary: $clientPath"
+          }
+
+          $nestedPublishDirectories = Get-ChildItem -Path (Join-Path $publishDir "Client") -Directory -Filter publish -Recurse
+          if ($nestedPublishDirectories.Count -gt 0) {
+            $paths = $nestedPublishDirectories | ForEach-Object { $_.FullName }
+            throw "Unexpected nested publish directories found: $($paths -join ', ')"
+          }
+
+  publish-cross-il:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        rid: [win-x64, osx-x64]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # 6.0.2
+        with:
+          persist-credentials: false
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@baa11fbfe1d6520db94683bd5c7a3818018e4309 # 5.1.0
+        with:
+          dotnet-version: '10.0.x'
+          dotnet-quality: 'ga'
+      - name: Restore dependencies for .NET
+        run: dotnet restore
+      - name: Publish launcher (IL fallback for cross-OS RID)
+        run: dotnet publish BetaSharp.Launcher/BetaSharp.Launcher.csproj -c Release -r ${{ matrix.rid }} -p:PublishAot=false
+      - name: Validate published artifact layout
+        shell: pwsh
+        run: |
+          $publishDir = Join-Path "BetaSharp.Launcher/bin/Release/net10.0" "${{ matrix.rid }}/publish"
+          $launcherBinaryName = if ("${{ matrix.rid }}".StartsWith("win-")) { "BetaSharp.Launcher.exe" } else { "BetaSharp.Launcher" }
+          $launcherBinary = Join-Path $publishDir $launcherBinaryName
+          $clientRidDir = Join-Path $publishDir "Client/${{ matrix.rid }}"
+          $clientBinary = if ("${{ matrix.rid }}".StartsWith("win-")) { "BetaSharp.Client.exe" } else { "BetaSharp.Client" }
+          $clientPath = Join-Path $clientRidDir $clientBinary
+
+          if (-not (Test-Path $launcherBinary)) {
+            throw "Missing launcher binary: $launcherBinary"
+          }
+
+          if (-not (Test-Path $clientRidDir)) {
+            throw "Missing RID-specific client directory: $clientRidDir"
+          }
+
+          if (-not (Test-Path $clientPath)) {
+            throw "Missing client binary: $clientPath"
+          }
+
+          $nestedPublishDirectories = Get-ChildItem -Path (Join-Path $publishDir "Client") -Directory -Filter publish -Recurse
+          if ($nestedPublishDirectories.Count -gt 0) {
+            $paths = $nestedPublishDirectories | ForEach-Object { $_.FullName }
+            throw "Unexpected nested publish directories found: $($paths -join ', ')"
+          }

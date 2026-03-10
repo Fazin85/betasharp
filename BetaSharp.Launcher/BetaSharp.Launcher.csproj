@@ -6,8 +6,14 @@
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <PublishAot>true</PublishAot>
-    <RuntimeIdentifier Condition="'$(NETCoreSdkRuntimeIdentifier)' == 'arch-x64'">linux-x64</RuntimeIdentifier>
+    <!-- Disable Avalonia.BuildServices stats telemetry target -->
+    <UsedAvaloniaProducts></UsedAvaloniaProducts>
+    <SupportedRuntimeIdentifiers>win-x64;linux-x64;osx-x64</SupportedRuntimeIdentifiers>
+    <LauncherRuntimeIdentifier Condition="'$(RuntimeIdentifier)' != ''">$(RuntimeIdentifier)</LauncherRuntimeIdentifier>
+    <LauncherRuntimeIdentifier Condition="'$(LauncherRuntimeIdentifier)' == ''">$(NETCoreSdkPortableRuntimeIdentifier)</LauncherRuntimeIdentifier>
+    <ClientRuntimeIdentifier Condition="'$(ClientRuntimeIdentifier)' == ''">$(LauncherRuntimeIdentifier)</ClientRuntimeIdentifier>
+    <PublishAot Condition="'$(PublishAot)' == '' and '$(RuntimeIdentifier)' != '' and '$(RuntimeIdentifier)' == '$(NETCoreSdkPortableRuntimeIdentifier)'">true</PublishAot>
+    <PublishAot Condition="'$(PublishAot)' == ''">false</PublishAot>
     <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
     <OptimizationPreference>speed</OptimizationPreference>
     <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
@@ -21,24 +27,41 @@
     <ProjectReference Include="..\BetaSharp.Client\BetaSharp.Client.csproj" ReferenceOutputAssembly="false" Private="false"/>
   </ItemGroup>
 
-  <Target Name="_CopyClientOutput">
+  <Target Name="_StageClientPayload">
     <PropertyGroup>
-      <ClientOutputDir>..\BetaSharp.Client\bin\$(Configuration)\$(TargetFramework)\</ClientOutputDir>
+      <ClientPublishDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\BetaSharp.Client\obj\client-publish\$(ClientRuntimeIdentifier)\'))</ClientPublishDir>
+      <ClientDestinationRoot>$([System.IO.Path]::GetFullPath('$(ClientPayloadDestination)'))</ClientDestinationRoot>
+      <ClientDestinationDir>$([System.IO.Path]::GetFullPath('$(ClientPayloadDestination)$(ClientRuntimeIdentifier)\'))</ClientDestinationDir>
     </PropertyGroup>
 
+    <Error Condition="'$(ClientPayloadDestination)' == ''" Text="Client payload destination was not provided." />
+    <Error Condition="'$(ClientRuntimeIdentifier)' != 'win-x64' and '$(ClientRuntimeIdentifier)' != 'linux-x64' and '$(ClientRuntimeIdentifier)' != 'osx-x64'"
+           Text="Unsupported ClientRuntimeIdentifier '$(ClientRuntimeIdentifier)'. Supported values: $(SupportedRuntimeIdentifiers)." />
+
+    <RemoveDir Directories="$(ClientPublishDir)" />
+
+    <MSBuild Projects="..\BetaSharp.Client\BetaSharp.Client.csproj"
+             Targets="Restore;Publish"
+             Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework);RuntimeIdentifier=$(ClientRuntimeIdentifier);SelfContained=false;PublishSingleFile=false;PublishDir=$(ClientPublishDir)/" />
+
+    <RemoveDir Directories="$(ClientDestinationRoot)" />
+    <MakeDir Directories="$(ClientDestinationDir)" />
+
     <ItemGroup>
-      <ClientFiles Include="$(ClientOutputDir)**\*.*"/>
+      <ClientPublishedFiles Include="$(ClientPublishDir)/**/*.*" />
     </ItemGroup>
 
-    <Copy SourceFiles="@(ClientFiles)" DestinationFiles="@(ClientFiles->'$(ClientCopyDestination)%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true"/>
+    <Copy SourceFiles="@(ClientPublishedFiles)"
+          DestinationFiles="@(ClientPublishedFiles->'$(ClientDestinationDir)/%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
   </Target>
 
-  <Target Name="CopyClientOutputBuild" AfterTargets="Build">
-    <MSBuild Projects="$(MSBuildProjectFile)" Targets="_CopyClientOutput" Properties="ClientCopyDestination=$(OutputPath)Client\"/>
+  <Target Name="StageClientPayloadBuild" AfterTargets="Build" Condition="'$(DesignTimeBuild)' != 'true' and '$(SkipClientStaging)' != 'true'">
+    <MSBuild Projects="$(MSBuildProjectFile)" Targets="_StageClientPayload" Properties="ClientPayloadDestination=$(OutputPath)Client/" />
   </Target>
 
-  <Target Name="CopyClientOutputPublish" AfterTargets="Publish">
-    <MSBuild Projects="$(MSBuildProjectFile)" Targets="_CopyClientOutput" Properties="ClientCopyDestination=$(PublishDir)Client\"/>
+  <Target Name="StageClientPayloadPublish" AfterTargets="Publish" Condition="'$(SkipClientStaging)' != 'true'">
+    <MSBuild Projects="$(MSBuildProjectFile)" Targets="_StageClientPayload" Properties="ClientPayloadDestination=$(PublishDir)Client/" />
   </Target>
 
   <ItemGroup>
