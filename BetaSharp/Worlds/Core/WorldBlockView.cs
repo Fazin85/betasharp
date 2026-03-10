@@ -15,7 +15,7 @@ public class WorldBlockReader : IBlockReader
 {
     private readonly IBlockWorldContext _context;
     private readonly Dimension _dimension;
-    public int AmbientDarkness;
+    public int AmbientDarkness => _context.Environment?.AmbientDarkness ?? 0;
 
     public WorldBlockReader(IBlockWorldContext context, Dimension dimension, WorldBlockWrite writer)
     {
