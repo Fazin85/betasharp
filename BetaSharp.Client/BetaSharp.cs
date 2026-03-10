@@ -33,12 +33,10 @@ using BetaSharp.Worlds.Colors;
 using BetaSharp.Worlds.Storage;
 using ImGuiNET;
 using Microsoft.Extensions.Logging;
-using Silk.NET.GLFW;
 using Silk.NET.Input;
 using Silk.NET.OpenGL;
 using Silk.NET.OpenGL.Extensions.ImGui;
 using Silk.NET.Windowing;
-using Exception = System.Exception;
 using GLEnum = BetaSharp.Client.Rendering.Core.OpenGL.GLEnum;
 
 namespace BetaSharp.Client;
@@ -60,7 +58,6 @@ public partial class BetaSharp
     public EntityLiving camera;
     public ParticleManager particleManager;
     public Session session;
-    public string betaSharpUri;
     public bool hideQuitButton = false;
     public volatile bool isGamePaused;
     public TextureManager textureManager;
@@ -99,7 +96,6 @@ public partial class BetaSharp
     long prevFrameTime = -1L;
     public bool inGameHasFocus;
     public int MouseTicksRan { get; set; }
-    public bool isRaining = false;
     long systemTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
 ;
     private int joinPlayerCounter;
@@ -163,12 +159,6 @@ public partial class BetaSharp
     {
         hasCrashed = true;
         _logger.LogError(crashInfo, "BetaSharp has crashed!");
-    }
-
-    public void setServer(string name, int port)
-    {
-        serverName = name;
-        serverPort = port;
     }
 
     public unsafe void startGame()
@@ -531,8 +521,7 @@ public partial class BetaSharp
 
         try
         {
-            long lastFpsCheckTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-;
+            long lastFpsCheckTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             int frameCounter = 0;
 
             while (running)
@@ -637,16 +626,7 @@ public partial class BetaSharp
                     {
                         ++TicksRan;
 
-                        try
-                        {
-                            runTick(Timer.renderPartialTicks);
-                        }
-                        catch (BetaSharpException)
-                        {
-                            world = null;
-                            changeWorld((World)null);
-                            displayGuiScreen(new GuiConflictWarning());
-                        }
+                        runTick(Timer.renderPartialTicks);
                     }
 
                     if (options.DebugMode)
@@ -810,12 +790,6 @@ public partial class BetaSharp
                         debug = frameCounter + " fps";
                         lastFpsCheckTime += 1000L;
                     }
-                }
-                catch (BetaSharpException)
-                {
-                    world = null;
-                    changeWorld(null);
-                    displayGuiScreen(new GuiConflictWarning());
                 }
                 catch (OutOfMemoryException)
                 {
@@ -1873,10 +1847,7 @@ public partial class BetaSharp
     {
         Thread.CurrentThread.Name = "BetaSharp Main Thread";
 
-        BetaSharp game = new(850, 480, false)
-        {
-            betaSharpUri = "www.minecraft.net"
-        };
+        BetaSharp game = new(850, 480, false);
 
         if (playerName != null && sessionToken != null)
         {
@@ -1932,7 +1903,5 @@ public partial class BetaSharp
     {
         return Instance != null && Instance.options.ShowDebugInfo;
     }
-
-    public static bool lineIsCommand(string var1) => (var1.StartsWith("/"));
 }
 
