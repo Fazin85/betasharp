@@ -58,7 +58,15 @@ internal class ItemBlock : Item
         {
             return false;
         }
-        else if (y == 127 && Block.Blocks[blockID].material.IsSolid)
+
+        // Prevent overwriting existing non-replaceable blocks (fixes Lever/Button overlap)
+        int existingBlockId = world.BlocksReader.GetBlockId(x, y, z);
+        if (existingBlockId != 0 && !Block.Blocks[existingBlockId].material.IsReplaceable)
+        {
+            return false;
+        }
+
+        if (y == 127 && Block.Blocks[blockID].material.IsSolid)
         {
             return false;
         }
@@ -67,8 +75,7 @@ internal class ItemBlock : Item
             Block block = Block.Blocks[blockID];
             if (world.BlockWriter.SetBlock(x, y, z, blockID, getPlacementMetadata(itemStack.getDamage())))
             {
-                Block.Blocks[blockID].onPlaced(new OnPlacedEvt(world, null, 0, 0, x, y, z));
-                Block.Blocks[blockID].onPlaced(new OnPlacedEvt(world, entityPlayer, 0, 0, x, y, z));
+                Block.Blocks[blockID].onPlaced(new OnPlacedEvt(world, entityPlayer, meta, meta, x, y, z));
                 world.Broadcaster.PlaySoundAtPos(x + 0.5F, y + 0.5F, z + 0.5F, block.soundGroup.StepSound, (block.soundGroup.Volume + 1.0F) / 2.0F, block.soundGroup.Pitch * 0.8F);
                 --itemStack.count;
             }

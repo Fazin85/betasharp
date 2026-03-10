@@ -102,39 +102,37 @@ internal class BlockStairs : Block
 
     public override bool canPlaceAt(CanPlaceAtCtx evt) => baseBlock.canPlaceAt(evt);
 
-    // Merged the two onPlaced methods into one solid context execution
     public override void onPlaced(OnPlacedEvt evt)
     {
-        // 1. Calculate facing based on placer entity yaw
-        int facing = MathHelper.Floor(evt.Placer.yaw * 4.0F / 360.0F + 0.5D) & 3;
         int meta = 0;
-
-        if (facing == 0)
+        if (evt.Placer != null)
         {
-            meta = 2;
-        }
+            // 1. Calculate facing based on placer entity yaw
+            int facing = MathHelper.Floor(evt.Placer.yaw * 4.0F / 360.0F + 0.5D) & 3;
 
-        if (facing == 1)
-        {
-            meta = 1;
-        }
+            if (facing == 0)
+            {
+                meta = 2;
+            }
 
-        if (facing == 2)
-        {
-            meta = 3;
-        }
+            if (facing == 1)
+            {
+                meta = 1;
+            }
 
-        if (facing == 3)
-        {
-            meta = 0;
+            if (facing == 2)
+            {
+                meta = 3;
+            }
+
+            if (facing == 3)
+            {
+                meta = 0;
+            }
         }
 
         evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, meta);
-
-        // 2. Trigger Neighbor Update (Constructing a dummy OnTickEvt to satisfy the signature safely)
         evt.Level.Broadcaster.NotifyNeighbors(evt.X, evt.Y, evt.Z, id);
-
-        // 3. Inform the base block
         baseBlock.onPlaced(evt);
     }
 

@@ -26,25 +26,28 @@ internal class BlockFurnace : BlockWithEntity
 
     public override void onPlaced(OnPlacedEvt evt)
     {
-        int direction = MathHelper.Floor(evt.Placer.yaw * 4.0F / 360.0F + 0.5D) & 3;
-        if (direction == 0)
+        if (evt.Placer != null)
         {
-            evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, 2);
-        }
+            int direction = MathHelper.Floor(evt.Placer.yaw * 4.0F / 360.0F + 0.5D) & 3;
+            if (direction == 0)
+            {
+                evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, 2);
+            }
 
-        if (direction == 1)
-        {
-            evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, 5);
-        }
+            if (direction == 1)
+            {
+                evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, 5);
+            }
 
-        if (direction == 2)
-        {
-            evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, 3);
-        }
+            if (direction == 2)
+            {
+                evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, 3);
+            }
 
-        if (direction == 3)
-        {
-            evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, 4);
+            if (direction == 3)
+            {
+                evt.Level.BlockWriter.SetBlockMeta(evt.X, evt.Y, evt.Z, 4);
+            }
         }
 
         base.onPlaced(evt);

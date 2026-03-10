@@ -44,25 +44,29 @@ internal class BlockLever : Block
         {
             meta = 5 + Random.Shared.Next(2);
         }
-
-        if (evt.Direction == 2 && evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y, evt.Z + 1))
+        else if (evt.Direction == 2 && evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y, evt.Z + 1))
         {
             meta = 4;
         }
-
-        if (evt.Direction == 3 && evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y, evt.Z - 1))
+        else if (evt.Direction == 3 && evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y, evt.Z - 1))
         {
             meta = 3;
         }
-
-        if (evt.Direction == 4 && evt.Level.BlocksReader.ShouldSuffocate(evt.X + 1, evt.Y, evt.Z))
+        else if (evt.Direction == 4 && evt.Level.BlocksReader.ShouldSuffocate(evt.X + 1, evt.Y, evt.Z))
         {
             meta = 2;
         }
-
-        if (evt.Direction == 5 && evt.Level.BlocksReader.ShouldSuffocate(evt.X - 1, evt.Y, evt.Z))
+        else if (evt.Direction == 5 && evt.Level.BlocksReader.ShouldSuffocate(evt.X - 1, evt.Y, evt.Z))
         {
             meta = 1;
+        }
+        else
+        {
+            if (evt.Level.BlocksReader.ShouldSuffocate(evt.X - 1, evt.Y, evt.Z)) meta = 1;
+            else if (evt.Level.BlocksReader.ShouldSuffocate(evt.X + 1, evt.Y, evt.Z)) meta = 2;
+            else if (evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y, evt.Z - 1)) meta = 3;
+            else if (evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y, evt.Z + 1)) meta = 4;
+            else if (evt.Level.BlocksReader.ShouldSuffocate(evt.X, evt.Y - 1, evt.Z)) meta = 5 + Random.Shared.Next(2);
         }
 
         if (meta == -1)
