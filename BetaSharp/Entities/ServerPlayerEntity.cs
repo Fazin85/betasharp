@@ -157,10 +157,6 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
                 {
                     networkHandler.sendPacket(packet);
                 }
-                else
-                {
-                    packet.ReturnNoCount();
-                }
             }
         }
 

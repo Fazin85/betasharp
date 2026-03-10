@@ -164,7 +164,10 @@ internal class EntityTrackerEntry
 
     public void sendToAround(Packet packet)
     {
-        sendToListeners(packet);
+        foreach (var p in listeners)
+        {
+            p.networkHandler.sendPacket(packet);
+        }
         if (currentTrackedEntity is ServerPlayerEntity entity)
         {
             entity.networkHandler.sendPacket(packet);

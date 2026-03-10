@@ -113,7 +113,6 @@ public partial class BetaSharp
     private bool _wasRightTriggerDown;
     private bool _wasStartButtonDown;
     private bool _wasYButtonDown;
-    private bool _wasDpadDownDown;
 
     public bool isControllerMode;
     public float virtualCursorX;
