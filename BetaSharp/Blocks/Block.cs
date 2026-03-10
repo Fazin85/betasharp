@@ -256,7 +256,16 @@ public class Block
 
     public void setBoundingBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) => BoundingBox = new Box(minX, minY, minZ, maxX, maxY, maxZ);
 
-    public virtual float getLuminance(ILightProvider lighting, int x, int y, int z) => lighting.GetNaturalBrightness(x, y, z, BlocksLightLuminance[id]);
+    public virtual float getLuminance(ILightProvider lighting, int x, int y, int z)
+    {
+        if (lighting == null)
+        {
+            int baseLum = BlocksLightLuminance[id];
+            return baseLum > 0 ? baseLum / 15.0f : 1.0f;
+        }
+
+        return lighting.GetNaturalBrightness(x, y, z, BlocksLightLuminance[id]);
+    }
 
     public virtual bool isSideVisible(IBlockReader iBlockReader, int x, int y, int z, int side)
     {

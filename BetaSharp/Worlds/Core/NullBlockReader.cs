@@ -30,24 +30,42 @@ public sealed class NullBlockReader : IBlockReader
     public bool ShouldSuffocate(int x, int y, int z) => false;
 
     public BiomeSource GetBiomeSource() => null!;
-    public int GetMeta(int x, int y, int z) => throw new NotImplementedException();
-    public Material GetMaterial(int x, int y, int z) => throw new NotImplementedException();
-    public bool IsAir(int x, int y, int z) => throw new NotImplementedException();
-    public int GetBrightness(int x, int y, int z) => throw new NotImplementedException();
-    public bool IsTopY(int x, int y, int z) => throw new NotImplementedException();
-    public int GetTopY(int x, int z) => throw new NotImplementedException();
-    public int GetTopSolidBlockY(int x, int z) => throw new NotImplementedException();
-    public int GetSpawnPositionValidityY(int x, int z) => throw new NotImplementedException();
-    public float GetVisibilityRatio(Vec3D sourcePosition, Box targetBox) => throw new NotImplementedException();
-    public HitResult Raycast(Vec3D start, Vec3D end) => throw new NotImplementedException();
-    public HitResult Raycast(Vec3D start, Vec3D end, bool includeFluids) => throw new NotImplementedException();
-    public HitResult Raycast(Vec3D start, Vec3D target, bool includeFluids, bool ignoreNonSolid) => throw new NotImplementedException();
-    public bool IsAnyBlockInBox(Box area) => throw new NotImplementedException();
-    public bool IsBoxSubmergedInFluid(Box area) => throw new NotImplementedException();
-    public bool IsFireOrLavaInBox(Box area) => throw new NotImplementedException();
-    public bool IsMaterialInBox(Box area, Material material) => throw new NotImplementedException();
-    public bool IsFluidInBox(Box area, Material fluid) => throw new NotImplementedException();
-    public bool UpdateMovementInFluid(Box entityBox, Material fluidMaterial, Entity entity) => throw new NotImplementedException();
+
+    public int GetMeta(int x, int y, int z) => 0;
+
+    public Material GetMaterial(int x, int y, int z) => Material.Air;
+
+    public bool IsAir(int x, int y, int z) => true;
+
+    public int GetBrightness(int x, int y, int z) => 15;
+
+    public bool IsTopY(int x, int y, int z) => false;
+
+    public int GetTopY(int x, int z) => 0;
+
+    public int GetTopSolidBlockY(int x, int z) => 0;
+
+    public int GetSpawnPositionValidityY(int x, int z) => 0;
+
+    public float GetVisibilityRatio(Vec3D sourcePosition, Box targetBox) => 1.0f;
+
+    public HitResult Raycast(Vec3D start, Vec3D end) => new(HitResultType.MISS);
+
+    public HitResult Raycast(Vec3D start, Vec3D end, bool includeFluids) => new(HitResultType.MISS);
+
+    public HitResult Raycast(Vec3D start, Vec3D target, bool includeFluids, bool ignoreNonSolid) => new(HitResultType.MISS);
+
+    public bool IsAnyBlockInBox(Box area) => false;
+
+    public bool IsBoxSubmergedInFluid(Box area) => false;
+
+    public bool IsFireOrLavaInBox(Box area) => false;
+
+    public bool IsMaterialInBox(Box area, Material material) => false;
+
+    public bool IsFluidInBox(Box area, Material fluid) => false;
+
+    public bool UpdateMovementInFluid(Box entityBox, Material fluidMaterial, Entity entity) => false;
 
     public float GetNaturalBrightness(int x, int y, int z, int blockLight) => 1.0f;
 
@@ -56,5 +74,6 @@ public sealed class NullBlockReader : IBlockReader
     public int getBlockMeta(int x, int y, int z) => 0;
 
     public Material getMaterial(int x, int y, int z) => Material.Air;
-    public bool IsPosLoaded(int x, int y, int z) => throw new NotImplementedException();
+
+    public bool IsPosLoaded(int x, int y, int z) => true;
 }
