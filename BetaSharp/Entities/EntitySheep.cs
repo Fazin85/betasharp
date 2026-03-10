@@ -1,6 +1,7 @@
 using BetaSharp.Blocks;
 using BetaSharp.Items;
 using BetaSharp.NBT;
+using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
 
@@ -14,19 +15,16 @@ public class EntitySheep : EntityAnimal
         [0.2F, 0.4F, 0.8F], [0.5F, 0.4F, 0.3F], [0.4F, 0.5F, 0.2F], [0.8F, 0.3F, 0.3F], [0.1F, 0.1F, 0.1F]
     ];
 
+    public readonly SyncedProperty<byte> SheepData;
+
     public EntitySheep(IBlockWorldContext world) : base(world)
     {
         texture = "/mob/sheep.png";
         setBoundingBoxSpacing(0.9F, 1.3F);
+        SheepData = DataSynchronizer.MakeProperty<byte>(16, 0);
     }
 
     public override void PostSpawn() => setFleeceColor(getRandomFleeceColor(_level.random));
-
-    protected override void initDataTracker()
-    {
-        base.initDataTracker();
-        dataWatcher.AddObject(16, (byte)0);
-    }
 
     protected override void dropFewItems()
     {
@@ -83,26 +81,32 @@ public class EntitySheep : EntityAnimal
 
     protected override string getDeathSound() => "mob.sheep";
 
-    public int getFleeceColor() => dataWatcher.getWatchableObjectByte(16) & 15;
+    public int getFleeceColor()
+    {
+        return SheepData.Value & 15;
+    }
 
     public void setFleeceColor(int color)
     {
-        sbyte packedData = dataWatcher.getWatchableObjectByte(16);
-        dataWatcher.UpdateObject(16, (byte)((packedData & 240) | (color & 15)));
+        byte packedData = SheepData.Value;
+        SheepData.Value = (byte)(packedData & 240 | color & 15);
     }
 
-    public bool getSheared() => (dataWatcher.getWatchableObjectByte(16) & 16) != 0;
+    public bool getSheared()
+    {
+        return (SheepData.Value & 16) != 0;
+    }
 
     public void setSheared(bool sheared)
     {
-        sbyte packedData = dataWatcher.getWatchableObjectByte(16);
+        byte packedData = SheepData.Value;
         if (sheared)
         {
-            dataWatcher.UpdateObject(16, (byte)(packedData | 16));
+            SheepData.Value = (byte)(packedData | 16);
         }
         else
         {
-            dataWatcher.UpdateObject(16, (byte)(packedData & -17));
+            SheepData.Value = (byte)(packedData & -17);
         }
     }
 

@@ -119,10 +119,6 @@ public class EntityMinecart : Entity, IInventory
 
     protected override bool bypassesSteppingEffects() => false;
 
-    protected override void initDataTracker()
-    {
-    }
-
     public override Box? getCollisionAgainstShape(Entity entity) => entity.boundingBox;
 
     public override Box? getBoundingBox() => null;

@@ -35,10 +35,6 @@ public class EntityItem : Entity
 
     protected override bool bypassesSteppingEffects() => false;
 
-    protected override void initDataTracker()
-    {
-    }
-
     public override void tick()
     {
         base.tick();

@@ -45,9 +45,6 @@ public class EntityEgg : Entity
         standingEyeHeight = 0.0F;
     }
 
-    protected override void initDataTracker()
-    {
-    }
 
     public override bool shouldRender(double var1)
     {

@@ -20,6 +20,7 @@ public static class ControllerManager
     private static bool s_wasPickBlockDown;
     private static bool s_wasCraftingDown;
     private static bool s_wasSneakDown;
+    private static bool s_wasJumpDown;
 
     public static bool SneakToggle { get; set; }
     private static bool s_suppressInGameInput;
@@ -43,6 +44,7 @@ public static class ControllerManager
         s_wasPickBlockDown = Controller.IsButtonDown(GamepadButton.DPadUp);
         s_wasSneakDown = Controller.IsButtonDown(GamepadButton.RightStick);
         s_wasCraftingDown = Controller.IsButtonDown(GamepadButton.X);
+        s_wasJumpDown = Controller.IsButtonDown(GamepadButton.A);
     }
 
     public static void UpdateInGame(float tickDelta)
@@ -81,7 +83,10 @@ public static class ControllerManager
         }
 
         // Jump
-        s_game.player.movementInput.checkKeyForMovementInput(s_game.options.KeyBindJump.keyCode, jumpHeld);
+        if (jumpHeld != s_wasJumpDown)
+        {
+            s_game.player.movementInput.checkKeyForMovementInput(s_game.options.KeyBindJump.keyCode, jumpHeld);
+        }
 
         // Attack
         if (attackHeld && !s_wasAttackDown)

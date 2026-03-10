@@ -89,9 +89,6 @@ public class EntityLightningBolt : EntityWeatherEffect
         }
     }
 
-    protected override void initDataTracker()
-    {
-    }
 
     public override void readNbt(NBTTagCompound nbt)
     {

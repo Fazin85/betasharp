@@ -61,10 +61,6 @@ public class EntityFX : Entity
 
     protected override bool bypassesSteppingEffects() => false;
 
-    protected override void initDataTracker()
-    {
-    }
-
     public override void tick()
     {
         prevX = x;

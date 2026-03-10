@@ -50,9 +50,6 @@ public class EntityFireball : Entity
         powerZ = var7 / var9 * 0.1D;
     }
 
-    protected override void initDataTracker()
-    {
-    }
 
     public override bool shouldRender(double var1)
     {

@@ -77,9 +77,6 @@ public class EntityLiving : Entity
     {
     }
 
-    protected override void initDataTracker()
-    {
-    }
 
     public bool canSee(Entity entity) => _level.BlocksReader.Raycast(new Vec3D(x, y + getEyeHeight(), z), new Vec3D(entity.x, entity.y + entity.getEyeHeight(), entity.z)).Type == HitResultType.MISS;
 

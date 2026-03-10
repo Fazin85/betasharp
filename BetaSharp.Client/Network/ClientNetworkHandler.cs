@@ -129,7 +129,7 @@ public class ClientNetworkHandler : NetHandler
         double x = packet.x / 32.0D;
         double y = packet.y / 32.0D;
         double z = packet.z / 32.0D;
-        object entity = null;
+        object? entity = null;
         if (packet.entityType == 10)
         {
             entity = new EntityMinecart(worldClient, x, y, z, 0);
@@ -204,7 +204,7 @@ public class ClientNetworkHandler : NetHandler
             {
                 if (packet.entityType == 60)
                 {
-                    Entity owner = getEntityByID(packet.entityData);
+                    Entity? owner = getEntityByID(packet.entityData);
                     if (owner is EntityLiving)
                     {
                         ((EntityArrow)entity).owner = (EntityLiving)owner;
@@ -222,7 +222,7 @@ public class ClientNetworkHandler : NetHandler
         double x = packet.x / 32.0D;
         double y = packet.y / 32.0D;
         double z = packet.z / 32.0D;
-        EntityLightningBolt ent = null;
+        EntityLightningBolt? ent = null;
         if (packet.type == 1)
         {
             ent = new EntityLightningBolt(worldClient, x, y, z);
@@ -249,7 +249,7 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onEntityVelocityUpdate(EntityVelocityUpdateS2CPacket packet)
     {
-        Entity ent = getEntityByID(packet.EntityId);
+        Entity? ent = getEntityByID(packet.EntityId);
         if (ent != null)
         {
             ent.setVelocityClient(packet.motionX / 8000.0D, packet.motionY / 8000.0D, packet.motionZ / 8000.0D);
@@ -258,12 +258,13 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onEntityTrackerUpdate(EntityTrackerUpdateS2CPacket packet)
     {
-        Entity ent = getEntityByID(packet.EntityId);
-        if (ent != null && packet.GetWatchedObjects() != null)
+        Entity? ent = getEntityByID(packet.EntityId);
+        if (ent == null || packet.Data == null || packet.Data.Length == 0)
         {
-            ent.getDataWatcher().UpdateWatchedObjectsFromList(packet.GetWatchedObjects());
+            return;
         }
 
+        ent.DataSynchronizer.ApplyChanges(new MemoryStream(packet.Data));
     }
 
     public override void onPlayerSpawn(PlayerSpawnS2CPacket packet)
@@ -556,12 +557,7 @@ public class ClientNetworkHandler : NetHandler
         ent.lastTickZ = ent.z;
         ent.interpolateOnly = true;
         worldClient.ForceEntity(packet.entityId, ent);
-        List<WatchableObject> metaData = packet.GetMetadata();
-        if (metaData != null)
-        {
-            ent.getDataWatcher().UpdateWatchedObjectsFromList(metaData);
-        }
-
+        ent.DataSynchronizer.ApplyChanges(new MemoryStream(packet.Data));
     }
 
     public override void onWorldTimeUpdate(WorldTimeUpdateS2CPacket packet)
@@ -695,7 +691,7 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onScreenHandlerAcknowledgement(ScreenHandlerAcknowledgementPacket packet)
     {
-        ScreenHandler screenHandler = null;
+        ScreenHandler? screenHandler = null;
         if (packet.syncId == 0)
         {
             screenHandler = _game.player.playerScreenHandler;
@@ -765,7 +761,7 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onEntityEquipmentUpdate(EntityEquipmentUpdateS2CPacket packet)
     {
-        Entity ent = getEntityByID(packet.EntityId);
+        Entity? ent = getEntityByID(packet.EntityId);
         if (ent != null)
         {
             ent.setEquipmentStack(packet.slot, packet.itemRawId, packet.itemDamage);

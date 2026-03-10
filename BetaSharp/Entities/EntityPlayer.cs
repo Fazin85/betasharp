@@ -61,13 +61,6 @@ public abstract class EntityPlayer : EntityLiving
         fireImmunityTicks = 20;
         texture = "/mob/char.png";
     }
-
-    protected override void initDataTracker()
-    {
-        base.initDataTracker();
-        dataWatcher.AddObject(16, (byte)0);
-    }
-
     protected void TickSleep()
     {
         if (isSleeping())
