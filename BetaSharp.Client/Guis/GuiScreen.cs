@@ -13,26 +13,39 @@ public class GuiScreen : Gui
     public BetaSharp Game;
     public int Width;
     public int Height;
-    protected List<GuiButton> _controlList = new();
+    protected List<GuiButton> _controlList = [];
     public bool AllowUserInput = false;
     public virtual bool PausesGame => true;
     public TextRenderer FontRenderer;
     public GuiParticle ParticlesGui;
     private GuiButton SelectedButton = null;
+    protected GuiButton? _hoveredButton = null;
     protected bool _isSubscribedToKeyboard = false;
 
     public virtual void Render(int mouseX, int mouseY, float partialTicks)
     {
-        foreach (var control in _controlList)
+        _hoveredButton = null;
+        foreach (GuiButton control in _controlList)
         {
             control.DrawButton(Game, mouseX, mouseY);
+            if (mouseX >= control.XPosition && mouseY >= control.YPosition && mouseX < control.XPosition + control.Width && mouseY < control.YPosition + control.Height)
+            {
+                _hoveredButton = control;
+            }
         }
 
         ControlTooltip.Render(Game, Width, Height, partialTicks);
     }
 
-    public virtual List<ActionTip> GetTooltips(bool controller)
+    public virtual List<ActionTip>? GetTooltips(bool controller)
     {
+        if (_hoveredButton != null)
+        {
+            return
+            [
+                new(ControlIcon.A, "Select")
+            ];
+        }
         return null;
     }
 
@@ -82,7 +95,7 @@ public class GuiScreen : Gui
     {
         if (button == 0)
         {
-            foreach (var control in _controlList.ToArray())
+            foreach (GuiButton control in _controlList.ToArray())
             {
                 if (control.MousePressed(Game, mouseX, mouseY))
                 {
@@ -300,8 +313,8 @@ public class GuiScreen : Gui
         int scaledMouseX = (int)(cursorX * sr.ScaledWidth / Game.displayWidth);
         int scaledMouseY = (int)(cursorY * sr.ScaledHeight / Game.displayHeight);
 
-        GuiButton currentButton = null;
-        foreach (var control in _controlList)
+        GuiButton? currentButton = null;
+        foreach (GuiButton control in _controlList)
         {
             if (scaledMouseX >= control.XPosition && scaledMouseY >= control.YPosition &&
                 scaledMouseX < control.XPosition + control.Width && scaledMouseY < control.YPosition + control.Height)
@@ -325,10 +338,10 @@ public class GuiScreen : Gui
             refY = scaledMouseY;
         }
 
-        GuiButton bestButton = null;
+        GuiButton? bestButton = null;
         float bestScore = float.MaxValue;
 
-        foreach (var button in _controlList)
+        foreach (GuiButton button in _controlList)
         {
             if (button == currentButton || !button.Visible || !button.Enabled) continue;
 

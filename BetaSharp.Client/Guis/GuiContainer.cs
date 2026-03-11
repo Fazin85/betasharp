@@ -16,6 +16,7 @@ public abstract class GuiContainer : GuiScreen
     protected int _xSize = 176;
     protected int _ySize = 166;
     public ScreenHandler InventorySlots;
+    protected Slot? _hoveredSlot;
 
     public override bool PausesGame => false;
 
@@ -49,7 +50,7 @@ public abstract class GuiContainer : GuiScreen
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         GLManager.GL.Enable(GLEnum.RescaleNormal);
 
-        Slot hoveredSlot = null;
+        _hoveredSlot = null;
 
 
         for (int i = 0; i < InventorySlots.Slots.Count; ++i)
@@ -58,7 +59,7 @@ public abstract class GuiContainer : GuiScreen
             DrawSlotInventory(slot);
             if (GetIsMouseOverSlot(slot, mouseX, mouseY))
             {
-                hoveredSlot = slot;
+                _hoveredSlot = slot;
 
                 GLManager.GL.Disable(GLEnum.Lighting);
                 GLManager.GL.Disable(GLEnum.DepthTest);
@@ -78,9 +79,9 @@ public abstract class GuiContainer : GuiScreen
         GLManager.GL.Disable(GLEnum.DepthTest);
         DrawGuiContainerForegroundLayer();
 
-        if (playerInv.getCursorStack() == null && hoveredSlot != null && hoveredSlot.hasStack())
+        if (playerInv.getCursorStack() == null && _hoveredSlot != null && _hoveredSlot.hasStack())
         {
-            string itemName = ("" + TranslationStorage.Instance.TranslateNamedKey(hoveredSlot.getStack().getItemName())).Trim();
+            string itemName = ("" + TranslationStorage.Instance.TranslateNamedKey(_hoveredSlot.getStack().getItemName())).Trim();
             if (itemName.Length > 0)
             {
                 int tipX = mouseX - guiLeft + 12;
@@ -303,23 +304,26 @@ public abstract class GuiContainer : GuiScreen
 
     public override List<ActionTip> GetTooltips(bool controller)
     {
-        if (controller)
+        var tips = new List<ActionTip>();
+
+        if (_hoveredSlot != null)
         {
-            return new List<ActionTip>
+            ItemStack cursorStack = Game.player.inventory.getCursorStack();
+            if (_hoveredSlot.hasStack() || cursorStack != null)
             {
-                new ActionTip(ControlIcon.A, "Move"),
-                new ActionTip(ControlIcon.X, "Take Half"),
-                new ActionTip(ControlIcon.Y, "Quick Move")
-            };
-        }
-        else
-        {
-            return new List<ActionTip>
+                tips.Add(new ActionTip(ControlIcon.A, "Move"));
+            }
+
+            if (_hoveredSlot.hasStack())
             {
-                new ActionTip(ControlIcon.MOUSE_LEFT, "Move"),
-                new ActionTip(ControlIcon.MOUSE_RIGHT, "Take Half"),
-                new ActionTip(ControlIcon.KEY_BASE, "Quick Move", "SHIFT")
-            };
+                if (_hoveredSlot.getStack().count > 1)
+                {
+                    tips.Add(new ActionTip(ControlIcon.X, "Take Half"));
+                }
+                tips.Add(new ActionTip(ControlIcon.Y, "Quick Move"));
+            }
         }
+
+        return tips;
     }
 }
