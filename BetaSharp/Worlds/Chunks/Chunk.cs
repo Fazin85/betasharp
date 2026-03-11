@@ -550,7 +550,7 @@ public class Chunk
         {
             foreach (var (x, y, z, blockId, tickRate) in PendingTileTicks)
             {
-                Level.TickScheduler.ScheduleBlockUpdate(x, y, z, blockId, tickRate);
+                Level.TickScheduler.ScheduleBlockUpdateFromChunkLoad(x, y, z, blockId, tickRate);
             }
             PendingTileTicks = null;
         }

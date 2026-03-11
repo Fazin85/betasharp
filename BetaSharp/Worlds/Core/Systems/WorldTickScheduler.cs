@@ -10,6 +10,18 @@ public class WorldTickScheduler
     public WorldTickScheduler(IBlockWorldContext context) => _context = context;
     public void Tick(bool forceFlush = false) => ProcessScheduledTicks(forceFlush);
 
+    /// <summary>
+    /// Schedules a block update when restoring from chunk NBT (TileTicks). Skips the load-radius check
+    /// because Chunk.Load() runs when the chunk is being loaded—neighbor chunks for the ±8 block radius
+    /// may not be loaded yet, which would cause ticks to be silently dropped.
+    /// </summary>
+    public void ScheduleBlockUpdateFromChunkLoad(int x, int y, int z, int blockId, int tickRate)
+    {
+        long scheduledTime = _context.GetTime() + tickRate;
+        BlockUpdate blockUpdate = new(x, y, z, blockId, scheduledTime);
+        _scheduledUpdates.Enqueue(blockUpdate, (blockUpdate.ScheduledTime, blockUpdate.ScheduledOrder));
+    }
+
     public virtual void ScheduleBlockUpdate(int x, int y, int z, int blockId, int tickRate, bool instantBlockUpdateEnabled = false)
     {
         const byte loadRadius = 8;
@@ -57,15 +69,18 @@ public class WorldTickScheduler
             BlockUpdate blockUpdate = _scheduledUpdates.Dequeue();
 
             const byte loadRadius = 8;
-            if (_context.BlocksReader.IsPosLoaded(blockUpdate.X - loadRadius, blockUpdate.Y - loadRadius, blockUpdate.Z - loadRadius) &&
-             _context.BlocksReader.IsPosLoaded(blockUpdate.X + loadRadius, blockUpdate.Y + loadRadius, blockUpdate.Z + loadRadius))
+            bool posLoaded = _context.BlocksReader.IsPosLoaded(blockUpdate.X - loadRadius, blockUpdate.Y - loadRadius, blockUpdate.Z - loadRadius) &&
+                            _context.BlocksReader.IsPosLoaded(blockUpdate.X + loadRadius, blockUpdate.Y + loadRadius, blockUpdate.Z + loadRadius);
+            if (!posLoaded)
             {
-                int currentBlockId = _context.BlocksReader.GetBlockId(blockUpdate.X, blockUpdate.Y, blockUpdate.Z);
-                if (currentBlockId == blockUpdate.BlockId && currentBlockId > 0)
-                {
-                    Block.Blocks[currentBlockId].onTick(new OnTickEvt(_context, blockUpdate.X, blockUpdate.Y, blockUpdate.Z, _context.BlocksReader.GetMeta(blockUpdate.X, blockUpdate.Y, blockUpdate.Z), currentBlockId));
-                }
+                continue;
             }
+            int currentBlockId = _context.BlocksReader.GetBlockId(blockUpdate.X, blockUpdate.Y, blockUpdate.Z);
+            if (currentBlockId != blockUpdate.BlockId || currentBlockId <= 0)
+            {
+                continue;
+            }
+            Block.Blocks[currentBlockId].onTick(new OnTickEvt(_context, blockUpdate.X, blockUpdate.Y, blockUpdate.Z, _context.BlocksReader.GetMeta(blockUpdate.X, blockUpdate.Y, blockUpdate.Z), currentBlockId));
         }
     }
     
