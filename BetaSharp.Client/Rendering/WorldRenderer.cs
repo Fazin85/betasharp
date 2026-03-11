@@ -786,7 +786,7 @@ public class WorldRenderer : IWorldAccess
             {
                 for (int var17 = var9; var17 <= var12; ++var17)
                 {
-                    chunkRenderer.MarkDirty(new Vector3D<int>(var13, var15, var17) * SubChunkRenderer.Size, true);
+                    chunkRenderer.MarkDirty(new Vector3D<int>(var13, var15, var17) * SubChunkRenderer.Size);
                 }
             }
         }
