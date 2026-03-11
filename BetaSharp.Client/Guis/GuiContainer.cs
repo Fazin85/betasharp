@@ -17,7 +17,6 @@ public abstract class GuiContainer : GuiScreen
     protected int _ySize = 166;
     public ScreenHandler InventorySlots;
     protected Slot? _hoveredSlot;
-    protected Slot? _lastHoveredSlot;
 
     public override bool PausesGame => false;
 

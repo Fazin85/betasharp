@@ -20,14 +20,12 @@ public class GuiScreen : Gui
     public GuiParticle ParticlesGui;
     private GuiButton SelectedButton = null;
     protected GuiButton? _hoveredButton = null;
-    protected GuiButton? _lastHoveredButton = null;
     protected bool _isSubscribedToKeyboard = false;
     protected GuiSlot? _mainSlot = null;
 
     public virtual void Render(int mouseX, int mouseY, float partialTicks)
     {
         _hoveredButton = null;
-        _mainSlot?.DrawScreen(mouseX, mouseY, partialTicks);
         foreach (GuiButton control in _controlList)
         {
             control.DrawButton(Game, mouseX, mouseY);
@@ -35,15 +33,6 @@ public class GuiScreen : Gui
             {
                 _hoveredButton = control;
             }
-        }
-
-        if (_hoveredButton != _lastHoveredButton)
-        {
-            if (_hoveredButton != null)
-            {
-                Game.sndManager.PlayUISound("", "console.focus", Game.isControllerMode);
-            }
-            _lastHoveredButton = _hoveredButton;
         }
 
         ControlTooltip.Render(Game, Width, Height, partialTicks);
