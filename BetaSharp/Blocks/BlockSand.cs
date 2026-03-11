@@ -25,7 +25,8 @@ internal class BlockSand : Block
 
     private void processFall(OnTickEvt evt)
     {
-        if (canFallThrough(evt) && evt.Y >= 0)
+        // Check the block BELOW the sand (evt has sand position; canFallThrough checks ctx coords)
+        if (evt.Y > 0 && canFallThrough(new OnTickEvt(evt.Level, evt.X, evt.Y - 1, evt.Z, 0, evt.BlockId)))
         {
             sbyte checkRadius = 32;
             if (!fallInstantly && evt.Level.BlockHost.IsRegionLoaded(evt.X - checkRadius, evt.Y - checkRadius, evt.Z - checkRadius, evt.X + checkRadius, evt.Y + checkRadius, evt.Z + checkRadius))
