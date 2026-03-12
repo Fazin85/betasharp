@@ -1,4 +1,4 @@
-namespace BetaSharp.Worlds;
+namespace BetaSharp.Worlds.Core.Systems;
 
 public class WorldSettings
 {

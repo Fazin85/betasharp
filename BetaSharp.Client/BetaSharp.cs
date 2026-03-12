@@ -30,6 +30,7 @@ using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.ClientData.Colors;
 using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 using BetaSharp.Worlds.Storage;
 using ImGuiNET;
 using Microsoft.Extensions.Logging;
@@ -393,6 +394,8 @@ public partial class BetaSharp
 
     public void displayGuiScreen(GuiScreen? newScreen)
     {
+        Mouse.ClearEvents();
+        Controller.ClearEvents();
         currentScreen?.OnGuiClosed();
 
         if (newScreen is GuiMainMenu)
@@ -1616,10 +1619,10 @@ public partial class BetaSharp
         return world != null && world.IsRemote;
     }
 
-    public void startWorld(string worldName, string mainMenuText, long seed)
+    public void startWorld(string worldName, string mainMenuText, WorldSettings settings)
     {
-        changeWorld((World)null);
-        displayGuiScreen(new GuiLevelLoading(worldName, seed));
+        changeWorld(null);
+        displayGuiScreen(new GuiLevelLoading(worldName, settings));
     }
 
     public void changeWorld(World newWorld, string loadingText = "", EntityPlayer targetEntity = null)

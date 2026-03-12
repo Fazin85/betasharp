@@ -25,6 +25,7 @@ public class WorldProperties
     public virtual bool IsThundering { get; set; }
     public virtual int ThunderTime { get; set; }
     public virtual string GeneratorOptions { get; set; } = "";
+
     protected WorldProperties()
     {
     }
@@ -43,7 +44,7 @@ public class WorldProperties
         IsRaining = nbt.GetBoolean("raining");
         ThunderTime = nbt.GetInteger("thunderTime");
         IsThundering = nbt.GetBoolean("thundering");
-
+        
         if (nbt.HasKey("generatorName"))
         {
             string generatorName = nbt.GetString("generatorName");
@@ -145,6 +146,12 @@ public class WorldProperties
         worldNbt.SetBoolean("raining", IsRaining);
         worldNbt.SetInteger("thunderTime", ThunderTime);
         worldNbt.SetBoolean("thundering", IsThundering);
+        
+        if (TerrainType != null)
+        {
+            worldNbt.SetString("generatorName", TerrainType.Name);
+            worldNbt.SetString("generatorOptions", GeneratorOptions);
+        }
 
         if (TerrainType != null)
         {

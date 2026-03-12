@@ -19,7 +19,7 @@ internal class NetherIChunkGenerator : IChunkSource
     private readonly OctavePerlinNoiseSampler _perlinNoise3;
     private readonly OctavePerlinNoiseSampler _scaleNoise;
     private readonly long _seed;
-    private readonly World _world;
+    private readonly IWorldContext _world;
     private readonly JavaRandom random;
     private double[] _depthBuffer = new double[256];
     private double[] _depthNoiseBuffer;
@@ -37,7 +37,7 @@ internal class NetherIChunkGenerator : IChunkSource
     private double[] _sandBuffer = new double[256];
     private double[] _scaleNoiseBuffer;
 
-    public NetherIChunkGenerator(World world, long seed)
+    public NetherIChunkGenerator(IWorldContext world, long seed)
     {
         _world = world;
         random = new JavaRandom(seed);

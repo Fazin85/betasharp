@@ -1,4 +1,6 @@
 using BetaSharp.Client.Input;
+using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core.Systems;
 using BetaSharp.Worlds.Storage;
 
 namespace BetaSharp.Client.Guis;
@@ -133,7 +135,7 @@ public class GuiSelectWorld : GuiScreen
             Game.statFileWriter.ReadStat(Stats.Stats.LoadWorldStat, 1);
             Game.playerController = new PlayerControllerSP(Game);
             string worldFileName = getSaveFileName(worldIndex) ?? $"World{worldIndex}";
-            Game.startWorld(worldFileName, getSaveName(worldIndex), 0L);
+            Game.startWorld(worldFileName, getSaveName(worldIndex), new WorldSettings(0L, WorldType.Default));
         }
     }
 

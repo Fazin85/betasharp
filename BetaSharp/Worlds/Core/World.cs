@@ -55,12 +55,12 @@ public abstract class World : IWorldContext
 
     public PersistentStateManager StateManager { get; protected set; }
 
-    protected World(IWorldStorage worldStorage, string levelName, Dimension dim, long seed)
+    protected World(IWorldStorage worldStorage, string levelName, WorldSettings settings, Dimension dim)
     {
         Pathing = new PathFinder(this);
         Storage = worldStorage;
         StateManager = new PersistentStateManager(worldStorage);
-        Properties = new WorldProperties(seed, levelName);
+        Properties = new WorldProperties(settings, levelName);
         dimension = dim;
         dim.SetWorld(this);
 
@@ -71,7 +71,7 @@ public abstract class World : IWorldContext
             : new RuleSet(RuleRegistry.Instance);
 
         BlockHost = new ChunkHost(chunkSource);
-        BlocksReader = new WorldBlockReader(this, dim, null);
+        BlocksReader = new WorldBlockReader(this, dim);
         BlockWriter = new WorldBlockWrite(BlockHost, BlocksReader);
         BlockWriter.OnBlockChanged += BlockUpdate;
 
@@ -107,77 +107,6 @@ public abstract class World : IWorldContext
                 EventListeners[i].notifyEntityRemoved(ent);
             }
         };
-    }
-
-    protected World(IWorldStorage worldStorage, string levelName, long seed, Dimension? dim)
-    {
-        Pathing = new PathFinder(this);
-        Storage = worldStorage;
-        StateManager = new PersistentStateManager(worldStorage);
-
-        Properties = worldStorage.LoadProperties();
-        IsNewWorld = Properties == null;
-        bool shouldInitializeSpawn = IsNewWorld;
-        if (IsNewWorld)
-        {
-            Properties = new WorldProperties(seed, levelName);
-        }
-        else
-        {
-            Properties.LevelName = levelName;
-        }
-
-        dimension = dim ?? Dimension.FromId(Properties.Dimension == -1 ? -1 : 0);
-        dimension.SetWorld(this);
-
-        IChunkSource chunkSource = CreateChunkCache();
-
-        Rules = Properties.RulesTag != null
-            ? RuleSet.FromNBT(RuleRegistry.Instance, Properties.RulesTag)
-            : new RuleSet(RuleRegistry.Instance);
-
-        BlockHost = new ChunkHost(chunkSource);
-        BlocksReader = new WorldBlockReader(this, dimension, null);
-        BlockWriter = new WorldBlockWrite(BlockHost, BlocksReader);
-        BlockWriter.OnBlockChanged += BlockUpdate;
-
-        Broadcaster = new WorldEventBroadcaster(EventListeners, BlocksReader, this);
-
-        BlockWriter.OnNeighborsShouldUpdate += (x, y, z, id) => Broadcaster.NotifyNeighbors(x, y, z, id);
-
-        Redstone = new RedstoneEngine(BlocksReader);
-        Lighting = new LightingEngine(BlocksReader, dimension, BlockHost);
-        Lighting.OnLightUpdated += (x, y, z) => Broadcaster.BlockUpdateEvent(x, y, z);
-
-        TickScheduler = new WorldTickScheduler(this);
-
-        Environment = new EnvironmentManager(Properties, dimension, BlocksReader, random);
-        Entities = new EntityManager(BlocksReader, Rules, BlockHost);
-
-        Entities.OnBlockUpdateRequired += (x, y, z) => Broadcaster.BlockUpdateEvent(x, y, z);
-
-        Environment.PrepareWeather();
-        Environment.UpdateSkyBrightness();
-
-        Entities.OnEntityAdded += ent =>
-        {
-            for (int i = 0; i < EventListeners.Count; ++i)
-            {
-                EventListeners[i].notifyEntityAdded(ent);
-            }
-        };
-        Entities.OnEntityRemoved += ent =>
-        {
-            for (int i = 0; i < EventListeners.Count; ++i)
-            {
-                EventListeners[i].notifyEntityRemoved(ent);
-            }
-        };
-
-        if (shouldInitializeSpawn)
-        {
-            InitializeSpawnPoint();
-        }
     }
 
     public WorldProperties Properties { get; protected set; }

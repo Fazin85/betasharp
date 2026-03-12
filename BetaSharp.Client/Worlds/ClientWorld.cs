@@ -3,9 +3,11 @@ using BetaSharp.Client.Network;
 using BetaSharp.Entities;
 using BetaSharp.Network.Packets.Play;
 using BetaSharp.Util.Maths;
+using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
 using BetaSharp.Worlds.Core;
 using BetaSharp.Worlds.Dimensions;
+using BetaSharp.Worlds.Core.Systems;
 using BetaSharp.Worlds.Storage;
 
 namespace BetaSharp.Client.Worlds;
@@ -14,11 +16,11 @@ public class ClientWorld : World
 {
     private readonly List<BlockReset> _blockResets = [];
     private readonly ClientNetworkHandler _networkHandler;
-    private MultiplayerIChunkCache _iChunkCache;
+    private MultiplayerIChunkCache _iChunkCache; 
     private readonly HashSet<Entity> _forcedEntities = [];
     private readonly HashSet<Entity> _pendingEntities = [];
 
-    public ClientWorld(ClientNetworkHandler netHandler, long seed, int dimId) : base(new EmptyWorldStorage(), "MpServer", Dimension.FromId(dimId), seed)
+    public ClientWorld(ClientNetworkHandler netHandler, long seed, int dimId) : base(new EmptyWorldStorage(), "MpServer", new WorldSettings(seed, WorldType.Default, ""), Dimension.FromId(dimId))
     {
         _networkHandler = netHandler;
         SetSpawnPos(new Vec3i(8, 64, 8));

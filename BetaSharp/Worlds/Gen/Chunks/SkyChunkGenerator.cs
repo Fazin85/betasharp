@@ -74,11 +74,11 @@ internal class SkyChunkGenerator : IChunkSource
         _forestNoise = new OctavePerlinNoiseSampler(_random, 8);
     }
 
-    public SkyChunkGenerator(World world, long seed)
+    public SkyChunkGenerator(IWorldContext world, long seed)
     {
         _world = world;
         _seed = seed;
-        _biomeSource = world.GetBiomeSource();
+        _biomeSource = world.BlocksReader.GetBiomeSource();
         _random = new JavaRandom(seed);
         _minLimitPerlinNoise = new OctavePerlinNoiseSampler(_random, 16);
         _maxLimitPerlinNoise = new OctavePerlinNoiseSampler(_random, 16);

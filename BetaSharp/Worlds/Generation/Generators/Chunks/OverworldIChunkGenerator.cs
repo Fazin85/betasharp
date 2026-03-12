@@ -66,7 +66,7 @@ internal class OverworldIChunkGenerator : IChunkSource
     private double[] _selectorNoiseBuffer;
     private double[] _temperatures;
 
-    public OverworldIChunkGenerator(World world, long seed)
+    public OverworldIChunkGenerator(IWorldContext world, long seed)
     {
         _level = world;
         _random = new JavaRandom(seed);
@@ -79,7 +79,7 @@ internal class OverworldIChunkGenerator : IChunkSource
         _floatingIslandNoise = new OctavePerlinNoiseSampler(_random, 16);
         _forestNoise = new OctavePerlinNoiseSampler(_random, 8);
         _seed = seed;
-        _biomeSource = world.GetBiomeSource();
+        _biomeSource = world.dimension.BiomeSource;
         InitFeatures();
     }
 
@@ -896,9 +896,5 @@ internal class OverworldIChunkGenerator : IChunkSource
         }
 
         return heightMap;
-    }
-
-    public void markChunksForUnload(int _)
-    {
     }
 }

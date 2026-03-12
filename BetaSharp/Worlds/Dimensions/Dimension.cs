@@ -17,14 +17,14 @@ public abstract class Dimension
     public bool IsNether = false;
 
     public float[] LightLevelToLuminance = new float[16];
-    public World World { get; set; } = null!;
+    public IWorldContext World { get; set; } = null!;
     public BiomeSource BiomeSource { get; set; } = null!;
 
     public virtual float CloudHeight { get; } = 108.0F;
     public virtual bool HasGround => true;
     public virtual bool HasWorldSpawn => true;
 
-    public void SetWorld(World world)
+    public void SetWorld(IWorldContext world)
     {
         World = world;
         InitBiomeSource();
@@ -44,9 +44,14 @@ public abstract class Dimension
 
     public virtual void InitBiomeSource() => BiomeSource = new BiomeSource(World);
 
-    public virtual IChunkSource CreateChunkGenerator() => new OverworldIChunkGenerator(World, World.GetSeed());
+    public virtual IChunkSource CreateChunkGenerator() => new OverworldIChunkGenerator(World, World.Seed);
 
-    public virtual bool IsValidSpawnPoint(int x, int y) => World.GetSpawnBlockId(x, y) == Block.Sand.id;
+    public virtual bool IsValidSpawnPoint(int x, int z) {
+        int y = World.BlocksReader.GetTopY(x, z);
+        int topBlockId = World.BlocksReader.GetBlockId(x, y, z);
+
+        return topBlockId != 0 && Block.Blocks[topBlockId] != null && Block.Blocks[topBlockId].material.BlocksMovement;
+    }
 
     public virtual float GetTimeOfDay(long time, float tickDelta)
     {

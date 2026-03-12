@@ -33,12 +33,13 @@ internal class NetherDimension : Dimension
         }
     }
 
-    public override IChunkSource CreateChunkGenerator() => new NetherIChunkGenerator(World, World.GetSeed());
+    public override IChunkSource CreateChunkGenerator() => new NetherIChunkGenerator(World, World.Seed);
 
     public override bool IsValidSpawnPoint(int x, int z)
     {
-        int blockId = World.GetSpawnBlockId(x, z);
-        return blockId != Block.Bedrock.id && blockId != 0 && Block.BlocksOpaque[blockId];
+        int y = World.BlocksReader.GetTopY(x, z);
+        int topBlockId = World.BlocksReader.GetBlockId(x, y, z);
+        return topBlockId != 0 && Block.Blocks[topBlockId] != null && Block.Blocks[topBlockId].material.BlocksMovement;
     }
 
     public override float GetTimeOfDay(long time, float tickDelta) => 0.5F;

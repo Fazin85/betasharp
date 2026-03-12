@@ -2,6 +2,7 @@ using BetaSharp.Client.Input;
 using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core.Systems;
 using BetaSharp.Worlds.Storage;
 
 namespace BetaSharp.Client.Guis;
@@ -170,21 +171,21 @@ public class GuiCreateWorld : GuiScreen
                         Game.statFileWriter.ReadStat(Stats.Stats.CreateWorldStat, 1);
                         Game.playerController = new PlayerControllerSP(Game);
 
-                        WorldSettings settings = new(worldSeed, _selectedWorldType, GeneratorOptions);
+                        WorldSettings settings = new WorldSettings(worldSeed, _selectedWorldType, GeneratorOptions);
 
-                        Game.startWorld(_folderName, _textboxWorldName.GetText(), settings.Seed);
+                        Game.startWorld(_folderName, _textboxWorldName.GetText(), settings);
                         break;
                     }
                 case ButtonMoreOptions:
                     _moreOptions = !_moreOptions;
                     InitGui();
                     break;
-                // case ButtonWorldType:
-                //     Game.displayGuiScreen(new GuiSelectWorldType(this, _selectedWorldType));
-                //     break;
-                // case ButtonCustomizeFlat:
-                //     Game.displayGuiScreen(new GuiCreateFlatWorld(this, GeneratorOptions));
-                //     break;
+                case ButtonWorldType:
+                    Game.displayGuiScreen(new GuiSelectWorldType(this, _selectedWorldType));
+                    break;
+                case ButtonCustomizeFlat:
+                    Game.displayGuiScreen(new GuiCreateFlatWorld(this, GeneratorOptions));
+                    break;
             }
         }
     }

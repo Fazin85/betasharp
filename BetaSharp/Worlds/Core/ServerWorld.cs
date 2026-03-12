@@ -5,6 +5,7 @@ using BetaSharp.Server;
 using BetaSharp.Server.Internal;
 using BetaSharp.Server.Worlds;
 using BetaSharp.Worlds.Chunks;
+using BetaSharp.Worlds.Core.Systems;
 using BetaSharp.Worlds.Dimensions;
 using BetaSharp.Worlds.Mechanics;
 using BetaSharp.Worlds.Storage;
@@ -20,7 +21,7 @@ public class ServerWorld : World
     public ServerIChunkCache ChunkCache;
     public bool savingDisabled;
 
-    public ServerWorld(BetaSharpServer server, IWorldStorage storage, string name, int dimensionId, long seed) : base(storage, name, seed, Dimension.FromId(dimensionId))
+    public ServerWorld(BetaSharpServer server, IWorldStorage storage, string saveName, int dimension, WorldSettings settings, ServerWorld del) : base(storage, saveName, settings, Dimension.FromId(dimension))
     {
         this.server = server;
 
