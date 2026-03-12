@@ -98,6 +98,7 @@ public class GuiScreen : Gui
                     SelectedButton = control;
                     Game.sndManager.PlaySoundFX(Game.isControllerMode ? "random.wood click" : "random.click", 1.0F, 1.0F);
                     ActionPerformed(control);
+                    break;
                 }
             }
         }
