@@ -5,7 +5,6 @@ using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Network.Packets.C2SPlay;
 using BetaSharp.Worlds.Core;
-using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Client.Input;
 
@@ -15,6 +14,8 @@ public class PlayerControllerMP : PlayerController
     private int currentBlockX = -1;
     private int currentBlockY = -1;
     private int currentblockZ = -1;
+    private int currentBlockId; // Cached for break sound when server updates block to Air first (race)
+    private int currentBlockMeta;
     private float curBlockDamageMP;
     private float prevBlockDamageMP;
     private float field_9441_h;
@@ -84,6 +85,8 @@ public class PlayerControllerMP : PlayerController
     {
         curBlockDamageMP = 0.0F;
         isHittingBlock = false;
+        currentBlockId = 0;
+        currentBlockMeta = 0;
     }
 
     public override void sendBlockRemoving(int var1, int var2, int var3, int var4)
@@ -102,10 +105,23 @@ public class PlayerControllerMP : PlayerController
                     int var5 = Game.world.BlocksReader.GetBlockId(var1, var2, var3);
                     if (var5 == 0)
                     {
+                        // Block became Air (server broke it first). Play break sound/particles if we were mining (race fix).
+                        if (currentBlockId > 0 && curBlockDamageMP > 0.01F)
+                        {
+                            Block cachedBlock = Block.Blocks[currentBlockId];
+                            if (cachedBlock != null)
+                            {
+                                Game.sndManager.PlaySound(cachedBlock.soundGroup.BreakSound, (float)var1 + 0.5F, (float)var2 + 0.5F, (float)var3 + 0.5F, (cachedBlock.soundGroup.Volume + 1.0F) / 2.0F, cachedBlock.soundGroup.Pitch * 0.8F);
+                                Game.particleManager.addBlockDestroyEffects(var1, var2, var3, currentBlockId, currentBlockMeta);
+                            }
+                        }
                         isHittingBlock = false;
+                        currentBlockId = 0;
                         return;
                     }
 
+                    currentBlockId = var5;
+                    currentBlockMeta = Game.world.BlocksReader.GetMeta(var1, var2, var3);
                     Block var6 = Block.Blocks[var5];
                     curBlockDamageMP += var6.getHardness(Game.player);
                     if (field_9441_h % 4.0F == 0.0F && var6 != null)
@@ -118,10 +134,19 @@ public class PlayerControllerMP : PlayerController
                     {
                         isHittingBlock = false;
                         netClientHandler.addToSendQueue(PlayerActionC2SPacket.Get(2, var1, var2, var3, var4));
+                        // Play break sound/particles locally (base.sendBlockRemoved doesn't; we may not receive WorldEvent 2001 in time)
+                        if (var6 != null)
+                        {
+                            int meta = Game.world.BlocksReader.GetMeta(var1, var2, var3);
+                            Game.sndManager.PlaySound(var6.soundGroup.BreakSound, (float)var1 + 0.5F, (float)var2 + 0.5F, (float)var3 + 0.5F, (var6.soundGroup.Volume + 1.0F) / 2.0F, var6.soundGroup.Pitch * 0.8F);
+                            Game.particleManager.addBlockDestroyEffects(var1, var2, var3, var5, meta);
+                        }
                         sendBlockRemoved(var1, var2, var3, var4);
                         curBlockDamageMP = 0.0F;
                         prevBlockDamageMP = 0.0F;
                         field_9441_h = 0.0F;
+                        currentBlockId = 0;
+                        currentBlockMeta = 0;
                         blockHitDelay = 5;
                     }
                 }
