@@ -22,7 +22,7 @@ namespace BetaSharp.Client.Rendering;
 
 public class GameRenderer
 {
-    private const bool EnablePostProcessing = false;
+    private const bool EnablePostProcessing = true;
     private readonly bool _cloudFog = false;
     private readonly BetaSharp _client;
     private float _viewDistance;
