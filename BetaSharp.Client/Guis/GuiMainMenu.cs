@@ -24,7 +24,7 @@ public class GuiMainMenu : GuiScreen
         try
         {
             List<string> splashLines = [];
-            string splashesText = AssetManager.Instance.getAsset("title/splashes.txt").getTextContent();
+            string splashesText = AssetManager.Instance.getAsset("title/splashes.txt").GetTextContent();
             using (StringReader reader = new(splashesText))
             {
                 string? line;
