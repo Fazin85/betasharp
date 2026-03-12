@@ -393,6 +393,8 @@ public partial class BetaSharp
 
     public void displayGuiScreen(GuiScreen? newScreen)
     {
+        Mouse.ClearEvents();
+        Controller.ClearEvents();
         currentScreen?.OnGuiClosed();
 
         if (newScreen is GuiMainMenu)

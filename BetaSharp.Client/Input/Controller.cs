@@ -114,6 +114,12 @@ public static class Controller
         return false;
     }
 
+    public static void ClearEvents()
+    {
+        if (!s_created) return;
+        s_eventQueue.Clear();
+    }
+
     public static int GetEventButton() => s_current_event.Button;
     public static bool GetEventButtonState() => s_current_event.State;
 

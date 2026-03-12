@@ -277,6 +277,12 @@ public static class Mouse
         eventQueue.Clear();
     }
 
+    public static void ClearEvents()
+    {
+        if (!created) return;
+        eventQueue.Clear();
+    }
+
     public static void setDisplayDimensions(int width, int height)
     {
         displayWidth = width;

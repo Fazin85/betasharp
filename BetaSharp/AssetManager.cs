@@ -14,53 +14,52 @@ public class AssetManager
 
     public class Asset
     {
-        private readonly AssetType type;
-        private readonly byte[]? binaryContent;
-        private readonly string? textContent;
+        private readonly AssetType _type;
+        private readonly byte[]? _binaryContent;
+        private readonly string? _textContent;
 
         public Asset(byte[] binary)
         {
-            type = AssetType.Binary;
-            binaryContent = binary;
+            _type = AssetType.Binary;
+            _binaryContent = binary;
         }
 
         public Asset(string text)
         {
-            type = AssetType.Text;
-            textContent = text;
+            _type = AssetType.Text;
+            _textContent = text;
         }
 
-        public AssetType getType() => type;
+        public AssetType GetAssetType() => _type;
 
-        public byte[] getBinaryContent()
+        public byte[] GetBinaryContent()
         {
-            if (binaryContent == null || type != AssetType.Binary)
+            if (_binaryContent == null || _type != AssetType.Binary)
             {
                 throw new Exception("Attempted to get binary content from a non binary asset");
             }
 
-            return binaryContent;
+            return _binaryContent;
         }
 
-        public string getTextContent()
+        public string GetTextContent()
         {
-            if (textContent == null || type != AssetType.Text)
+            if (_textContent == null || _type != AssetType.Text)
             {
                 throw new Exception("Attempted to get text content from a non text asset");
             }
 
-            return textContent;
+            return _textContent;
         }
     }
 
     public static AssetManager Instance { get; } = new();
 
-    private readonly Dictionary<string, AssetType> assetsToLoad = [];
-    private readonly Dictionary<string, Asset> loadedAssets = [];
-    private readonly HashSet<string> assetDirectories = [];
+    private readonly Dictionary<string, AssetType> _assetsToLoad = [];
+    private readonly Dictionary<string, Asset> _loadedAssets = [];
+    private readonly HashSet<string> _assetDirectories = [];
+    private int _embeddedAssetsLoaded;
     private readonly ILogger<AssetManager> _logger = Log.Instance.For<AssetManager>();
-
-    private int embeddedAssetsLoaded;
 
     private AssetManager()
     {
@@ -141,6 +140,10 @@ public class AssetManager
             }
         }
 
+        defineAsset("gui/world_types/default.png", AssetType.Binary);
+        defineAsset("gui/world_types/flat.png", AssetType.Binary);
+        defineAsset("gui/world_types/sky.png", AssetType.Binary);
+
         defineAsset("item/arrows.png", AssetType.Binary);
         defineAsset("item/boat.png", AssetType.Binary);
         defineAsset("item/cart.png", AssetType.Binary);
@@ -201,7 +204,7 @@ public class AssetManager
         defineEmbeddedAsset("shaders/chunk.vert", AssetType.Text);
         defineEmbeddedAsset("shaders/chunk.frag", AssetType.Text);
 
-        _logger.LogInformation($"Loaded {embeddedAssetsLoaded} embedded assets");
+        _logger.LogInformation($"Loaded {_embeddedAssetsLoaded} embedded assets");
     }
 
     public Asset getAsset(string assetPath)
@@ -211,7 +214,7 @@ public class AssetManager
             assetPath = assetPath[1..];
         }
 
-        if (loadedAssets.TryGetValue(assetPath, out Asset? asset))
+        if (_loadedAssets.TryGetValue(assetPath, out Asset? asset))
         {
             return asset;
         }
@@ -232,7 +235,7 @@ public class AssetManager
             entries[entry.FullName] = entry;
         }
 
-        foreach (string assetPath in assetsToLoad.Keys)
+        foreach (string assetPath in _assetsToLoad.Keys)
         {
             string fsAssetPath = Path.Combine("assets", assetPath);
             string? directory = Path.GetDirectoryName(fsAssetPath);
@@ -261,7 +264,7 @@ public class AssetManager
 
     private void loadAssets()
     {
-        foreach (KeyValuePair<string, AssetType> kvp in assetsToLoad)
+        foreach (KeyValuePair<string, AssetType> kvp in _assetsToLoad)
         {
             string assetPath = kvp.Key;
             AssetType type = kvp.Value;
@@ -270,7 +273,7 @@ public class AssetManager
             {
                 try
                 {
-                    loadedAssets[assetPath] = new(File.ReadAllBytes("assets/" + assetPath));
+                    _loadedAssets[assetPath] = new(File.ReadAllBytes("assets/" + assetPath));
                 }
                 catch (Exception e)
                 {
@@ -281,7 +284,7 @@ public class AssetManager
             {
                 try
                 {
-                    loadedAssets[assetPath] = new(File.ReadAllText("assets/" + assetPath));
+                    _loadedAssets[assetPath] = new(File.ReadAllText("assets/" + assetPath));
                 }
                 catch (Exception e)
                 {
@@ -290,20 +293,20 @@ public class AssetManager
             }
         }
 
-        _logger.LogInformation($"Loaded {assetsToLoad.Count} assets");
+        _logger.LogInformation($"Loaded {_assetsToLoad.Count} assets");
 
-        assetsToLoad.Clear();
+        _assetsToLoad.Clear();
     }
 
     private void defineAsset(string assetPath, AssetType type)
     {
-        assetsToLoad[assetPath] = type;
+        _assetsToLoad[assetPath] = type;
 
         int idx = assetPath.IndexOf('/');
         if (idx != -1)
         {
             string directory = assetPath[..idx];
-            assetDirectories.Add(directory);
+            _assetDirectories.Add(directory);
         }
     }
 
@@ -323,8 +326,8 @@ public class AssetManager
                     {
                         using var reader = new StreamReader(stream);
                         string text = reader.ReadToEnd();
-                        loadedAssets[embeddedAssetPath] = new(text);
-                        embeddedAssetsLoaded++;
+                        _loadedAssets[embeddedAssetPath] = new(text);
+                        _embeddedAssetsLoaded++;
                         break;
                     }
 
@@ -332,8 +335,8 @@ public class AssetManager
                     {
                         using var ms = new MemoryStream();
                         stream.CopyTo(ms);
-                        loadedAssets[embeddedAssetPath] = new(ms.ToArray());
-                        embeddedAssetsLoaded++;
+                        _loadedAssets[embeddedAssetPath] = new(ms.ToArray());
+                        _embeddedAssetsLoaded++;
                         break;
                     }
             }
