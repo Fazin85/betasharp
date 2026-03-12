@@ -1,5 +1,5 @@
 using BetaSharp.Worlds.Chunks;
-using BetaSharp.Worlds.Gen.Chunks;
+using BetaSharp.Worlds.Gen.Flat;
 
 namespace BetaSharp.Worlds.Dimensions;
 

@@ -103,9 +103,10 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
 
         string typeString = config.GetLevelType("DEFAULT");
         WorldType worldType = WorldType.ParseWorldType(typeString) ?? WorldType.Default;
+        string optionsString = config.GetLevelOptions("");
 
         _logger.LogInformation($"Preparing level \"{worldName}\"");
-        loadWorld(worldName, new WorldSettings(seed, worldType));
+        loadWorld(worldName, new WorldSettings(seed, worldType, optionsString));
 
         if (logHelp)
         {

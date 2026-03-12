@@ -28,6 +28,7 @@ public abstract class World : IBlockAccess
     private ChunkSource _chunkSource;
     public PersistentStateManager persistentStateManager;
     protected WorldProperties Properties;
+    public WorldProperties WorldProperties => Properties;
     protected List<IWorldAccess> EventListeners = [];
 
     public RuleSet Rules { get; protected set; }
