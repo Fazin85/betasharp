@@ -1,5 +1,4 @@
 using System.Net;
-using System.Net.Sockets;
 using BetaSharp.Server.Network;
 using BetaSharp.Server.Threading;
 using java.lang;
@@ -86,8 +85,8 @@ internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(co
         }
     }
 
-    public override java.io.File getFile(string path)
+    public override FileStream getFile(string path)
     {
-        return new java.io.File(path);
+        return File.Open(path, FileMode.OpenOrCreate);
     }
 }

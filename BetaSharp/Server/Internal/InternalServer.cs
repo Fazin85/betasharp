@@ -54,9 +54,9 @@ public class InternalServer : BetaSharpServer
         return result;
     }
 
-    public override java.io.File getFile(string path)
+    public override FileStream getFile(string path)
     {
-        return new(System.IO.Path.Combine(_worldPath, path));
+        return File.Open(Path.Combine(_worldPath, path), FileMode.OpenOrCreate);
     }
 
     public void SetDifficulty(int difficulty)
