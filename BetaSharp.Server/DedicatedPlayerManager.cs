@@ -1,4 +1,3 @@
-using java.io;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server;
@@ -6,10 +5,10 @@ namespace BetaSharp.Server;
 internal class DedicatedPlayerManager : PlayerManager
 {
     private readonly ILogger<DedicatedPlayerManager> _logger = Log.Instance.For<DedicatedPlayerManager>();
-    private readonly java.io.File BANNED_PLAYERS_FILE;
-    private readonly java.io.File BANNED_IPS_FILE;
-    private readonly java.io.File OPERATORS_FILE;
-    private readonly java.io.File WHITELIST_FILE;
+    private readonly FileStream BANNED_PLAYERS_FILE;
+    private readonly FileStream BANNED_IPS_FILE;
+    private readonly FileStream OPERATORS_FILE;
+    private readonly FileStream WHITELIST_FILE;
 
     public DedicatedPlayerManager(BetaSharpServer server) : base(server)
     {
@@ -33,15 +32,13 @@ internal class DedicatedPlayerManager : PlayerManager
         try
         {
             bannedPlayers.Clear();
-            BufferedReader reader = new(new FileReader(BANNED_PLAYERS_FILE));
-            string line = "";
+            using StreamReader reader = new(BANNED_PLAYERS_FILE);
+            string? line = "";
 
-            while ((line = reader.readLine()) != null)
+            while ((line = reader.ReadLine()) != null)
             {
                 bannedPlayers.Add(line.Trim().ToLower());
             }
-
-            reader.close();
         }
         catch (Exception exception)
         {
@@ -53,14 +50,12 @@ internal class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            PrintWriter writer = new(new FileWriter(BANNED_PLAYERS_FILE, false));
+            using StreamWriter writer = new(BANNED_PLAYERS_FILE);
 
             foreach (string player in bannedPlayers)
             {
-                writer.println(player);
+                writer.WriteLine(player);
             }
-
-            writer.close();
         }
         catch (Exception exception)
         {
@@ -73,15 +68,13 @@ internal class DedicatedPlayerManager : PlayerManager
         try
         {
             bannedIps.Clear();
-            BufferedReader reader = new(new FileReader(BANNED_IPS_FILE));
-            string line = "";
+            using StreamReader reader = new(BANNED_IPS_FILE);
+            string? line = "";
 
-            while ((line = reader.readLine()) != null)
+            while ((line = reader.ReadLine()) != null)
             {
                 bannedIps.Add(line.Trim().ToLower());
             }
-
-            reader.close();
         }
         catch (Exception exception)
         {
@@ -93,14 +86,12 @@ internal class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            PrintWriter writer = new(new FileWriter(BANNED_IPS_FILE, false));
+            using StreamWriter writer = new(BANNED_IPS_FILE);
 
             foreach (string ip in bannedIps)
             {
-                writer.println(ip);
+                writer.WriteLine(ip);
             }
-
-            writer.close();
         }
         catch (Exception exception)
         {
@@ -113,15 +104,13 @@ internal class DedicatedPlayerManager : PlayerManager
         try
         {
             ops.Clear();
-            BufferedReader reader = new(new FileReader(OPERATORS_FILE));
-            string line = "";
+            using StreamReader reader = new(OPERATORS_FILE);
+            string? line = "";
 
-            while ((line = reader.readLine()) != null)
+            while ((line = reader.ReadLine()) != null)
             {
                 ops.Add(line.Trim().ToLower());
             }
-
-            reader.close();
         }
         catch (Exception exception)
         {
@@ -133,14 +122,12 @@ internal class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            PrintWriter writer = new(new FileWriter(OPERATORS_FILE, false));
+            using StreamWriter writer = new(OPERATORS_FILE);
 
             foreach (string op in ops)
             {
-                writer.println(op);
+                writer.WriteLine(op);
             }
-
-            writer.close();
         }
         catch (Exception exception)
         {
@@ -153,15 +140,13 @@ internal class DedicatedPlayerManager : PlayerManager
         try
         {
             whitelist.Clear();
-            BufferedReader reader = new(new FileReader(WHITELIST_FILE));
-            string line = "";
+            using StreamReader reader = new(WHITELIST_FILE);
+            string? line = "";
 
-            while ((line = reader.readLine()) != null)
+            while ((line = reader.ReadLine()) != null)
             {
                 whitelist.Add(line.Trim().ToLower());
             }
-
-            reader.close();
         }
         catch (Exception exception)
         {
@@ -173,14 +158,12 @@ internal class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            PrintWriter writer = new(new FileWriter(WHITELIST_FILE, false));
+            using StreamWriter writer = new(WHITELIST_FILE);
 
             foreach (string name in whitelist)
             {
-                writer.println(name);
+                writer.WriteLine(name);
             }
-
-            writer.close();
         }
         catch (Exception exception)
         {

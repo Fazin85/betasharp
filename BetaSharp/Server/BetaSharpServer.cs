@@ -119,7 +119,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
     private void loadWorld(string worldDir, WorldSettings settings)
     {
         worlds = new ServerWorld[2];
-        RegionWorldStorage worldStorage = new(getFile(".").getAbsolutePath(), worldDir, true);
+        RegionWorldStorage worldStorage = new(getFile(".").Name, worldDir, true);
 
         for (int i = 0; i < worlds.Length; i++)
         {
@@ -472,7 +472,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
         }
     }
 
-    public abstract java.io.File getFile(string path);
+    public abstract FileStream getFile(string path);
 
     public void SendMessage(string message)
     {
