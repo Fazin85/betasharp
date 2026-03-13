@@ -1,18 +1,23 @@
+using java.io;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server;
 
 internal class DedicatedPlayerManager : PlayerManager
 {
-    private const string BannedPlayersPath = "banned-players.txt";
-    private const string BannedIpsPath = "banned-ips.txt";
-    private const string OperatorsPath = "ops.txt";
-    private const string WhitelistPath = "white-list.txt";
-
     private readonly ILogger<DedicatedPlayerManager> _logger = Log.Instance.For<DedicatedPlayerManager>();
+    private readonly java.io.File BANNED_PLAYERS_FILE;
+    private readonly java.io.File BANNED_IPS_FILE;
+    private readonly java.io.File OPERATORS_FILE;
+    private readonly java.io.File WHITELIST_FILE;
 
     public DedicatedPlayerManager(BetaSharpServer server) : base(server)
     {
+        BANNED_PLAYERS_FILE = server.getFile("banned-players.txt");
+        BANNED_IPS_FILE = server.getFile("banned-ips.txt");
+        OPERATORS_FILE = server.getFile("ops.txt");
+        WHITELIST_FILE = server.getFile("white-list.txt");
+
         loadBannedPlayers();
         loadBannedIps();
         loadOperators();
@@ -28,16 +33,19 @@ internal class DedicatedPlayerManager : PlayerManager
         try
         {
             bannedPlayers.Clear();
-            using StreamReader reader = new(BannedPlayersPath);
+            BufferedReader var1 = new(new FileReader(BANNED_PLAYERS_FILE));
+            string var2 = "";
 
-            while (reader.ReadLine() is { } line)
+            while ((var2 = var1.readLine()) != null)
             {
-                bannedPlayers.Add(line.Trim().ToLower());
+                bannedPlayers.Add(var2.Trim().ToLower());
             }
+
+            var1.close();
         }
-        catch (Exception exception)
+        catch (Exception var3)
         {
-            _logger.LogWarning("Failed to load ban list {Exception}", exception);
+            _logger.LogWarning($"Failed to load ban list: {var3}");
         }
     }
 
@@ -45,16 +53,18 @@ internal class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            using StreamWriter writer = new(BannedPlayersPath);
+            PrintWriter var1 = new(new FileWriter(BANNED_PLAYERS_FILE, false));
 
-            foreach (string player in bannedPlayers)
+            foreach (string var3 in bannedPlayers)
             {
-                writer.WriteLine(player);
+                var1.println(var3);
             }
+
+            var1.close();
         }
-        catch (Exception exception)
+        catch (Exception var4)
         {
-            _logger.LogWarning("Failed to save ban list {Exception}", exception);
+            _logger.LogWarning($"Failed to save ban list: {var4}");
         }
     }
 
@@ -63,16 +73,19 @@ internal class DedicatedPlayerManager : PlayerManager
         try
         {
             bannedIps.Clear();
-            using StreamReader reader = new(BannedIpsPath);
+            BufferedReader var1 = new(new FileReader(BANNED_IPS_FILE));
+            string var2 = "";
 
-            while (reader.ReadLine() is { } line)
+            while ((var2 = var1.readLine()) != null)
             {
-                bannedIps.Add(line.Trim().ToLower());
+                bannedIps.Add(var2.Trim().ToLower());
             }
+
+            var1.close();
         }
-        catch (Exception exception)
+        catch (Exception var3)
         {
-            _logger.LogWarning("Failed to load IP ban list {Exception}", exception);
+            _logger.LogWarning($"Failed to load ip ban list: {var3}");
         }
     }
 
@@ -80,16 +93,18 @@ internal class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            using StreamWriter writer = new(BannedIpsPath);
+            PrintWriter var1 = new(new FileWriter(BANNED_IPS_FILE, false));
 
-            foreach (string ip in bannedIps)
+            foreach (string var3 in bannedIps)
             {
-                writer.WriteLine(ip);
+                var1.println(var3);
             }
+
+            var1.close();
         }
-        catch (Exception exception)
+        catch (Exception var4)
         {
-            _logger.LogWarning("Failed to save IP ban list {Exception}", exception);
+            _logger.LogWarning($"Failed to save ip ban list: {var4}");
         }
     }
 
@@ -98,16 +113,19 @@ internal class DedicatedPlayerManager : PlayerManager
         try
         {
             ops.Clear();
-            using StreamReader reader = new(OperatorsPath);
+            BufferedReader var1 = new(new FileReader(OPERATORS_FILE));
+            string var2 = "";
 
-            while (reader.ReadLine() is { } line)
+            while ((var2 = var1.readLine()) != null)
             {
-                ops.Add(line.Trim().ToLower());
+                ops.Add(var2.Trim().ToLower());
             }
+
+            var1.close();
         }
-        catch (Exception exception)
+        catch (Exception var3)
         {
-            _logger.LogWarning("Failed to load OP list {Exception}", exception);
+            _logger.LogWarning($"Failed to load ip ban list: {var3}");
         }
     }
 
@@ -115,16 +133,18 @@ internal class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            using StreamWriter writer = new(OperatorsPath);
+            PrintWriter var1 = new(new FileWriter(OPERATORS_FILE, false));
 
-            foreach (string op in ops)
+            foreach (string var3 in ops)
             {
-                writer.WriteLine(op);
+                var1.println(var3);
             }
+
+            var1.close();
         }
-        catch (Exception exception)
+        catch (Exception var4)
         {
-            _logger.LogWarning("Failed to save OP list {Exception}", exception);
+            _logger.LogWarning($"Failed to save ip ban list: {var4}");
         }
     }
 
@@ -133,16 +153,19 @@ internal class DedicatedPlayerManager : PlayerManager
         try
         {
             whitelist.Clear();
-            using StreamReader reader = new(WhitelistPath);
+            BufferedReader var1 = new(new FileReader(WHITELIST_FILE));
+            string var2 = "";
 
-            while (reader.ReadLine() is { } line)
+            while ((var2 = var1.readLine()) != null)
             {
-                whitelist.Add(line.Trim().ToLower());
+                whitelist.Add(var2.Trim().ToLower());
             }
+
+            var1.close();
         }
-        catch (Exception exception)
+        catch (Exception var3)
         {
-            _logger.LogWarning("Failed to load white-lis: {Exception}", exception);
+            _logger.LogWarning($"Failed to load white-list: {var3}");
         }
     }
 
@@ -150,16 +173,18 @@ internal class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            using StreamWriter writer = new(WhitelistPath);
+            PrintWriter var1 = new(new FileWriter(WHITELIST_FILE, false));
 
-            foreach (string name in whitelist)
+            foreach (String var3 in whitelist)
             {
-                writer.WriteLine(name);
+                var1.println(var3);
             }
+
+            var1.close();
         }
-        catch (Exception exception)
+        catch (Exception var4)
         {
-            _logger.LogWarning("Failed to save white-list {Exception}", exception);
+            _logger.LogWarning($"Failed to save white-list: {var4}");
         }
     }
 }
