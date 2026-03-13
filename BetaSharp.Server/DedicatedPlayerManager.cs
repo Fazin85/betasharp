@@ -5,17 +5,17 @@ namespace BetaSharp.Server;
 internal class DedicatedPlayerManager : PlayerManager
 {
     private readonly ILogger<DedicatedPlayerManager> _logger = Log.Instance.For<DedicatedPlayerManager>();
-    private readonly FileStream BANNED_PLAYERS_FILE;
-    private readonly FileStream BANNED_IPS_FILE;
-    private readonly FileStream OPERATORS_FILE;
-    private readonly FileStream WHITELIST_FILE;
+    private readonly FileStream _bannedPlayersFile;
+    private readonly FileStream _bannedIpsFile;
+    private readonly FileStream _operatorsFile;
+    private readonly FileStream _whitelistFile;
 
     public DedicatedPlayerManager(BetaSharpServer server) : base(server)
     {
-        BANNED_PLAYERS_FILE = server.getFile("banned-players.txt");
-        BANNED_IPS_FILE = server.getFile("banned-ips.txt");
-        OPERATORS_FILE = server.getFile("ops.txt");
-        WHITELIST_FILE = server.getFile("white-list.txt");
+        _bannedPlayersFile = server.getFile("banned-players.txt");
+        _bannedIpsFile = server.getFile("banned-ips.txt");
+        _operatorsFile = server.getFile("ops.txt");
+        _whitelistFile = server.getFile("white-list.txt");
 
         loadBannedPlayers();
         loadBannedIps();
@@ -32,10 +32,9 @@ internal class DedicatedPlayerManager : PlayerManager
         try
         {
             bannedPlayers.Clear();
-            using StreamReader reader = new(BANNED_PLAYERS_FILE);
-            string? line = "";
+            using StreamReader reader = new(_bannedPlayersFile);
 
-            while ((line = reader.ReadLine()) != null)
+            while (reader.ReadLine() is { } line)
             {
                 bannedPlayers.Add(line.Trim().ToLower());
             }
@@ -50,7 +49,7 @@ internal class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            using StreamWriter writer = new(BANNED_PLAYERS_FILE);
+            using StreamWriter writer = new(_bannedPlayersFile);
 
             foreach (string player in bannedPlayers)
             {
@@ -68,10 +67,9 @@ internal class DedicatedPlayerManager : PlayerManager
         try
         {
             bannedIps.Clear();
-            using StreamReader reader = new(BANNED_IPS_FILE);
-            string? line = "";
+            using StreamReader reader = new(_bannedIpsFile);
 
-            while ((line = reader.ReadLine()) != null)
+            while (reader.ReadLine() is { } line)
             {
                 bannedIps.Add(line.Trim().ToLower());
             }
@@ -86,7 +84,7 @@ internal class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            using StreamWriter writer = new(BANNED_IPS_FILE);
+            using StreamWriter writer = new(_bannedIpsFile);
 
             foreach (string ip in bannedIps)
             {
@@ -104,10 +102,9 @@ internal class DedicatedPlayerManager : PlayerManager
         try
         {
             ops.Clear();
-            using StreamReader reader = new(OPERATORS_FILE);
-            string? line = "";
+            using StreamReader reader = new(_operatorsFile);
 
-            while ((line = reader.ReadLine()) != null)
+            while (reader.ReadLine() is { } line)
             {
                 ops.Add(line.Trim().ToLower());
             }
@@ -122,7 +119,7 @@ internal class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            using StreamWriter writer = new(OPERATORS_FILE);
+            using StreamWriter writer = new(_operatorsFile);
 
             foreach (string op in ops)
             {
@@ -140,10 +137,9 @@ internal class DedicatedPlayerManager : PlayerManager
         try
         {
             whitelist.Clear();
-            using StreamReader reader = new(WHITELIST_FILE);
-            string? line = "";
+            using StreamReader reader = new(_whitelistFile);
 
-            while ((line = reader.ReadLine()) != null)
+            while (reader.ReadLine() is { } line)
             {
                 whitelist.Add(line.Trim().ToLower());
             }
@@ -158,7 +154,7 @@ internal class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            using StreamWriter writer = new(WHITELIST_FILE);
+            using StreamWriter writer = new(_whitelistFile);
 
             foreach (string name in whitelist)
             {
