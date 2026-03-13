@@ -45,6 +45,7 @@ public class PlayerManager
     public void updatePlayerAfterDimensionChange(ServerPlayerEntity player)
     {
         // Removal from the source chunk map is handled by sendPlayerToDimension before coordinate scaling.
+        player.ResetChunkStreamingState();
         player.activeChunks.Clear();
         GetChunkMap(player.dimensionId).addPlayer(player);
         ServerWorld var2 = _server.getWorld(player.dimensionId);
@@ -74,6 +75,7 @@ public class PlayerManager
     public void addPlayer(ServerPlayerEntity player)
     {
         players.Add(player);
+        player.ResetChunkStreamingState();
         ServerWorld var2 = _server.getWorld(player.dimensionId);
         var2.chunkCache.LoadChunk((int)player.x >> 4, (int)player.z >> 4);
 
@@ -285,6 +287,14 @@ public class PlayerManager
         for (int var1 = 0; var1 < _chunkMaps.Length; var1++)
         {
             _chunkMaps[var1].updateChunks();
+        }
+    }
+
+    public void flushPendingChunkUpdates()
+    {
+        for (int i = 0; i < players.Count; i++)
+        {
+            players[i].FlushPendingChunkUpdates();
         }
     }
 

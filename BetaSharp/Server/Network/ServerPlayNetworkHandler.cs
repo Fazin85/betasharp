@@ -74,7 +74,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
 
     public override void onPlayerMove(PlayerMovePacket packet)
     {
-        ServerWorld var2 = server.getWorld(player.dimensionId);
+        ServerWorld sWorld = server.getWorld(player.dimensionId);
         moved = true;
         if (!teleported)
         {
@@ -110,14 +110,14 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
                 }
 
                 player.onGround = packet.onGround;
-                player.playerTick(true);
+                player.playerTick(false);
                 player.move(var31, 0.0, var34);
                 player.setPositionAndAngles(var28, var29, var30, var27, var4);
                 player.velocityX = var31;
                 player.velocityZ = var34;
                 if (player.vehicle != null)
                 {
-                    var2.tickVehicle(player.vehicle, true);
+                    sWorld.tickVehicle(player.vehicle, true);
                 }
 
                 if (player.vehicle != null)
@@ -129,15 +129,15 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
                 teleportTargetX = player.x;
                 teleportTargetY = player.y;
                 teleportTargetZ = player.z;
-                var2.updateEntity(player);
+                sWorld.updateEntity(player);
                 return;
             }
 
             if (player.isSleeping())
             {
-                player.playerTick(true);
+                player.playerTick(false);
                 player.setPositionAndAngles(teleportTargetX, teleportTargetY, teleportTargetZ, player.yaw, player.pitch);
-                var2.updateEntity(player);
+                sWorld.updateEntity(player);
                 return;
             }
 
@@ -181,7 +181,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
                 var12 = packet.pitch;
             }
 
-            player.playerTick(true);
+            player.playerTick(false);
             player.cameraOffset = 0.0F;
             player.setPositionAndAngles(teleportTargetX, teleportTargetY, teleportTargetZ, var11, var12);
             if (!teleported)
@@ -201,7 +201,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             }
 
             float var21 = (1 / 16f);
-            bool var22 = var2.GetEntityCollisions(player, player.boundingBox.Contract(var21, var21, var21)).Count == 0;
+            bool var22 = sWorld.GetEntityCollisions(player, player.boundingBox.Contract(var21, var21, var21)).Count == 0;
             player.move(var32, var15, var17);
             var32 = var5 - player.x;
             var15 = var7 - player.y;
@@ -222,7 +222,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             }
 
             player.setPositionAndAngles(var5, var7, var9, var11, var12);
-            bool var24 = var2.GetEntityCollisions(player, player.boundingBox.Contract(var21, var21, var21)).Count == 0;
+            bool var24 = sWorld.GetEntityCollisions(player, player.boundingBox.Contract(var21, var21, var21)).Count == 0;
             if (var22 && (var23 || !var24) && !player.isSleeping())
             {
                 teleport(teleportTargetX, teleportTargetY, teleportTargetZ, var11, var12);
@@ -230,7 +230,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             }
 
             Box var25 = player.boundingBox.Expand(var21, var21, var21).Stretch(0.0, -0.55, 0.0);
-            if (server.flightEnabled || var2.isAnyBlockInBox(var25))
+            if (server.flightEnabled || sWorld.isAnyBlockInBox(var25))
             {
                 floatingTime = 0;
             }
@@ -558,7 +558,12 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
 
     public int getBlockDataSendQueueSize()
     {
-        return connection.getDelayedSendQueueSize();
+        return getWorldPacketBacklog();
+    }
+
+    public int getWorldPacketBacklog()
+    {
+        return connection.getWorldPacketBacklog();
     }
 
     public void SendMessage(string message)

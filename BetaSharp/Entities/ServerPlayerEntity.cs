@@ -27,15 +27,17 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public ServerPlayerInteractionManager interactionManager;
     public double lastX;
     public double lastZ;
-    public Queue<ChunkPos> PendingChunkUpdates = new();
     public HashSet<ChunkPos> activeChunks = new();
-    private int lastHealthScore = -99999999;
-    private int joinInvulnerabilityTicks = 60;
-    private ItemStack[] equipment = [null, null, null, null, null];
-    private int screenHandlerSyncId;
+    private int _lastHealthScore = -99999999;
+    private int _joinInvulnerabilityTicks = 60;
+    private ItemStack[] _equipment = [null, null, null, null, null];
+    private int _screenHandlerSyncId;
     public bool skipPacketSlotUpdates;
+    private readonly PlayerChunkSendQueue _pendingChunkUpdates = new();
+    private double _chunkStreamingMotionX;
+    private double _chunkStreamingMotionZ;
 
-    public ServerPlayerEntity(BetaSharpServer server, World world, String name, ServerPlayerInteractionManager interactionManager) : base(world)
+    public ServerPlayerEntity(BetaSharpServer server, World world, string name, ServerPlayerInteractionManager interactionManager) : base(world)
     {
         interactionManager.player = this;
         this.interactionManager = interactionManager;
@@ -72,7 +74,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
     public override ItemStack[] getEquipment()
     {
-        return equipment;
+        return _equipment;
     }
 
     protected override void resetEyeHeight()
@@ -91,16 +93,16 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
         TickSleep();
 
         interactionManager.update();
-        joinInvulnerabilityTicks--;
+        _joinInvulnerabilityTicks--;
         currentScreenHandler.SendContentUpdates();
 
         for (int i = 0; i < 5; i++)
         {
             ItemStack itemStack = getEquipment(i);
-            if (itemStack != equipment[i])
+            if (itemStack != _equipment[i])
             {
                 server.getEntityTracker(dimensionId).sendToListeners(this, EntityEquipmentUpdateS2CPacket.Get(id, i, itemStack));
-                equipment[i] = itemStack;
+                _equipment[i] = itemStack;
             }
         }
     }
@@ -112,7 +114,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
     public override bool damage(Entity damageSource, int amount)
     {
-        if (joinInvulnerabilityTicks > 0)
+        if (_joinInvulnerabilityTicks > 0)
         {
             return false;
         }
@@ -162,13 +164,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
         if (shouldSendChunkUpdates)
         {
-            while (CanSendMoreChunkData() && PendingChunkUpdates.TryDequeue(out ChunkPos chunkPos))
-            {
-                ServerWorld world = server.getWorld(dimensionId);
-                if (!activeChunks.Contains(chunkPos)) continue;
-                SendChunkData(world, chunkPos);
-                SendBlockEntityUpdates(world, chunkPos);
-            }
+            FlushPendingChunkUpdates();
         }
 
         if (inTeleportationState)
@@ -216,16 +212,78 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
             portalCooldown--;
         }
 
-        if (health != lastHealthScore)
+        if (health != _lastHealthScore)
         {
             networkHandler.sendPacket(HealthUpdateS2CPacket.Get(health));
-            lastHealthScore = health;
+            _lastHealthScore = health;
         }
     }
 
     private bool CanSendMoreChunkData()
     {
-        return networkHandler.getBlockDataSendQueueSize() < MaxChunkPackets;
+        return networkHandler.getWorldPacketBacklog() < MaxChunkPackets;
+    }
+
+    public void ResetChunkStreamingState()
+    {
+        _chunkStreamingMotionX = 0.0;
+        _chunkStreamingMotionZ = 0.0;
+        _pendingChunkUpdates.Clear();
+    }
+
+    public void UpdateChunkStreamingMotion(double motionX, double motionZ)
+    {
+        _chunkStreamingMotionX = motionX;
+        _chunkStreamingMotionZ = motionZ;
+        _pendingChunkUpdates.ReprioritizeAll(this);
+    }
+
+    public void ScheduleChunkSend(ChunkPos chunkPos)
+    {
+        _pendingChunkUpdates.EnqueueOrPromote(this, chunkPos);
+    }
+
+    public void CancelChunkSend(ChunkPos chunkPos)
+    {
+        _pendingChunkUpdates.Remove(chunkPos);
+    }
+
+    public void FlushPendingChunkUpdates()
+    {
+        if (_pendingChunkUpdates.Count == 0)
+        {
+            return;
+        }
+
+        ServerWorld world = server.getWorld(dimensionId);
+        while (CanSendMoreChunkData() && _pendingChunkUpdates.TryDequeue(out ChunkPos chunkPos))
+        {
+            if (!activeChunks.Contains(chunkPos))
+            {
+                continue;
+            }
+
+            SendChunkData(world, chunkPos);
+            SendBlockEntityUpdates(world, chunkPos);
+        }
+    }
+
+    internal ChunkPriority GetChunkPriority(ChunkPos chunkPos, long sequence)
+    {
+        int playerChunkX = (int)x >> 4;
+        int playerChunkZ = (int)z >> 4;
+        int deltaX = chunkPos.X - playerChunkX;
+        int deltaZ = chunkPos.Z - playerChunkZ;
+        int ring = Math.Max(Math.Abs(deltaX), Math.Abs(deltaZ));
+
+        double directionPenalty = 0.0;
+        double motionLength = Math.Sqrt(_chunkStreamingMotionX * _chunkStreamingMotionX + _chunkStreamingMotionZ * _chunkStreamingMotionZ);
+        if (motionLength > 0.0)
+        {
+            directionPenalty = -((deltaX * _chunkStreamingMotionX) + (deltaZ * _chunkStreamingMotionZ)) / motionLength;
+        }
+
+        return new ChunkPriority(ring, directionPenalty, sequence);
     }
 
     private void SendChunkData(ServerWorld world, ChunkPos chunkPos)
@@ -242,7 +300,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
         int endX = startX + 16;
         int endZ = startZ + 16;
 
-        var blockEntities = world.getBlockEntities(startX, 0, startZ, endX, 128, endZ);
+        List<BlockEntity> blockEntities = world.getBlockEntities(startX, 0, startZ, endX, 128, endZ);
         foreach (BlockEntity blockEntity in blockEntities)
         {
             updateBlockEntity(blockEntity);
@@ -341,16 +399,16 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
     private void incrementScreenHandlerSyncId()
     {
-        screenHandlerSyncId = screenHandlerSyncId % 100 + 1;
+        _screenHandlerSyncId = _screenHandlerSyncId % 100 + 1;
     }
 
 
     public override void openCraftingScreen(int x, int y, int z)
     {
         incrementScreenHandlerSyncId();
-        networkHandler.sendPacket(OpenScreenS2CPacket.Get(screenHandlerSyncId, 1, "Crafting", 9));
+        networkHandler.sendPacket(OpenScreenS2CPacket.Get(_screenHandlerSyncId, 1, "Crafting", 9));
         currentScreenHandler = new CraftingScreenHandler(inventory, world, x, y, z);
-        currentScreenHandler.SyncId = screenHandlerSyncId;
+        currentScreenHandler.SyncId = _screenHandlerSyncId;
         currentScreenHandler.AddListener(this);
     }
 
@@ -358,9 +416,9 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public override void openChestScreen(IInventory inventory)
     {
         incrementScreenHandlerSyncId();
-        networkHandler.sendPacket(OpenScreenS2CPacket.Get(screenHandlerSyncId, 0, inventory.getName(), inventory.size()));
+        networkHandler.sendPacket(OpenScreenS2CPacket.Get(_screenHandlerSyncId, 0, inventory.getName(), inventory.size()));
         currentScreenHandler = new GenericContainerScreenHandler(this.inventory, inventory);
-        currentScreenHandler.SyncId = screenHandlerSyncId;
+        currentScreenHandler.SyncId = _screenHandlerSyncId;
         currentScreenHandler.AddListener(this);
     }
 
@@ -368,9 +426,9 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public override void openFurnaceScreen(BlockEntityFurnace furnace)
     {
         incrementScreenHandlerSyncId();
-        networkHandler.sendPacket(OpenScreenS2CPacket.Get(screenHandlerSyncId, 2, furnace.getName(), furnace.size()));
+        networkHandler.sendPacket(OpenScreenS2CPacket.Get(_screenHandlerSyncId, 2, furnace.getName(), furnace.size()));
         currentScreenHandler = new FurnaceScreenHandler(inventory, furnace);
-        currentScreenHandler.SyncId = screenHandlerSyncId;
+        currentScreenHandler.SyncId = _screenHandlerSyncId;
         currentScreenHandler.AddListener(this);
     }
 
@@ -378,9 +436,9 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public override void openDispenserScreen(BlockEntityDispenser dispenser)
     {
         incrementScreenHandlerSyncId();
-        networkHandler.sendPacket(OpenScreenS2CPacket.Get(screenHandlerSyncId, 3, dispenser.getName(), dispenser.size()));
+        networkHandler.sendPacket(OpenScreenS2CPacket.Get(_screenHandlerSyncId, 3, dispenser.getName(), dispenser.size()));
         currentScreenHandler = new DispenserScreenHandler(inventory, dispenser);
-        currentScreenHandler.SyncId = screenHandlerSyncId;
+        currentScreenHandler.SyncId = _screenHandlerSyncId;
         currentScreenHandler.AddListener(this);
     }
 
@@ -500,7 +558,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
     public void markHealthDirty()
     {
-        lastHealthScore = -99999999;
+        _lastHealthScore = -99999999;
     }
 
     public override void sendMessage(string message)
