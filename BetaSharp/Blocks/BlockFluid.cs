@@ -209,9 +209,9 @@ public abstract class BlockFluid : Block
     public override void applyVelocity(OnApplyVelocityEvt evt)
     {
         Vector3D<double> flowVec = getFlow(evt.Level.Reader, evt.X, evt.Y, evt.Z);
-        evt.Velocity.x += flowVec.X;
-        evt.Velocity.y += flowVec.Y;
-        evt.Velocity.z += flowVec.Z;
+        evt.Entity.velocityX += flowVec.X; 
+        evt.Entity.velocityY += flowVec.Y; 
+        evt.Entity.velocityZ += flowVec.Z; 
     }
 
     public override int getTickRate()

@@ -188,12 +188,16 @@ public class BlockPistonBase : Block
                     evt.Level.BlockWriter.SetBlock(targetX, targetY, targetZ, 0);
                     deaf = true;
 
-                    evt.X += PistonConstants.HEAD_OFFSET_X[facing];
-                    evt.Y += PistonConstants.HEAD_OFFSET_Y[facing];
-                    evt.Z += PistonConstants.HEAD_OFFSET_Z[facing];
+                    int x = evt.X;
+                    int y = evt.Y;
+                    int z = evt.Z;
+                
+                    x += PistonConstants.HEAD_OFFSET_X[facing];
+                    y += PistonConstants.HEAD_OFFSET_Y[facing];
+                    z += PistonConstants.HEAD_OFFSET_Z[facing];
 
-                    evt.Level.BlockWriter.SetBlockWithoutNotifyingNeighbors(evt.X, evt.Y, evt.Z, MovingPiston.id, targetMeta);
-                    evt.Level.Entities.SetBlockEntity(evt.X, evt.Y, evt.Z, BlockPistonMoving.createPistonBlockEntity(targetId, targetMeta, facing, false, false));
+                    evt.Level.BlockWriter.SetBlockWithoutNotifyingNeighbors(x, y, z, MovingPiston.id, targetMeta);
+                    evt.Level.Entities.SetBlockEntity(x, y, z, BlockPistonMoving.createPistonBlockEntity(targetId, targetMeta, facing, false, false));
                 }
             }
             else

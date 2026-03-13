@@ -95,12 +95,15 @@ internal class BlockTrapDoor : Block
 
     public void setOpen(OnTickEvt ctx, bool open)
     {
-        int meta = ctx.Level.Reader.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+        int x = ctx.X;
+        int y = ctx.Y;
+        int z = ctx.Z;
+        int meta = ctx.Level.Reader.GetBlockMeta(x, y, z);
         bool isOpen = (meta & 4) > 0;
         if (isOpen != open)
         {
-            ctx.Level.BlockWriter.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, meta ^ 4);
-            ctx.Level.Broadcaster.WorldEvent(1003, ctx.X, ctx.Y, ctx.Z, 0);
+            ctx.Level.BlockWriter.SetBlockMeta(x, y, z, meta ^ 4);
+            ctx.Level.Broadcaster.WorldEvent(1003, x, y, z, 0);
         }
     }
 
@@ -179,6 +182,10 @@ internal class BlockTrapDoor : Block
 
     public override bool canPlaceAt(CanPlaceAtCtx ctx)
     {
+        int x = ctx.X;
+        int y = ctx.Y;
+        int z = ctx.Z;
+
         if (ctx.Direction == 0)
         {
             return false;
@@ -191,25 +198,25 @@ internal class BlockTrapDoor : Block
 
         if (ctx.Direction == 2)
         {
-            ++ctx.Z;
+            ++z;
         }
 
         if (ctx.Direction == 3)
         {
-            --ctx.Z;
+            --z;
         }
 
         if (ctx.Direction == 4)
         {
-            ++ctx.X;
+            ++x;
         }
 
         if (ctx.Direction == 5)
         {
-            --ctx.X;
+            --x;
         }
 
-        return ctx.Level.Reader.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z);
+        return ctx.Level.Reader.ShouldSuffocate(x, y, z);
     }
 
     public static bool isOpen(int meta) => (meta & 4) != 0;

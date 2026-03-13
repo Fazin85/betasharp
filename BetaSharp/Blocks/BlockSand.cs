@@ -26,26 +26,29 @@ internal class BlockSand : Block
     private void processFall(OnTickEvt evt)
     {
         // Check the block BELOW the sand (evt has sand position; canFallThrough checks ctx coords)
-        if (evt.Y > 0 && canFallThrough(new OnTickEvt(evt.Level, evt.X, evt.Y - 1, evt.Z, 0, evt.BlockId)))
+        int x = evt.X;
+        int y = evt.Y;
+        int z = evt.Z;
+        if (y > 0 && canFallThrough(new OnTickEvt(evt.Level, x, y - 1, z, 0, evt.BlockId)))
         {
             sbyte checkRadius = 32;
-            if (!fallInstantly && evt.Level.BlockHost.IsRegionLoaded(evt.X - checkRadius, evt.Y - checkRadius, evt.Z - checkRadius, evt.X + checkRadius, evt.Y + checkRadius, evt.Z + checkRadius))
+            if (!fallInstantly && evt.Level.BlockHost.IsRegionLoaded(x - checkRadius, y - checkRadius, z - checkRadius, x + checkRadius, y + checkRadius, z + checkRadius))
             {
-                EntityFallingSand fallingSand = new(evt.Level, evt.X + 0.5F, evt.Y + 0.5F, evt.Z + 0.5F, id);
+                EntityFallingSand fallingSand = new(evt.Level, x + 0.5F, y + 0.5F, z + 0.5F, id);
                 evt.Level.Entities.SpawnEntity(fallingSand);
             }
             else
             {
-                evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, 0);
+                evt.Level.BlockWriter.SetBlock(x, y, z, 0);
 
                 while (canFallThrough(evt) && evt.Y > 0)
                 {
-                    --evt.Y;
+                    --y;
                 }
 
-                if (evt.Y > 0)
+                if (y > 0)
                 {
-                    evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, id);
+                    evt.Level.BlockWriter.SetBlock(x, y, z, id);
                 }
             }
         }

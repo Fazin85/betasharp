@@ -1,138 +1,33 @@
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds.Core;
 using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Blocks;
 
-public struct OnTickEvt(IWorldContext level, int x, int y, int z, int meta, int blockId)
-{
-    public IWorldContext Level = level;
-    public int X = x;
-    public int Y = y;
-    public int Z = z;
-    public int Meta = meta;
-    public int BlockId = blockId;
-}
+public readonly record struct OnTickEvt(IWorldContext Level, int X, int Y, int Z, int Meta, int BlockId);
 
-public struct OnPlacedEvt(IWorldContext level, EntityLiving? placer, int direction, int side, int x, int y, int z)
-{
-    public IWorldContext Level = level;
-    public EntityLiving? Placer = placer;
-    public int Direction = direction;
-    public int Side = side;
-    public int X = x;
-    public int Y = y;
-    public int Z = z;
-}
+public readonly record struct OnPlacedEvt(IWorldContext Level, EntityLiving? Placer, int Direction, int Side, int X, int Y, int Z);
 
-public struct CanPlaceAtCtx(IWorldContext level, int direction, int x, int y, int z)
-{
-    public IWorldContext Level = level;
-    public int Direction = direction;
-    public int X = x;
-    public int Y = y;
-    public int Z = z;
-}
+public readonly record struct CanPlaceAtCtx(IWorldContext Level, int Direction, int X, int Y, int Z);
 
-public struct OnUseEvt(IWorldContext level, EntityPlayer player, int x, int y, int z)
-{
-    public IWorldContext Level = level;
-    public EntityPlayer Player = player;
-    public int X = x;
-    public int Y = y;
-    public int Z = z;
-}
+public readonly record struct OnUseEvt(IWorldContext Level, EntityPlayer Player, int X, int Y, int Z);
 
-public struct OnBreakEvt(IWorldContext level, Entity? entity, int x, int y, int z)
-{
-    public IWorldContext Level = level;
-    public Entity? Entity = entity;
-    public int X = x;
-    public int Y = y;
-    public int Z = z;
-}
+public readonly record struct OnBreakEvt(IWorldContext Level, Entity? Entity, int X, int Y, int Z);
 
-public struct OnBlockBreakStartEvt(IWorldContext level, EntityPlayer player, int x, int y, int z)
-{
-    public IWorldContext Level = level;
-    public EntityPlayer Player = player;
-    public int X = x;
-    public int Y = y;
-    public int Z = z;
-}
+public readonly record struct OnBlockBreakStartEvt(IWorldContext Level, EntityPlayer Player, int X, int Y, int Z);
 
-public struct OnDropEvt(IWorldContext level, int x, int y, int z, int meta, float luck = 1.0F)
-{
-    public IWorldContext Level = level;
-    public int X = x;
-    public int Y = y;
-    public int Z = z;
-    public int Meta = meta;
-    public float Luck = luck;
-}
+public readonly record struct OnDropEvt(IWorldContext Level, int X, int Y, int Z, int Meta, float Luck = 1.0F);
 
-public struct OnMetadataChangeEvt(IWorldContext level, int x, int y, int z, int meta)
-{
-    public IWorldContext Level = level;
-    public int X = x;
-    public int Y = y;
-    public int Z = z;
-    public int Meta = meta;
-}
+public readonly record struct OnMetadataChangeEvt(IWorldContext Level, int X, int Y, int Z, int Meta);
 
-public struct OnEntityStepEvt(IWorldContext level, Entity entity, int x, int y, int z)
-{
-    public IWorldContext Level = level;
-    public Entity Entity = entity;
-    public int X = x;
-    public int Y = y;
-    public int Z = z;
-}
+public readonly record struct OnEntityStepEvt(IWorldContext Level, Entity Entity, int X, int Y, int Z);
 
-public struct OnEntityCollisionEvt(IWorldContext level, Entity entity, int x, int y, int z)
-{
-    public IWorldContext Level = level;
-    public Entity Entity = entity;
-    public int X = x;
-    public int Y = y;
-    public int Z = z;
-}
+public readonly record struct OnEntityCollisionEvt(IWorldContext Level, Entity Entity, int X, int Y, int Z);
 
-public struct OnApplyVelocityEvt(IWorldContext level, Entity entity, Vec3D velocity, int x, int y, int z)
-{
-    public IWorldContext Level = level;
-    public Entity Entity = entity;
-    public Vec3D Velocity = velocity;
-    public int X = x;
-    public int Y = y;
-    public int Z = z;
-}
+public readonly record struct OnApplyVelocityEvt(IWorldContext Level, Entity Entity, Vec3D Velocity, int X, int Y, int Z);
 
-public struct OnDestroyedByExplosionEvt(IWorldContext level, int x, int y, int z)
-{
-    public IWorldContext Level = level;
-    public int X = x;
-    public int Y = y;
-    public int Z = z;
-}
+public readonly record struct OnDestroyedByExplosionEvt(IWorldContext Level, int X, int Y, int Z);
 
-public struct OnAfterBreakEvt(IWorldContext level, EntityPlayer player, int meta, int x, int y, int z)
-{
-    public IWorldContext Level = level;
-    public EntityPlayer Player = player;
-    public int Meta = meta;
-    public int X = x;
-    public int Y = y;
-    public int Z = z;
-}
+public readonly record struct OnAfterBreakEvt(IWorldContext Level, EntityPlayer Player, int Meta, int X, int Y, int Z);
 
-public struct OnBlockActionEvt(IWorldContext level, int data1, int data2, int x, int y, int z)
-{
-    public IWorldContext Level = level;
-    public int Data1 = data1;
-    public int Data2 = data2;
-    public int X = x;
-    public int Y = y;
-    public int Z = z;
-}
+public readonly record struct OnBlockActionEvt(IWorldContext Level, int Data1, int Data2, int X, int Y, int Z);

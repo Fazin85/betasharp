@@ -36,7 +36,10 @@ internal class BlockStationary : BlockFluid
 
     public override void onTick(OnTickEvt evt)
     {
-        if (evt.Level.Reader.GetBlockId(evt.X, evt.Y, evt.Z) == id)
+        int x = evt.X;
+        int y = evt.Y;
+        int z = evt.Z;
+        if (evt.Level.Reader.GetBlockId(x, y, z) == id)
         {
             convertToFlowing(evt);
         }
@@ -47,16 +50,16 @@ internal class BlockStationary : BlockFluid
 
             for (int attempt = 0; attempt < attempts; ++attempt)
             {
-                evt.X += evt.Level.random.NextInt(3) - 1;
-                ++evt.Y;
-                evt.Z += evt.Level.random.NextInt(3) - 1;
-                int neighborBlockId = evt.Level.Reader.GetBlockId(evt.X, evt.Y, evt.Z);
+                x += evt.Level.random.NextInt(3) - 1;
+                ++y;
+                z += evt.Level.random.NextInt(3) - 1;
+                int neighborBlockId = evt.Level.Reader.GetBlockId(x, y, z);
                 if (neighborBlockId == 0)
                 {
-                    if (isFlammable(evt.Level.Reader, evt.X - 1, evt.Y, evt.Z) || isFlammable(evt.Level.Reader, evt.X + 1, evt.Y, evt.Z) || isFlammable(evt.Level.Reader, evt.X, evt.Y, evt.Z - 1) ||
-                        isFlammable(evt.Level.Reader, evt.X, evt.Y, evt.Z + 1) || isFlammable(evt.Level.Reader, evt.X, evt.Y - 1, evt.Z) || isFlammable(evt.Level.Reader, evt.X, evt.Y + 1, evt.Z))
+                    if (isFlammable(evt.Level.Reader, x - 1, y, z) || isFlammable(evt.Level.Reader, x + 1, y, z) || isFlammable(evt.Level.Reader, x, y, z - 1) ||
+                        isFlammable(evt.Level.Reader, x, y, z + 1) || isFlammable(evt.Level.Reader, x, y - 1, z) || isFlammable(evt.Level.Reader, x, y + 1, z))
                     {
-                        evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, Fire.id);
+                        evt.Level.BlockWriter.SetBlock(x, y, z, Fire.id);
                         return;
                     }
                 }

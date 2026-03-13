@@ -22,19 +22,22 @@ public class BlockPistonExtension : Block
     public override void onBreak(OnBreakEvt evt)
     {
         base.onBreak(evt);
-        int var5 = evt.Level.Reader.GetBlockMeta(evt.X, evt.Y, evt.Z);
+        int x = evt.X;
+        int y = evt.Y;
+        int z = evt.Z;
+        int var5 = evt.Level.Reader.GetBlockMeta(x, y, z);
         int var6 = PistonConstants.field_31057_a[getFacing(var5)];
-        evt.X += PistonConstants.HEAD_OFFSET_X[var6];
-        evt.Y += PistonConstants.HEAD_OFFSET_Y[var6];
-        evt.Z += PistonConstants.HEAD_OFFSET_Z[var6];
-        int var7 = evt.Level.Reader.GetBlockId(evt.X, evt.Y, evt.Z);
+        x += PistonConstants.HEAD_OFFSET_X[var6];
+        y += PistonConstants.HEAD_OFFSET_Y[var6];
+        z += PistonConstants.HEAD_OFFSET_Z[var6];
+        int var7 = evt.Level.Reader.GetBlockId(x, y, z);
         if (var7 == Piston.id || var7 == StickyPiston.id)
         {
-            var5 = evt.Level.Reader.GetBlockMeta(evt.X, evt.Y, evt.Z);
+            var5 = evt.Level.Reader.GetBlockMeta(x, y, z);
             if (BlockPistonBase.isExtended(var5))
             {
-                Blocks[var7].dropStacks(new OnDropEvt(evt.Level, evt.X, evt.Y, evt.Z, var5));
-                evt.Level.BlockWriter.SetBlock(evt.X, evt.Y, evt.Z, 0);
+                Blocks[var7].dropStacks(new OnDropEvt(evt.Level, x, y, z, var5));
+                evt.Level.BlockWriter.SetBlock(x, y, z, 0);
             }
         }
     }
