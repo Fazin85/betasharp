@@ -626,7 +626,7 @@ public class WorldRenderer : IWorldAccess
         GLManager.GL.Enable(GLEnum.CullFace);
     }
 
-    public void drawBlockBreaking(EntityPlayer var1, HitResult var2, int var3, ItemStack var4, float var5)
+    public void drawBlockBreaking(EntityPlayer entityPlayer, HitResult var2, int i, ItemStack itemStack, float tickDelta)
     {
         Tessellator var6 = Tessellator.instance;
         GLManager.GL.Enable(GLEnum.Blend);
@@ -635,7 +635,7 @@ public class WorldRenderer : IWorldAccess
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, (MathHelper.Sin(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
  / 100.0F) * 0.2F + 0.4F) * 0.5F);
         int var8;
-        if (var3 == 0)
+        if (i == 0)
         {
             if (damagePartialTime > 0.0F)
             {
@@ -644,14 +644,13 @@ public class WorldRenderer : IWorldAccess
                 GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 0.5F);
                 GLManager.GL.PushMatrix();
                 var8 = world.getBlockId(var2.BlockX, var2.BlockY, var2.BlockZ);
-                Block var9 = var8 > 0 ? Block.Blocks[var8] : null;
+                Block var9 = var8 > 0 ? Block.Blocks[var8] : Block.Stone;
                 GLManager.GL.Disable(GLEnum.AlphaTest);
                 GLManager.GL.PolygonOffset(-3.0F, -3.0F);
                 GLManager.GL.Enable(GLEnum.PolygonOffsetFill);
-                double var10 = var1.lastTickX + (var1.x - var1.lastTickX) * (double)var5;
-                double var12 = var1.lastTickY + (var1.y - var1.lastTickY) * (double)var5;
-                double var14 = var1.lastTickZ + (var1.z - var1.lastTickZ) * (double)var5;
-                var9 ??= Block.Stone;
+                double var10 = entityPlayer.lastTickX + (entityPlayer.x - entityPlayer.lastTickX) * (double)tickDelta;
+                double var12 = entityPlayer.lastTickY + (entityPlayer.y - entityPlayer.lastTickY) * (double)tickDelta;
+                double var14 = entityPlayer.lastTickZ + (entityPlayer.z - entityPlayer.lastTickZ) * (double)tickDelta;
 
                 GLManager.GL.Enable(GLEnum.AlphaTest);
                 var6.startDrawingQuads();
@@ -668,7 +667,7 @@ public class WorldRenderer : IWorldAccess
                 GLManager.GL.PopMatrix();
             }
         }
-        else if (var4 != null)
+        else if (itemStack != null)
         {
             GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
             float var16 = MathHelper.Sin(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()

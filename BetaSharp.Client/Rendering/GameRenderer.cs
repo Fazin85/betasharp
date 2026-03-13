@@ -404,13 +404,13 @@ public class GameRenderer
         var6.renderParticles(var4, tickDelta);
         Profiler.Stop("renderParticles");
 
-        EntityPlayer var21;
+        EntityPlayer entityPlayer;
         if (_client.objectMouseOver.Type != HitResultType.MISS && var4.isInFluid(Material.Water) && var4 is EntityPlayer)
         {
-            var21 = (EntityPlayer)var4;
+            entityPlayer = (EntityPlayer)var4;
             GLManager.GL.Disable(GLEnum.AlphaTest);
-            var5.drawBlockBreaking(var21, _client.objectMouseOver, 0, var21.inventory.getSelectedItem(), tickDelta);
-            var5.drawSelectionBox(var21, _client.objectMouseOver, 0, var21.inventory.getSelectedItem(), tickDelta);
+            var5.drawBlockBreaking(entityPlayer, _client.objectMouseOver, 0, entityPlayer.inventory.getSelectedItem(), tickDelta);
+            var5.drawSelectionBox(entityPlayer, _client.objectMouseOver, 0, entityPlayer.inventory.getSelectedItem(), tickDelta);
             GLManager.GL.Enable(GLEnum.AlphaTest);
         }
 
@@ -435,10 +435,10 @@ public class GameRenderer
         GLManager.GL.Disable(GLEnum.Blend);
         if (cameraController.CameraZoom == 1.0D && var4 is EntityPlayer && _client.objectMouseOver.Type != HitResultType.MISS && !var4.isInFluid(Material.Water))
         {
-            var21 = (EntityPlayer)var4;
+            entityPlayer = (EntityPlayer)var4;
             GLManager.GL.Disable(GLEnum.AlphaTest);
-            var5.drawBlockBreaking(var21, _client.objectMouseOver, 0, var21.inventory.getSelectedItem(), tickDelta);
-            var5.drawSelectionBox(var21, _client.objectMouseOver, 0, var21.inventory.getSelectedItem(), tickDelta);
+            var5.drawBlockBreaking(entityPlayer, _client.objectMouseOver, 0, entityPlayer.inventory.getSelectedItem(), tickDelta);
+            var5.drawSelectionBox(entityPlayer, _client.objectMouseOver, 0, entityPlayer.inventory.getSelectedItem(), tickDelta);
             GLManager.GL.Enable(GLEnum.AlphaTest);
         }
 
