@@ -5,7 +5,7 @@ namespace BetaSharp.Server;
 
 internal class DedicatedServerConfiguration : IServerConfiguration
 {
-    public static ILogger<DedicatedServerConfiguration> logger = Log.Instance.For<DedicatedServerConfiguration>();
+    private static ILogger<DedicatedServerConfiguration> logger = Log.Instance.For<DedicatedServerConfiguration>();
     private readonly  Properties _properties = new();
     private readonly FileInfo _propertiesFile;
 
@@ -100,7 +100,7 @@ internal class DedicatedServerConfiguration : IServerConfiguration
     {
         try
         {
-            return java.lang.Boolean.parseBoolean(getProperty(property, "" + fallback));
+            return bool.Parse(getProperty(property, "" + fallback));
         }
         catch (Exception)
         {

@@ -29,7 +29,7 @@ internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(co
         if (availableMb < 512)
         {
             s_logger.LogWarning("**** NOT ENOUGH RAM!");
-            s_logger.LogWarning("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
+            s_logger.LogWarning("To start the server ensure that a minimum of 512MB of RAM is available.");
         }
 
         s_logger.LogInformation("Loading properties");
