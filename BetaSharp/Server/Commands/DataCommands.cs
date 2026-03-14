@@ -12,7 +12,7 @@ public static class DataCommands
             return;
         }
 
-        ServerPlayerEntity player = server.playerManager.getPlayer(senderName);
+        ServerPlayerEntity player = server.playerManager.GetPlayer(senderName);
         if (player == null)
         {
             output.SendMessage("Could not find your player.");

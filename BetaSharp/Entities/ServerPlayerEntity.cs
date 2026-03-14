@@ -187,7 +187,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
                     {
                         changeDimensionCooldown = 1.0F;
                         portalCooldown = 10;
-                        server.playerManager.changePlayerDimension(this);
+                        server.playerManager.ChangePlayerDimension(this);
                     }
                 }
 

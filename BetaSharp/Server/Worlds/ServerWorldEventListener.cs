@@ -44,7 +44,7 @@ internal class ServerWorldEventListener : IWorldAccess
 
     public void blockUpdate(int x, int y, int z)
     {
-        server.playerManager.markDirty(x, y, z, world.dimension.Id);
+        server.playerManager.MarkDirty(x, y, z, world.dimension.Id);
     }
 
     public void playStreaming(String stream, int x, int y, int z)
@@ -53,12 +53,12 @@ internal class ServerWorldEventListener : IWorldAccess
 
     public void updateBlockEntity(int x, int y, int z, BlockEntity blockEntity)
     {
-        server.playerManager.updateBlockEntity(x, y, z, blockEntity);
+        server.playerManager.UpdateBlockEntity(x, y, z, blockEntity);
     }
 
     public void worldEvent(EntityPlayer player, int @event, int x, int y, int z, int data)
     {
-        server.playerManager.sendToAround(player, x, y, z, 64.0, world.dimension.Id, WorldEventS2CPacket.Get(@event, x, y, z, data));
+        server.playerManager.SendToAround(player, x, y, z, 64.0, world.dimension.Id, WorldEventS2CPacket.Get(@event, x, y, z, data));
     }
 
     public void spawnParticle(string particle, double x, double y, double z, double velocityX, double velocityY, double velocityZ)

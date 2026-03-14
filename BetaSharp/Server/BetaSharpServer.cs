@@ -135,7 +135,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
             worlds[i].addWorldAccess(new ServerWorldEventListener(this, worlds[i]));
             worlds[i].difficulty = config.GetSpawnMonsters(true) ? 1 : 0;
             worlds[i].allowSpawning(config.GetSpawnMonsters(true), spawnAnimals);
-            playerManager.saveAllPlayers(worlds);
+            playerManager.SaveAllPlayers(worlds);
         }
 
         int startRegionSize = config.GetSpawnRegionSize(196);
@@ -242,7 +242,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
 
         _logger.LogInformation("Stopping server");
 
-        playerManager?.savePlayers();
+        playerManager?.SavePlayers();
 
         foreach (ServerWorld world in worlds)
         {
@@ -413,7 +413,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                 ServerWorld world = worlds[i];
                 if (_ticks % 20 == 0)
                 {
-                    playerManager.sendToDimension(WorldTimeUpdateS2CPacket.Get(world.getTime()), world.dimension.Id);
+                    playerManager.SendToDimension(WorldTimeUpdateS2CPacket.Get(world.getTime()), world.dimension.Id);
                 }
 
                 world.Tick();
@@ -433,7 +433,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
         }
 
         connections?.Tick();
-        playerManager.updateAllChunks();
+        playerManager.UpdateAllChunks();
         playerManager.FlushPendingChunkUpdates();
 
         foreach (EntityTracker t in entityTrackers)

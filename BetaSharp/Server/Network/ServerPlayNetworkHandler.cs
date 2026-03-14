@@ -59,13 +59,13 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         player.onDisconnect();
         sendPacket(DisconnectPacket.Get(reason));
         connection.disconnect();
-        server.playerManager.disconnect(player);
-        server.playerManager.sendToAll(PlayerConnectionUpdateS2CPacket.Get(
+        server.playerManager.Disconnect(player);
+        server.playerManager.SendToAll(PlayerConnectionUpdateS2CPacket.Get(
             player.id,
             PlayerConnectionUpdateS2CPacket.ConnectionUpdateType.Leave,
             player.name
         ));
-        server.playerManager.sendToAll(ChatMessagePacket.Get("§e" + player.name + " left the game."));
+        server.playerManager.SendToAll(ChatMessagePacket.Get("§e" + player.name + " left the game."));
         disconnected = true;
     }
 
@@ -125,7 +125,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
                     player.vehicle.updatePassengerPosition();
                 }
 
-                server.playerManager.updatePlayerChunks(player);
+                server.playerManager.UpdatePlayerChunks(player);
                 teleportTargetX = player.x;
                 teleportTargetY = player.y;
                 teleportTargetZ = player.z;
@@ -246,7 +246,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             }
 
             player.onGround = packet.onGround;
-            server.playerManager.updatePlayerChunks(player);
+            server.playerManager.UpdatePlayerChunks(player);
             player.handleFall(player.y - var26, packet.onGround);
         }
     }
@@ -271,7 +271,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         }
         else
         {
-            bool var3 = var2.bypassSpawnProtection = var2.dimension.Id != 0 || server.playerManager.isOperator(player.name) || server is InternalServer;
+            bool var3 = var2.bypassSpawnProtection = var2.dimension.Id != 0 || server.playerManager.IsOperator(player.name) || server is InternalServer;
             bool var4 = false;
             if (packet.action == 0)
             {
@@ -345,7 +345,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
     {
         ServerWorld var2 = server.getWorld(player.dimensionId);
         ItemStack var3 = player.inventory.getSelectedItem();
-        bool var4 = var2.bypassSpawnProtection = var2.dimension.Id != 0 || server.playerManager.isOperator(player.name) || server is InternalServer;
+        bool var4 = var2.bypassSpawnProtection = var2.dimension.Id != 0 || server.playerManager.IsOperator(player.name) || server is InternalServer;
         if (packet.side == 255)
         {
             if (var3 == null)
@@ -430,13 +430,13 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
     public override void onDisconnected(string reason, object[]? objects)
     {
         _logger.LogInformation($"{player.name} lost connection: {reason}");
-        server.playerManager.disconnect(player);
-        server.playerManager.sendToAll(PlayerConnectionUpdateS2CPacket.Get(
+        server.playerManager.Disconnect(player);
+        server.playerManager.SendToAll(PlayerConnectionUpdateS2CPacket.Get(
             player.id,
             PlayerConnectionUpdateS2CPacket.ConnectionUpdateType.Leave,
             player.name
         ));
-        server.playerManager.sendToAll(ChatMessagePacket.Get("§e" + player.name + " left the game."));
+        server.playerManager.SendToAll(ChatMessagePacket.Get("§e" + player.name + " left the game."));
         disconnected = true;
     }
 
@@ -499,7 +499,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             {
                 var2 = "<" + player.name + "> " + var2;
                 _logger.LogInformation(var2);
-                server.playerManager.sendToAll(ChatMessagePacket.Get(var2));
+                server.playerManager.SendToAll(ChatMessagePacket.Get(var2));
             }
         }
     }
@@ -510,9 +510,9 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         {
             string emote = "* " + player.name + " " + message[message.IndexOf(" ")..].Trim();
             _logger.LogInformation(emote);
-            server.playerManager.sendToAll(ChatMessagePacket.Get(emote));
+            server.playerManager.SendToAll(ChatMessagePacket.Get(emote));
         }
-        else if (server is InternalServer || server.playerManager.isOperator(player.name))
+        else if (server is InternalServer || server.playerManager.IsOperator(player.name))
         {
             string commandText = message[1..];
             _logger.LogInformation($"{player.name} issued server command: {commandText}");
@@ -597,7 +597,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
     {
         if (player.health <= 0)
         {
-            player = server.playerManager.respawnPlayer(player, 0);
+            player = server.playerManager.RespawnPlayer(player, 0);
         }
     }
 
