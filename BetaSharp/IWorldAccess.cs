@@ -5,9 +5,9 @@ namespace BetaSharp;
 
 public interface IWorldAccess
 {
-    void blockUpdate(int var1, int var2, int var3);
+    void blockUpdate(int x, int y, int z);
 
-    void setBlocksDirty(int var1, int var2, int var3, int var4, int var5, int var6);
+    void setBlocksDirty(int minX, int minY, int minZ, int maxX, int maxY, int maxZ);
 
     void playSound(string var1, double var2, double var4, double var6, float var8, float var9);
 
