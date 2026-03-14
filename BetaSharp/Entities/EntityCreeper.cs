@@ -7,7 +7,7 @@ namespace BetaSharp.Entities;
 
 public class EntityCreeper : EntityMonster
 {
-    public readonly SyncedProperty<bool> Igniting;
+    public readonly SyncedProperty<byte> CreeperState;
     public readonly SyncedProperty<bool> Powered;
     private int timeSinceIgnited;
     private int lastActiveTime;
@@ -15,7 +15,7 @@ public class EntityCreeper : EntityMonster
     public EntityCreeper(World world) : base(world)
     {
         texture = "/mob/creeper.png";
-        Igniting = DataSynchronizer.MakeProperty<bool>(16, false);
+        CreeperState = DataSynchronizer.MakeProperty<byte>(16, 255); // -1
         Powered = DataSynchronizer.MakeProperty<bool>(17, false);
     }
 
@@ -40,7 +40,7 @@ public class EntityCreeper : EntityMonster
         {
             if (timeSinceIgnited > 0)
             {
-                Igniting.Value = false;
+                CreeperState.Value = 255;
                 --timeSinceIgnited;
                 if (timeSinceIgnited < 0)
                 {
@@ -55,12 +55,12 @@ public class EntityCreeper : EntityMonster
         lastActiveTime = timeSinceIgnited;
         if (world.isRemote)
         {
-            if (Igniting.Value && timeSinceIgnited == 0)
-            {
+            int state = (sbyte)CreeperState.Value;
+            if (state > 0 && timeSinceIgnited == 0) {
                 world.playSound(this, "random.fuse", 1.0F, 0.5F);
             }
 
-            timeSinceIgnited += Igniting.Value ? 1 : -1;
+            timeSinceIgnited += state;
             if (timeSinceIgnited < 0)
             {
                 timeSinceIgnited = 0;
@@ -75,7 +75,7 @@ public class EntityCreeper : EntityMonster
         base.tick();
         if (!world.isRemote && playerToAttack == null && timeSinceIgnited > 0)
         {
-            Igniting.Value = false;
+            CreeperState.Value = 255;
             --timeSinceIgnited;
             if (timeSinceIgnited < 0)
             {
@@ -109,14 +109,15 @@ public class EntityCreeper : EntityMonster
     {
         if (!world.isRemote)
         {
-            if (!Igniting.Value && distance < 3.0F || Igniting.Value && distance < 7.0F)
+            int state = (sbyte)CreeperState.Value;
+            if (state <= 0 && distance < 3.0F || state > 0 && distance < 7.0F)
             {
                 if (timeSinceIgnited == 0)
                 {
                     world.playSound(this, "random.fuse", 1.0F, 0.5F);
                 }
 
-                Igniting.Value = true;
+                CreeperState.Value = 1;
                 ++timeSinceIgnited;
                 if (timeSinceIgnited >= 30)
                 {
@@ -136,7 +137,7 @@ public class EntityCreeper : EntityMonster
             }
             else
             {
-                Igniting.Value = false;
+                CreeperState.Value = 255;
                 --timeSinceIgnited;
                 if (timeSinceIgnited < 0)
                 {
