@@ -15,9 +15,9 @@ public class CreeperEntityRenderer : LivingEntityRenderer
     {
     }
 
-    protected void updateCreeperScale(EntityCreeper ent, float partialTick)
+    protected void UpdateCreeperScale(EntityCreeper ent, float partialTick)
     {
-        float progress = ent.setCreeperFlashTime(partialTick);
+        float progress = ent.GetCreeperFlashTime(partialTick);
         float pulse = 1.0F + MathHelper.Sin(progress * 100.0F) * progress * 0.01F;
 
         if (progress < 0.0F)
@@ -37,9 +37,9 @@ public class CreeperEntityRenderer : LivingEntityRenderer
         GLManager.GL.Scale(scaleX, scaleY, scaleX);
     }
 
-    protected int updateCreeperColorMultiplier(EntityCreeper ent, float var2, float partialTick)
+    protected int UpdateCreeperColorMultiplier(EntityCreeper ent, float var2, float partialTick)
     {
-        float progress = ent.setCreeperFlashTime(partialTick);
+        float progress = ent.GetCreeperFlashTime(partialTick);
         if ((int)(progress * 10.0F) % 2 == 0)
         {
             return 0;
@@ -64,13 +64,13 @@ public class CreeperEntityRenderer : LivingEntityRenderer
         }
     }
 
-    protected bool func_27006_a(EntityCreeper var1, int var2, float var3)
+    protected bool func_27006_a(EntityCreeper ent, int var2, float var3)
     {
-        if (var1.Powered.Value)
+        if (ent.Powered.Value)
         {
             if (var2 == 1)
             {
-                float var4 = var1.age + var3;
+                float var4 = ent.age + var3;
                 loadTexture("/armor/power.png");
                 GLManager.GL.MatrixMode(GLEnum.Texture2D); //wtf?
                 GLManager.GL.LoadIdentity();
@@ -100,28 +100,28 @@ public class CreeperEntityRenderer : LivingEntityRenderer
         return false;
     }
 
-    protected bool func_27007_b(EntityCreeper var1, int var2, float var3)
+    protected bool func_27007_b(EntityCreeper ent, int var2, float var3)
     {
         return false;
     }
 
-    protected override void preRenderCallback(EntityLiving var1, float var2)
+    protected override void preRenderCallback(EntityLiving ent, float partialTick)
     {
-        updateCreeperScale((EntityCreeper)var1, var2);
+        UpdateCreeperScale((EntityCreeper)ent, partialTick);
     }
 
-    protected override int getColorMultiplier(EntityLiving var1, float var2, float var3)
+    protected override int getColorMultiplier(EntityLiving ent, float var2, float partialTick)
     {
-        return updateCreeperColorMultiplier((EntityCreeper)var1, var2, var3);
+        return UpdateCreeperColorMultiplier((EntityCreeper)ent, var2, partialTick);
     }
 
-    protected override bool shouldRenderPass(EntityLiving var1, int var2, float var3)
+    protected override bool shouldRenderPass(EntityLiving ent, int var2, float var3)
     {
-        return func_27006_a((EntityCreeper)var1, var2, var3);
+        return func_27006_a((EntityCreeper)ent, var2, var3);
     }
 
-    protected override bool func_27005_b(EntityLiving var1, int var2, float var3)
+    protected override bool func_27005_b(EntityLiving ent, int var2, float var3)
     {
-        return func_27007_b((EntityCreeper)var1, var2, var3);
+        return func_27007_b((EntityCreeper)ent, var2, var3);
     }
 }

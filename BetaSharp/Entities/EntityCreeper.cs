@@ -148,7 +148,7 @@ public class EntityCreeper : EntityMonster
         }
     }
 
-    public float setCreeperFlashTime(float partialTick)
+    public float GetCreeperFlashTime(float partialTick)
     {
         return ((float)lastActiveTime + (float)(timeSinceIgnited - lastActiveTime) * partialTick) / 28.0F;
     }
