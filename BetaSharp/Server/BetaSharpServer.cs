@@ -298,7 +298,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                         {
                             _currentTps = 0.0f;
                         }
-                        java.lang.Thread.sleep(1L);
+                        java.lang.Thread.sleep(50L);
                         continue;
                     }
 
