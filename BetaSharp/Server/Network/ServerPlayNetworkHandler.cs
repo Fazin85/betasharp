@@ -117,7 +117,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
                 player.velocityZ = var34;
                 if (player.vehicle != null)
                 {
-                    var2.Entities.UpdateEntity(player.vehicle, true);
+                    var2.Entities.TickVehicleBypassingFilter(player.vehicle, true);
                 }
 
                 if (player.vehicle != null)

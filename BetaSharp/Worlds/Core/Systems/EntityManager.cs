@@ -441,6 +441,103 @@ public class EntityManager
         }
     }
 
+    /// <summary>
+    /// Ticks a vehicle without consulting OnEntityUpdating, so the server can manually tick
+    /// the ridden vehicle when processing a movement packet (avoids filter that skips entities with EntityPlayer passenger).
+    /// </summary>
+    public void TickVehicleBypassingFilter(Entity vehicle, bool requireLoaded)
+    {
+        if (vehicle.dead)
+        {
+            return;
+        }
+
+        int blockX = MathHelper.Floor(vehicle.x);
+        int blockZ = MathHelper.Floor(vehicle.z);
+        const byte loadRadius = 32;
+
+        if (!requireLoaded || _host.IsRegionLoaded(blockX - loadRadius, 0, blockZ - loadRadius, blockX + loadRadius, 128, blockZ + loadRadius))
+        {
+            vehicle.lastTickX = vehicle.x;
+            vehicle.lastTickY = vehicle.y;
+            vehicle.lastTickZ = vehicle.z;
+            vehicle.prevYaw = vehicle.yaw;
+            vehicle.prevPitch = vehicle.pitch;
+
+            if (requireLoaded && vehicle.isPersistent)
+            {
+                if (vehicle.vehicle != null)
+                {
+                    vehicle.tickRiding();
+                }
+                else
+                {
+                    vehicle.tick();
+                }
+            }
+
+            if (double.IsNaN(vehicle.x) || double.IsInfinity(vehicle.x))
+            {
+                vehicle.x = vehicle.lastTickX;
+            }
+
+            if (double.IsNaN(vehicle.y) || double.IsInfinity(vehicle.y))
+            {
+                vehicle.y = vehicle.lastTickY;
+            }
+
+            if (double.IsNaN(vehicle.z) || double.IsInfinity(vehicle.z))
+            {
+                vehicle.z = vehicle.lastTickZ;
+            }
+
+            if (double.IsNaN(vehicle.pitch) || double.IsInfinity(vehicle.pitch))
+            {
+                vehicle.pitch = vehicle.prevPitch;
+            }
+
+            if (double.IsNaN(vehicle.yaw) || double.IsInfinity(vehicle.yaw))
+            {
+                vehicle.yaw = vehicle.prevYaw;
+            }
+
+            int newChunkX = MathHelper.Floor(vehicle.x / 16.0D);
+            int newChunkY = MathHelper.Floor(vehicle.y / 16.0D);
+            int newChunkZ = MathHelper.Floor(vehicle.z / 16.0D);
+
+            if (!vehicle.isPersistent || vehicle.chunkX != newChunkX || vehicle.chunkSlice != newChunkY || vehicle.chunkZ != newChunkZ)
+            {
+                if (vehicle.isPersistent && _host.ChunkSource.IsChunkLoaded(vehicle.chunkX, vehicle.chunkZ))
+                {
+                    _host.GetChunk(vehicle.chunkX, vehicle.chunkZ).RemoveEntity(vehicle, vehicle.chunkSlice);
+                }
+
+                if (_host.ChunkSource.IsChunkLoaded(newChunkX, newChunkZ))
+                {
+                    vehicle.isPersistent = true;
+                    _host.GetChunk(newChunkX, newChunkZ).AddEntity(vehicle);
+                }
+                else
+                {
+                    vehicle.isPersistent = false;
+                }
+            }
+
+            if (requireLoaded && vehicle.isPersistent && vehicle.passenger != null)
+            {
+                if (!vehicle.passenger.dead && vehicle.passenger.vehicle == vehicle)
+                {
+                    UpdateEntity(vehicle.passenger, true);
+                }
+                else
+                {
+                    vehicle.passenger.vehicle = null;
+                    vehicle.passenger = null;
+                }
+            }
+        }
+    }
+
     public List<Box> GetEntityCollisions(Entity entity, Box area) => GetEntityCollisions(entity, area, new List<Box>());
 
     internal List<Box> GetEntityCollisionsScratch(Entity entity, Box area)
