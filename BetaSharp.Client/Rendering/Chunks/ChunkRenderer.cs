@@ -59,6 +59,7 @@ public class ChunkRenderer : IChunkVisibilityVisitor
     private readonly List<SubChunkRenderer> _occludedRenderersBuffer = [];
     private readonly TranslucentDistanceComparer _translucentDistanceComparer = new();
     private int _frameIndex = 0;
+    private bool _firstRender = true;
 
     public bool UseOcclusionCulling { get; set; } = true;
 
@@ -129,6 +130,25 @@ public class ChunkRenderer : IChunkVisibilityVisitor
         {
             int y = Math.Clamp(cameraChunkPos.Y, 0, 112);
             _renderers.TryGetValue(new Vector3D<int>(cameraChunkPos.X, y, cameraChunkPos.Z), out cameraState);
+        }
+
+        if (_firstRender)
+        {
+            _firstRender = false;
+            for (int x = -_lastRenderDistance; x <= _lastRenderDistance; x++)
+            {
+                for (int z = -_lastRenderDistance; z <= _lastRenderDistance; z++)
+                {
+                    Vector3D<int> chunkPos = cameraChunkPos + new Vector3D<int>(x, 0, z) * SubChunkRenderer.Size;
+                    if (IsChunkInRenderDistance(chunkPos, _lastViewPos))
+                    {
+                        for (int y = 0; y < 128; y += SubChunkRenderer.Size)
+                        {
+                            MarkDirty(chunkPos with { Y = y });
+                        }
+                    }
+                }
+            }
         }
 
         float renderDistWorld = renderParams.RenderDistance * SubChunkRenderer.Size;
