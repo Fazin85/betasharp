@@ -9,7 +9,7 @@ internal static class PlayerCommands
 {
     public static void Kill(BetaSharpServer server, string senderName, string[] args, CommandOutput output)
     {
-        ServerPlayerEntity player = server.playerManager.getPlayer(senderName);
+        ServerPlayerEntity player = server.playerManager.GetPlayer(senderName);
         if (player == null) { output.SendMessage("Could not find your player."); return; }
 
         player.damage(null, 1000);
@@ -17,7 +17,7 @@ internal static class PlayerCommands
 
     public static void Heal(BetaSharpServer server, string senderName, string[] args, CommandOutput output)
     {
-        ServerPlayerEntity player = server.playerManager.getPlayer(senderName);
+        ServerPlayerEntity player = server.playerManager.GetPlayer(senderName);
         if (player == null) { output.SendMessage("Could not find your player."); return; }
 
         int amount = 20;
@@ -32,7 +32,7 @@ internal static class PlayerCommands
 
     public static void Clear(BetaSharpServer server, string senderName, string[] args, CommandOutput output)
     {
-        ServerPlayerEntity player = server.playerManager.getPlayer(senderName);
+        ServerPlayerEntity player = server.playerManager.GetPlayer(senderName);
         if (player == null) { output.SendMessage("Could not find your player."); return; }
 
         ItemStack[] inventory = player.inventory.main;
@@ -48,7 +48,7 @@ internal static class PlayerCommands
     {
         if (args.Length == 3)
         {
-            ServerPlayerEntity sender = server.playerManager.getPlayer(senderName);
+            ServerPlayerEntity sender = server.playerManager.GetPlayer(senderName);
             if (sender == null) { output.SendMessage("Could not find your player."); return; }
 
             if (float.TryParse(args[0], CultureInfo.InvariantCulture, out float x) &&
@@ -67,8 +67,8 @@ internal static class PlayerCommands
 
         if (args.Length == 2)
         {
-            ServerPlayerEntity source = server.playerManager.getPlayer(args[0]);
-            ServerPlayerEntity target = server.playerManager.getPlayer(args[1]);
+            ServerPlayerEntity source = server.playerManager.GetPlayer(args[0]);
+            ServerPlayerEntity target = server.playerManager.GetPlayer(args[1]);
 
             if (source == null)
             {
@@ -116,7 +116,7 @@ internal static class PlayerCommands
         ServerPlayerEntity targetPlayer;
         if (args.Length >= 2)
         {
-            targetPlayer = server.playerManager.getPlayer(args[1]);
+            targetPlayer = server.playerManager.GetPlayer(args[1]);
             if (targetPlayer == null)
             {
                 output.SendMessage("Player " + args[1] + " not found.");
@@ -125,7 +125,7 @@ internal static class PlayerCommands
         }
         else
         {
-            targetPlayer = server.playerManager.getPlayer(senderName);
+            targetPlayer = server.playerManager.GetPlayer(senderName);
             if (targetPlayer == null)
             {
                 output.SendMessage("Could not find your player.");
@@ -139,7 +139,7 @@ internal static class PlayerCommands
             return;
         }
 
-        server.playerManager.sendPlayerToDimension(targetPlayer, dim);
+        server.playerManager.SendPlayerToDimension(targetPlayer, dim);
         output.SendMessage("Teleported " + targetPlayer.name + " to dimension " + dim);
     }
 }

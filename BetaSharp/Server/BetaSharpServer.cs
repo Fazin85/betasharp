@@ -23,10 +23,10 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
     public IServerConfiguration config;
     public ServerWorld[] worlds;
     public PlayerManager playerManager;
-    private ServerCommandHandler commandHandler;
+    private ServerCommandHandler _commandHandler;
     public bool running = true;
     public bool stopped;
-    private int ticks;
+    private int _ticks;
     public string progressMessage;
     public int progress;
     private readonly Queue<Command> _pendingCommands = new();
@@ -69,7 +69,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
 
     protected virtual bool Init()
     {
-        commandHandler = new ServerCommandHandler(this);
+        _commandHandler = new ServerCommandHandler(this);
 
         onlineMode = config.GetOnlineMode(true);
         spawnAnimals = config.GetSpawnAnimals(true);
@@ -135,7 +135,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
             worlds[i].addWorldAccess(new ServerWorldEventListener(this, worlds[i]));
             worlds[i].difficulty = config.GetSpawnMonsters(true) ? 1 : 0;
             worlds[i].allowSpawning(config.GetSpawnMonsters(true), spawnAnimals);
-            playerManager.saveAllPlayers(worlds);
+            playerManager.SaveAllPlayers(worlds);
         }
 
         int startRegionSize = config.GetSpawnRegionSize(196);
@@ -242,7 +242,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
 
         _logger.LogInformation("Stopping server");
 
-        playerManager?.savePlayers();
+        playerManager?.SavePlayers();
 
         foreach (ServerWorld world in worlds)
         {
@@ -404,16 +404,16 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
             }
         }
 
-        ticks++;
+        _ticks++;
 
         for (int i = 0; i < worlds.Length; i++)
         {
             if (i == 0 || config.GetAllowNether(true))
             {
                 ServerWorld world = worlds[i];
-                if (ticks % 20 == 0)
+                if (_ticks % 20 == 0)
                 {
-                    playerManager.sendToDimension(WorldTimeUpdateS2CPacket.Get(world.getTime()), world.dimension.Id);
+                    playerManager.SendToDimension(WorldTimeUpdateS2CPacket.Get(world.getTime()), world.dimension.Id);
                 }
 
                 world.Tick();
@@ -433,7 +433,8 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
         }
 
         connections?.Tick();
-        playerManager.updateAllChunks();
+        playerManager.UpdateAllChunks();
+        playerManager.FlushPendingChunkUpdates();
 
         foreach (EntityTracker t in entityTrackers)
         {
@@ -468,7 +469,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                 if (_pendingCommands.Count == 0) break;
                 cmd = _pendingCommands.Dequeue();
             }
-            commandHandler.ExecuteCommand(cmd);
+            _commandHandler.ExecuteCommand(cmd);
         }
     }
 
