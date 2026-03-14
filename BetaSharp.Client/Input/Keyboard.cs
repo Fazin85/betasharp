@@ -149,12 +149,21 @@ public class Keyboard
     private static unsafe WindowHandle* window;
 
     private static readonly bool[] keyDownBuffer = new bool[KEYBOARD_SIZE];
+    private static readonly HashSet<Keys> logicalKeyDownBuffer = [];
+    private static readonly HashSet<int> scanCodeDownBuffer = [];
     private static readonly Queue<KeyEvent> eventQueue = new();
-    private static KeyEvent current_event = new();
+    private static readonly Dictionary<int, Keys> scanCodeToLogicalKey = [];
+    private static KeyEvent current_event = new()
+    {
+        Key = KEY_NONE,
+        LogicalKey = Keys.Unknown,
+        ScanCode = KEY_NONE,
+        Character = CHAR_NONE
+    };
     private static bool repeat_enabled;
 
-    private static Dictionary<Keys, int> keyMap;
-    private static string[] keyNames;
+    private static Dictionary<Keys, int> keyMap = null!;
+    private static string[] keyNames = null!;
 
     public static unsafe void create(Glfw glfwApi, WindowHandle* windowHandle)
     {
@@ -199,7 +208,24 @@ public class Keyboard
             }
         }
 
+        BuildScanCodeMap();
         created = true;
+    }
+
+    private static void BuildScanCodeMap()
+    {
+        scanCodeToLogicalKey.Clear();
+
+        foreach (Keys key in keyMap.Keys)
+        {
+            int scanCode = glfw.GetKeyScancode((int)key);
+            if (scanCode <= 0 || scanCodeToLogicalKey.ContainsKey(scanCode))
+            {
+                continue;
+            }
+
+            scanCodeToLogicalKey.Add(scanCode, key);
+        }
     }
 
     private static void InitializeKeyMap()
@@ -311,56 +337,56 @@ public class Keyboard
         };
     }
 
-    private static readonly Dictionary<char, char> ShiftMap = new() {
-        { '1', '!' }, { '2', '@' }, { '3', '#' }, { '4', '$' }, { '5', '%' },
-        { '6', '^' }, { '7', '&' }, { '8', '*' }, { '9', '(' }, { '0', ')' },
-        { '`', '~' }, { '-', '_' }, { '=', '+' }, { '[', '{' }, { ']', '}' },
-        { '\\', '|' }, { ';', ':' }, { '\'', '"' }, { ',', '<' }, { '.', '>' }, { '/', '?' }
-    };
-
-    private static char ShiftUp(char c)
-    {
-        if (char.IsLetter(c)) return char.ToUpper(c);
-        if (ShiftMap.TryGetValue(c, out char up)) return up;
-        return c;
-    }
-
     private static unsafe void OnKey(WindowHandle* window, Keys key, int scancode, InputAction action,
         KeyModifiers mods)
     {
         if (!created) return;
 
-        if (!keyMap.TryGetValue(key, out int lwjglKey)) lwjglKey = KEY_NONE;
+        int lwjglKey = TryGetLegacyKeyCode(key);
 
         bool pressed = action == InputAction.Press || action == InputAction.Repeat;
         bool isRepeat = action == InputAction.Repeat;
+        bool released = action == InputAction.Release;
 
-        if (lwjglKey > 0 && lwjglKey < KEYBOARD_SIZE) keyDownBuffer[lwjglKey] = pressed && !isRepeat;
-
-
-        char character = '\0';
-        if (pressed)
+        if (lwjglKey > 0 && lwjglKey < KEYBOARD_SIZE)
         {
-            // Get name of keyboard key and assign it (this feels stupid)
-            string? name = glfw.GetKeyName((int)key, scancode);
-            if (!string.IsNullOrEmpty(name)) character = name[0];
+            keyDownBuffer[lwjglKey] = pressed;
+        }
 
-            // Shift the char if shifted. TODO Missing caps lock check but can't find how to check
-            bool shifted = mods.HasFlag(KeyModifiers.Shift);
-            if (shifted) character = ShiftUp(character);
-            if (key == Keys.Space) character = ' ';
+        if (key != Keys.Unknown)
+        {
+            if (pressed)
+            {
+                logicalKeyDownBuffer.Add(key);
+            }
+            else if (released)
+            {
+                logicalKeyDownBuffer.Remove(key);
+            }
+        }
+
+        if (scancode > 0)
+        {
+            if (pressed)
+            {
+                scanCodeDownBuffer.Add(scancode);
+            }
+            else if (released)
+            {
+                scanCodeDownBuffer.Remove(scancode);
+            }
         }
 
         eventQueue.Enqueue(new KeyEvent
         {
             Key = lwjglKey,
-            Character = character,
+            LogicalKey = key,
+            ScanCode = scancode,
+            Character = CHAR_NONE,
             State = pressed,
             Repeat = isRepeat,
             Nanos = GetNanos()
         });
-
-        // pendingChar = null;
     }
 
     private static unsafe void OnChar(WindowHandle* window, uint codepoint)
@@ -392,10 +418,26 @@ public class Keyboard
     }
 
     public static bool getEventKeyState() => current_event.State;
+    public static Keys getEventLogicalKey() => current_event.LogicalKey;
+    public static int getEventScancode() => current_event.ScanCode;
     public static int getEventKey() => current_event.Key;
     public static char getEventCharacter() => (char)current_event.Character;
     public static long getEventNanoseconds() => current_event.Nanos;
     public static bool isRepeatEvent() => current_event.Repeat;
+
+    public static bool IsLogicalKeyDown(Keys key)
+    {
+        if (!created) throw new InvalidOperationException("Keyboard must be created before you can poll it");
+        if (key == Keys.Unknown) return false;
+        return logicalKeyDownBuffer.Contains(key);
+    }
+
+    public static bool IsScancodeDown(int scanCode)
+    {
+        if (!created) throw new InvalidOperationException("Keyboard must be created before you can poll it");
+        if (scanCode <= 0) return false;
+        return scanCodeDownBuffer.Contains(scanCode);
+    }
 
     public static bool isKeyDown(int key)
     {
@@ -417,7 +459,18 @@ public class Keyboard
     {
         if (!created) return;
         created = false;
+        Array.Clear(keyDownBuffer);
+        logicalKeyDownBuffer.Clear();
+        scanCodeDownBuffer.Clear();
+        scanCodeToLogicalKey.Clear();
         eventQueue.Clear();
+        current_event = new KeyEvent
+        {
+            Key = KEY_NONE,
+            LogicalKey = Keys.Unknown,
+            ScanCode = KEY_NONE,
+            Character = CHAR_NONE
+        };
     }
 
     private static long GetNanos()
@@ -435,8 +488,85 @@ public class Keyboard
         return "UNKNOWN";
     }
 
+    public static int GetScancodeForLogicalKey(Keys key)
+    {
+        if (!created || key == Keys.Unknown) return KEY_NONE;
+
+        int scanCode = glfw.GetKeyScancode((int)key);
+        return scanCode > 0 ? scanCode : KEY_NONE;
+    }
+
+    public static string getScancodeName(int scanCode)
+    {
+        if (scanCode <= 0) return "NONE";
+
+        if (created)
+        {
+            string? printable = glfw.GetKeyName((int)Keys.Unknown, scanCode);
+            if (!string.IsNullOrEmpty(printable))
+            {
+                return printable.Length == 1
+                    ? printable.ToUpperInvariant()
+                    : printable;
+            }
+        }
+
+        if (scanCodeToLogicalKey.TryGetValue(scanCode, out Keys key))
+        {
+            return GetLogicalKeyName(key);
+        }
+
+        return $"SCANCODE_{scanCode}";
+    }
+
+    private static int TryGetLegacyKeyCode(Keys key)
+    {
+        return keyMap.TryGetValue(key, out int code) ? code : KEY_NONE;
+    }
+
+    private static string GetLogicalKeyName(Keys key)
+    {
+        if (key is >= Keys.A and <= Keys.Z)
+        {
+            return key.ToString().ToUpperInvariant();
+        }
+
+        if (key is >= Keys.Number0 and <= Keys.Number9)
+        {
+            return ((int)key - (int)Keys.Number0).ToString();
+        }
+
+        return key switch
+        {
+            Keys.Space => "SPACE",
+            Keys.Tab => "TAB",
+            Keys.Enter => "ENTER",
+            Keys.Backspace => "BACKSPACE",
+            Keys.Delete => "DELETE",
+            Keys.Insert => "INSERT",
+            Keys.Home => "HOME",
+            Keys.End => "END",
+            Keys.PageUp => "PAGEUP",
+            Keys.PageDown => "PAGEDOWN",
+            Keys.Left => "LEFT",
+            Keys.Right => "RIGHT",
+            Keys.Up => "UP",
+            Keys.Down => "DOWN",
+            Keys.Escape => "ESCAPE",
+            Keys.ShiftLeft => "LSHIFT",
+            Keys.ShiftRight => "RSHIFT",
+            Keys.ControlLeft => "LCONTROL",
+            Keys.ControlRight => "RCONTROL",
+            Keys.AltLeft => "LALT",
+            Keys.AltRight => "RALT",
+            _ => key.ToString().ToUpperInvariant()
+        };
+    }
+
     private struct KeyEvent
     {
+        public Keys LogicalKey;
+        public int ScanCode;
         public int Character;
         public int Key;
         public bool State;

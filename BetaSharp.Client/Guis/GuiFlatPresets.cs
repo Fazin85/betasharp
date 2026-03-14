@@ -5,6 +5,7 @@ using BetaSharp.Client.Rendering.Core.OpenGL;
 using BetaSharp.Blocks;
 using BetaSharp.Worlds.Gen.Flat;
 using BetaSharp.Items;
+using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Guis;
 
@@ -58,16 +59,25 @@ public class GuiFlatPresets : GuiScreen
         Game.displayGuiScreen(_parent);
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, Keys eventKey)
     {
         if (TextField.IsFocused)
         {
-            TextField.textboxKeyTyped(eventChar, eventKey);
+            TextField.textboxKeyTyped(eventKey);
             UpdateSelectButtonStatus();
         }
         else
         {
             base.KeyTyped(eventChar, eventKey);
+        }
+    }
+
+    protected override void CharTyped(char eventChar)
+    {
+        if (TextField.IsFocused)
+        {
+            TextField.textboxCharTyped(eventChar);
+            UpdateSelectButtonStatus();
         }
     }
 

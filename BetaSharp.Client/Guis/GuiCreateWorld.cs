@@ -3,6 +3,7 @@ using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Storage;
+using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Guis;
 
@@ -124,6 +125,7 @@ public class GuiCreateWorld : GuiScreen
     public override void OnGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
+        base.OnGuiClosed();
     }
 
     protected override void ActionPerformed(GuiButton button)
@@ -189,9 +191,9 @@ public class GuiCreateWorld : GuiScreen
         }
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, Keys eventKey)
     {
-        if (eventKey == Keyboard.KEY_ESCAPE)
+        if (eventKey == Keys.Escape)
         {
             if (_moreOptions)
             {
@@ -207,16 +209,31 @@ public class GuiCreateWorld : GuiScreen
 
         if (_textboxWorldName.IsFocused && !_moreOptions)
         {
-            _textboxWorldName.textboxKeyTyped(eventChar, eventKey);
+            _textboxWorldName.textboxKeyTyped(eventKey);
         }
         else if (_textboxSeed.IsFocused && _moreOptions)
         {
-            _textboxSeed.textboxKeyTyped(eventChar, eventKey);
+            _textboxSeed.textboxKeyTyped(eventKey);
         }
 
-        if (eventChar == 13) // Enter
+        if (eventKey == Keys.Enter)
         {
             ActionPerformed(_controlList[0]);
+        }
+
+        _controlList[0].Enabled = _textboxWorldName.GetText().Length > 0;
+        UpdateFolderName();
+    }
+
+    protected override void CharTyped(char eventChar)
+    {
+        if (_textboxWorldName.IsFocused)
+        {
+            _textboxWorldName.textboxCharTyped(eventChar);
+        }
+        else
+        {
+            _textboxSeed.textboxCharTyped(eventChar);
         }
 
         _controlList[0].Enabled = _textboxWorldName.GetText().Length > 0;

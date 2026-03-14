@@ -1,3 +1,5 @@
+using Silk.NET.GLFW;
+
 namespace BetaSharp.Client.Guis;
 
 public class GuiConnectFailed : GuiScreen
@@ -26,7 +28,7 @@ public class GuiConnectFailed : GuiScreen
     {
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, Keys eventKey)
     {
     }
 

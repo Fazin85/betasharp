@@ -1,4 +1,5 @@
 using BetaSharp.Client.Input;
+using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Guis;
 
@@ -43,6 +44,7 @@ public class GuiScreenAddServer : GuiScreen
     public override void OnGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
+        base.OnGuiClosed();
     }
 
     protected override void ActionPerformed(GuiButton button)
@@ -62,12 +64,12 @@ public class GuiScreenAddServer : GuiScreen
         }
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, Keys eventKey)
     {
-        _serverName.textboxKeyTyped(eventChar, eventKey);
-        _serverAddress.textboxKeyTyped(eventChar, eventKey);
+        _serverName.textboxKeyTyped(eventKey);
+        _serverAddress.textboxKeyTyped(eventKey);
 
-        if (eventKey == Keyboard.KEY_TAB)
+        if (eventKey == Keys.Tab)
         {
             if (_serverName.IsFocused)
             {
@@ -81,11 +83,18 @@ public class GuiScreenAddServer : GuiScreen
             }
         }
 
-        if (eventKey == Keyboard.KEY_RETURN)
+        if (eventKey == Keys.Enter)
         {
             ActionPerformed(_controlList[0]);
         }
 
+        _controlList[0].Enabled = _serverName.GetText().Length > 0 && _serverAddress.GetText().Length > 0 && _serverAddress.GetText().Split(":").Length > 0;
+    }
+
+    protected override void CharTyped(char eventChar)
+    {
+        _serverName.textboxCharTyped(eventChar);
+        _serverAddress.textboxCharTyped(eventChar);
         _controlList[0].Enabled = _serverName.GetText().Length > 0 && _serverAddress.GetText().Length > 0 && _serverAddress.GetText().Split(":").Length > 0;
     }
 

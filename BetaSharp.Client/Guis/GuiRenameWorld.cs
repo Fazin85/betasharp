@@ -1,6 +1,7 @@
 using BetaSharp.Client.Input;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Storage;
+using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Guis;
 
@@ -44,6 +45,7 @@ public class GuiRenameWorld : GuiScreen
     public override void OnGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
+        base.OnGuiClosed();
     }
 
     protected override void ActionPerformed(GuiButton button)
@@ -64,15 +66,21 @@ public class GuiRenameWorld : GuiScreen
         }
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, Keys eventKey)
     {
-        nameInputField.textboxKeyTyped(eventChar, eventKey);
+        nameInputField.textboxKeyTyped(eventKey);
         _controlList[0].Enabled = nameInputField.GetText().Trim().Length > 0;
-        if (eventChar == 13)
+        if (eventKey == Keys.Enter)
         {
             ActionPerformed(_controlList[0]);
         }
 
+    }
+
+    protected override void CharTyped(char eventChar)
+    {
+        nameInputField.textboxCharTyped(eventChar);
+        _controlList[0].Enabled = nameInputField.GetText().Trim().Length > 0;
     }
 
     protected override void MouseClicked(int x, int y, int button)

@@ -1,6 +1,7 @@
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Rendering;
 using BetaSharp.Util;
+using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Guis;
 
@@ -44,33 +45,33 @@ public class GuiTextField : Gui
 
     public void updateCursorCounter() => _cursorCounter++;
 
-    public void textboxKeyTyped(char eventChar, int eventKey)
+    public void textboxKeyTyped(Keys eventKey)
     {
         if (!IsEnabled || !IsFocused) return;
 
         // Check for Ctrl combos first
-        bool ctrlDown = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
-        bool shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
+        bool ctrlDown = Keyboard.IsLogicalKeyDown(Keys.ControlLeft) || Keyboard.IsLogicalKeyDown(Keys.ControlRight);
+        bool shiftDown = Keyboard.IsLogicalKeyDown(Keys.ShiftLeft) || Keyboard.IsLogicalKeyDown(Keys.ShiftRight);
 
         if (ctrlDown)
         {
             switch (eventKey)
             {
-                case Keyboard.KEY_A:
+                case Keys.A:
                     // Select all
                     _selectionStart = 0;
                     _selectionEnd = _text?.Length ?? 0;
                     _cursorPosition = _selectionEnd;
                     return;
-                case Keyboard.KEY_C:
+                case Keys.C:
                     // Copy
                     CopySelectionToClipboard();
                     return;
-                case Keyboard.KEY_X:
+                case Keys.X:
                     // Cut
                     CutSelectionToClipboard();
                     return;
-                case Keyboard.KEY_V:
+                case Keys.V:
                     // Paste
                     PasteClipboardAtCursor();
                     return;
@@ -82,7 +83,7 @@ public class GuiTextField : Gui
         {
             switch (eventKey)
             {
-                case Keyboard.KEY_LEFT:
+                case Keys.Left:
                     if (_selectionStart == -1)
                     {
                         _selectionStart = _cursorPosition;
@@ -90,7 +91,7 @@ public class GuiTextField : Gui
                     if (_cursorPosition > 0) _cursorPosition--;
                     _selectionEnd = _cursorPosition;
                     return;
-                case Keyboard.KEY_RIGHT:
+                case Keys.Right:
                     if (_selectionStart == -1)
                     {
                         _selectionStart = _cursorPosition;
@@ -104,23 +105,23 @@ public class GuiTextField : Gui
         // Handle regular keys
         switch (eventKey)
         {
-            case Keyboard.KEY_LEFT:
+            case Keys.Left:
                 if (_cursorPosition > 0) _cursorPosition--;
                 ClearSelection();
                 return;
-            case Keyboard.KEY_RIGHT:
+            case Keys.Right:
                 if (_cursorPosition < _text.Length) _cursorPosition++;
                 ClearSelection();
                 return;
-            case Keyboard.KEY_HOME:
+            case Keys.Home:
                 _cursorPosition = 0;
                 ClearSelection();
                 return;
-            case Keyboard.KEY_END:
+            case Keys.End:
                 _cursorPosition = _text.Length;
                 ClearSelection();
                 return;
-            case Keyboard.KEY_DELETE:
+            case Keys.Delete:
                 if (HasSelection())
                 {
                     DeleteSelection();
@@ -131,41 +132,18 @@ public class GuiTextField : Gui
                 }
                 ClearSelection();
                 return;
-            case Keyboard.KEY_BACK:
+            case Keys.Backspace:
                 HandleBackspace();
                 return;
-            case Keyboard.KEY_TAB:
+            case Keys.Tab:
                 _parentGuiScreen.SelectNextField();
                 return;
         }
+    }
 
-        // Tab key
-        if (eventChar == 9 || eventKey == Keyboard.KEY_TAB)
-        {
-            _parentGuiScreen.SelectNextField();
-            return;
-        }
-
-        // Backspace
-        if (eventKey == Keyboard.KEY_BACK)
-        {
-            string var3 = GuiScreen.GetClipboardString();
-            var3 ??= "";
-
-            int var4 = 32 - _text.Length;
-            if (var4 > var3.Length)
-            {
-                DeleteSelection();
-            }
-            else if (_text.Length > 0 && _cursorPosition > 0)
-            {
-                _cursorPosition--;
-                _text = _text.Substring(0, _cursorPosition) + _text.Substring(_cursorPosition + 1);
-            }
-            ClearSelection();
-            return;
-        }
-
+    public void textboxCharTyped(char eventChar)
+    {
+        if (!IsEnabled || !IsFocused) return;
         // Regular character input
         if (ChatAllowedCharacters.IsAllowedCharacter(eventChar) && (_text.Length < _maxStringLength || _maxStringLength == 0))
         {

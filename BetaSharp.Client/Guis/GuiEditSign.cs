@@ -5,6 +5,7 @@ using BetaSharp.Client.Rendering.Blocks.Entities;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Network.Packets.Play;
 using BetaSharp.Util;
+using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Guis;
 
@@ -37,6 +38,8 @@ public class GuiEditSign : GuiScreen
         {
             Game.getSendQueue().addToSendQueue(UpdateSignPacket.Get(_entitySign.X, _entitySign.Y, _entitySign.Z, _entitySign.Texts));
         }
+
+        base.OnGuiClosed();
     }
 
     public override void UpdateScreen()
@@ -53,21 +56,21 @@ public class GuiEditSign : GuiScreen
         }
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, Keys eventKey)
     {
-        if (eventKey == Keyboard.KEY_UP)
+        if (eventKey == Keys.Up)
         {
             _editLine = _editLine - 1 & 3;
             return;
         }
 
-        if (eventKey == Keyboard.KEY_DOWN || eventKey == Keyboard.KEY_RETURN)
+        if (eventKey == Keys.Down || eventKey == Keys.Enter)
         {
             _editLine = _editLine + 1 & 3;
             return;
         }
 
-        if (eventKey == Keyboard.KEY_BACK)
+        if (eventKey == Keys.Backspace)
         {
             if (_entitySign.Texts[_editLine].Length > 0)
             {
@@ -76,13 +79,16 @@ public class GuiEditSign : GuiScreen
             return;
         }
 
-        if (eventKey == Keyboard.KEY_ESCAPE)
+        if (eventKey == Keys.Escape)
         {
             _entitySign.markDirty();
             Game?.displayGuiScreen(null);
             return;
         }
+    }
 
+    protected override void CharTyped(char eventChar)
+    {
         if (ChatAllowedCharacters.IsAllowedCharacter(eventChar) && _entitySign.Texts[_editLine].Length < MaxLineLength)
         {
             _entitySign.Texts[_editLine] += eventChar;

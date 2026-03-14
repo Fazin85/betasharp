@@ -1,5 +1,5 @@
-using BetaSharp.Client.Input;
 using BetaSharp.Worlds;
+using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Guis;
 
@@ -74,9 +74,9 @@ public class GuiSelectWorldType : GuiScreen
         }
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, Keys eventKey)
     {
-        if (eventKey == Keyboard.KEY_ESCAPE)
+        if (eventKey == Keys.Escape)
         {
             Game.displayGuiScreen(_parent);
         }

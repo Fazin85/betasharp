@@ -6,6 +6,7 @@ using BetaSharp.Inventorys;
 using BetaSharp.Items;
 using BetaSharp.Screens;
 using BetaSharp.Screens.Slots;
+using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Guis;
 
@@ -190,7 +191,7 @@ public abstract class GuiContainer : GuiScreen
             if (isOutside) slotId = -999;
             if (slotId != -1)
             {
-                bool isShiftClick = slotId != -999 && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT));
+                bool isShiftClick = slotId != -999 && (Keyboard.IsLogicalKeyDown(Keys.ShiftLeft) || Keyboard.IsLogicalKeyDown(Keys.ShiftRight));
                 Game.playerController.func_27174_a(InventorySlots.SyncId, slotId, button, isShiftClick, Game.player);
             }
         }
@@ -208,9 +209,9 @@ public abstract class GuiContainer : GuiScreen
 
     protected override void MouseMovedOrUp(int x, int y, int button) { }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, Keys eventKey)
     {
-        if (eventKey == Keyboard.KEY_ESCAPE || eventKey == Game.options.KeyBindInventory.keyCode)
+        if (eventKey == Keys.Escape || Keyboard.getEventScancode() == Game.options.KeyBindInventory.scanCode)
         {
             Game.player.closeHandledScreen();
         }
@@ -223,6 +224,8 @@ public abstract class GuiContainer : GuiScreen
         {
             Game.playerController.func_20086_a(InventorySlots.SyncId, Game.player);
         }
+
+        base.OnGuiClosed();
     }
 
 

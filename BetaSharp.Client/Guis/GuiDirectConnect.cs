@@ -1,5 +1,6 @@
 ﻿using BetaSharp.Client.Input;
 using BetaSharp.Client.Options;
+using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Guis;
 
@@ -39,6 +40,7 @@ public class GuiDirectConnect : GuiScreen
     public override void OnGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
+        base.OnGuiClosed();
     }
 
     protected override void ActionPerformed(GuiButton button)
@@ -57,20 +59,26 @@ public class GuiDirectConnect : GuiScreen
         }
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, Keys eventKey)
     {
-        _serverAddress.textboxKeyTyped(eventChar, eventKey);
+        _serverAddress.textboxKeyTyped(eventKey);
 
-        if (eventKey == Keyboard.KEY_TAB)
+        if (eventKey == Keys.Tab)
         {
             _serverAddress.IsFocused = true;
         }
 
-        if (eventKey == Keyboard.KEY_RETURN)
+        if (eventKey == Keys.Enter)
         {
             ActionPerformed(_controlList[0]);
         }
 
+        _controlList[0].Enabled = _serverAddress.GetText().Length > 0 && _serverAddress.GetText().Split(":").Length > 0;
+    }
+
+    protected override void CharTyped(char eventChar)
+    {
+        _serverAddress.textboxCharTyped(eventChar);
         _controlList[0].Enabled = _serverAddress.GetText().Length > 0 && _serverAddress.GetText().Split(":").Length > 0;
     }
 

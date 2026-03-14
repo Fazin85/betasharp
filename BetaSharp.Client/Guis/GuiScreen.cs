@@ -3,6 +3,7 @@ using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Core.OpenGL;
 using Microsoft.Extensions.Logging;
+using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Guis;
 
@@ -45,14 +46,19 @@ public class GuiScreen : Gui
         }
     }
 
-    protected virtual void KeyTyped(char eventChar, int eventKey)
+    protected virtual void KeyTyped(char eventChar, Keys eventKey)
     {
-        if (eventKey == Keyboard.KEY_ESCAPE)
+        // Compatibility path for screens that still override the old int keycode signature.
+        KeyTyped(eventChar, (int)eventKey);
+
+        if (eventKey == Keys.Escape)
         {
             Game.displayGuiScreen(null);
             Game.setIngameFocus();
         }
     }
+
+    protected virtual void KeyTyped(char eventChar, int eventKey) { }
 
     protected virtual void CharTyped(char eventChar) { }
 
@@ -123,6 +129,13 @@ public class GuiScreen : Gui
         Width = width;
         Height = height;
         _controlList.Clear();
+
+        if (!_isSubscribedToKeyboard)
+        {
+            Keyboard.OnCharacterTyped += CharTyped;
+            _isSubscribedToKeyboard = true;
+        }
+
         InitGui();
     }
 
@@ -196,7 +209,7 @@ public class GuiScreen : Gui
         {
             if (Controller.GetEventButtonState())
             {
-                KeyTyped('\0', Keyboard.KEY_ESCAPE);
+                KeyTyped('\0', Keys.Escape);
             }
         }
         else if (Controller.GetEventButton() == (int)Silk.NET.GLFW.GamepadButton.Y)
@@ -233,18 +246,17 @@ public class GuiScreen : Gui
             Game.isControllerMode = false;
             Mouse.setCursorVisible(true);
 
-            int key = Keyboard.getEventKey();
-            char c = Keyboard.getEventCharacter();
+            Keys key = Keyboard.getEventLogicalKey();
 
-            if (key == Keyboard.KEY_F11)
+            if (key == Keys.F11)
             {
                 Game.toggleFullscreen();
                 return;
             }
 
-            if (key != Keyboard.KEY_NONE)
+            if (key != Keys.Unknown)
             {
-                KeyTyped(c, key);
+                KeyTyped('\0', key);
             }
         }
     }

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using BetaSharp.Client.Input;
 using Microsoft.Extensions.Logging;
+using Silk.NET.GLFW;
 using File = System.IO.File;
 using FileNotFoundException = System.IO.FileNotFoundException;
 
@@ -108,17 +109,17 @@ public class GameOptions
 
 
     public string Skin = "Default";
-    public KeyBinding KeyBindForward = new("key.forward", 17);
-    public KeyBinding KeyBindLeft = new("key.left", 30);
-    public KeyBinding KeyBindBack = new("key.back", 31);
-    public KeyBinding KeyBindRight = new("key.right", 32);
-    public KeyBinding KeyBindJump = new("key.jump", 57);
-    public KeyBinding KeyBindInventory = new("key.inventory", 18);
-    public KeyBinding KeyBindDrop = new("key.drop", 16);
-    public KeyBinding KeyBindChat = new("key.chat", 20);
-    public KeyBinding KeyBindCommand = new("key.command", Keyboard.KEY_SLASH);
-    public KeyBinding KeyBindToggleFog = new("key.fog", 33);
-    public KeyBinding KeyBindSneak = new("key.sneak", 42);
+    public KeyBinding KeyBindForward = new("key.forward", Keys.W);
+    public KeyBinding KeyBindLeft = new("key.left", Keys.A);
+    public KeyBinding KeyBindBack = new("key.back", Keys.S);
+    public KeyBinding KeyBindRight = new("key.right", Keys.D);
+    public KeyBinding KeyBindJump = new("key.jump", Keys.Space);
+    public KeyBinding KeyBindInventory = new("key.inventory", Keys.E);
+    public KeyBinding KeyBindDrop = new("key.drop", Keys.Q);
+    public KeyBinding KeyBindChat = new("key.chat", Keys.T);
+    public KeyBinding KeyBindCommand = new("key.command", Keys.Slash);
+    public KeyBinding KeyBindToggleFog = new("key.fog", Keys.F);
+    public KeyBinding KeyBindSneak = new("key.sneak", Keys.ShiftLeft);
     public KeyBinding[] KeyBindings;
 
     protected BetaSharp _game;
@@ -144,20 +145,7 @@ public class GameOptions
         _optionsPath = System.IO.Path.Combine(gameDataDir, "options.txt");
 
         InitializeOptions();
-
-        KeyBindings =
-        [
-            KeyBindForward,
-            KeyBindLeft,
-            KeyBindBack,
-            KeyBindRight,
-            KeyBindJump,
-            KeyBindSneak,
-            KeyBindDrop,
-            KeyBindInventory,
-            KeyBindChat,
-            KeyBindToggleFog,
-        ];
+        InitializeKeyBindings();
 
         LoadOptions();
         INITIAL_MSAA = MSAALevel;
@@ -167,6 +155,7 @@ public class GameOptions
     public GameOptions()
     {
         InitializeOptions();
+        InitializeKeyBindings();
     }
 
     private void InitializeOptions()
@@ -321,13 +310,39 @@ public class GameOptions
 
     public string GetOptionDisplayString(int keyBindingIndex)
     {
-        return Keyboard.getKeyName(KeyBindings[keyBindingIndex].keyCode);
+        return Keyboard.getScancodeName(KeyBindings[keyBindingIndex].scanCode);
     }
 
-    public void SetKeyBinding(int keyBindingIndex, int keyCode)
+    public void SetKeyBinding(int keyBindingIndex, int scanCode)
     {
-        KeyBindings[keyBindingIndex].keyCode = keyCode;
+        KeyBindings[keyBindingIndex].scanCode = scanCode;
         SaveOptions();
+    }
+
+    public void ResolveMissingKeyBindingScancodes(bool saveIfChanged = true)
+    {
+        bool changed = false;
+        foreach (KeyBinding keyBinding in GetPersistedKeyBindings())
+        {
+            if (keyBinding.scanCode > 0)
+            {
+                continue;
+            }
+
+            int scanCode = Keyboard.GetScancodeForLogicalKey(keyBinding.defaultLogicalKey);
+            if (scanCode <= 0)
+            {
+                continue;
+            }
+
+            keyBinding.scanCode = scanCode;
+            changed = true;
+        }
+
+        if (changed && saveIfChanged)
+        {
+            SaveOptions();
+        }
     }
 
 
@@ -380,14 +395,14 @@ public class GameOptions
                 CameraMode = value == "true" ? EnumCameraMode.ThirdPerson : EnumCameraMode.FirstPerson;
                 break;
             default:
-                if (key.StartsWith("key_"))
+                if (key.StartsWith("sc_key_"))
                 {
-                    string bindName = key[4..];
-                    for (int i = 0; i < KeyBindings.Length; ++i)
+                    string bindName = key[7..];
+                    foreach (KeyBinding keyBinding in GetPersistedKeyBindings())
                     {
-                        if (KeyBindings[i].keyDescription == bindName)
+                        if (keyBinding.keyDescription == bindName)
                         {
-                            KeyBindings[i].keyCode = int.Parse(value);
+                            keyBinding.scanCode = int.Parse(value);
                             break;
                         }
                     }
@@ -411,9 +426,9 @@ public class GameOptions
             writer.WriteLine($"lastServer:{LastServer}");
             writer.WriteLine($"cameraMode:{(int)CameraMode}");
 
-            foreach (var bind in KeyBindings)
+            foreach (KeyBinding bind in GetPersistedKeyBindings())
             {
-                writer.WriteLine($"key_{bind.keyDescription}:{bind.keyCode}");
+                writer.WriteLine($"sc_key_{bind.keyDescription}:{bind.scanCode}");
             }
 
             writer.Close();
@@ -427,5 +442,32 @@ public class GameOptions
     public void OnSoundOptionsChanged()
     {
         _game?.sndManager.OnSoundOptionsChanged();
+    }
+
+    private void InitializeKeyBindings()
+    {
+        KeyBindings =
+        [
+            KeyBindForward,
+            KeyBindLeft,
+            KeyBindBack,
+            KeyBindRight,
+            KeyBindJump,
+            KeyBindSneak,
+            KeyBindDrop,
+            KeyBindInventory,
+            KeyBindChat,
+            KeyBindToggleFog,
+        ];
+    }
+
+    private IEnumerable<KeyBinding> GetPersistedKeyBindings()
+    {
+        foreach (KeyBinding keyBinding in KeyBindings)
+        {
+            yield return keyBinding;
+        }
+
+        yield return KeyBindCommand;
     }
 }

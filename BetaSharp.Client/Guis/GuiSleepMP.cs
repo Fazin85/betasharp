@@ -1,6 +1,7 @@
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Network;
 using BetaSharp.Network.Packets.C2SPlay;
+using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Guis;
 
@@ -18,15 +19,16 @@ public class GuiSleepMP : GuiChat
     public override void OnGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
+        base.OnGuiClosed();
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, Keys eventKey)
     {
-        if (eventKey == 1)
+        if (eventKey == Keys.Escape)
         {
             sendStopSleepingCommand();
         }
-        else if (eventKey == 28)
+        else if (eventKey == Keys.Enter)
         {
             string trimmed = _message.Trim();
             if (trimmed.Length > 0)

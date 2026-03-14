@@ -1,5 +1,6 @@
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Options;
+using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Guis;
 
@@ -70,17 +71,21 @@ public class GuiControls : GuiScreen
 
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, Keys eventKey)
     {
         if (_selectedKey >= 0)
         {
-            _options.SetKeyBinding(_selectedKey, eventKey);
-            _controlList[_selectedKey].DisplayString = _options.GetOptionDisplayString(_selectedKey);
-            _selectedKey = -1;
+            int eventScanCode = Keyboard.getEventScancode();
+            if (eventScanCode > 0)
+            {
+                _options.SetKeyBinding(_selectedKey, eventScanCode);
+                _controlList[_selectedKey].DisplayString = _options.GetOptionDisplayString(_selectedKey);
+                _selectedKey = -1;
+            }
         }
         else
         {
-            if (eventKey == Keyboard.KEY_ESCAPE || eventKey == Keyboard.KEY_NONE)
+            if (eventKey == Keys.Escape || eventKey == Keys.Unknown)
             {
                 Game.options.SaveOptions();
                 Game.displayGuiScreen(_parentScreen);

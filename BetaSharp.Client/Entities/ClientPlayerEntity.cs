@@ -109,9 +109,9 @@ public class ClientPlayerEntity : EntityPlayer
         movementInput.resetKeyState();
     }
 
-    public void handleKeyPress(int key, bool isPressed)
+    public void handleKeyPress(int scanCode, bool isPressed)
     {
-        movementInput.checkKeyForMovementInput(key, isPressed);
+        movementInput.checkKeyForMovementInput(scanCode, isPressed);
     }
 
     public override void writeNbt(NBTTagCompound nbt)

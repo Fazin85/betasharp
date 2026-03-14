@@ -35,6 +35,7 @@ using BetaSharp.Worlds.Storage;
 using ImGuiNET;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Input;
+using Silk.NET.GLFW;
 using Silk.NET.OpenGL;
 using Silk.NET.OpenGL.Extensions.ImGui;
 using Silk.NET.Windowing;
@@ -280,6 +281,7 @@ public partial class BetaSharp
         }
 
         Keyboard.create(Display.getGlfw(), Display.getWindowHandle());
+        options.ResolveMissingKeyBindingScancodes();
         Mouse.create(Display.getGlfw(), Display.getWindowHandle(), Display.getWidth(), Display.getHeight());
         Controller.Create(Display.getGlfw(), Display.getWindowHandle());
         ControllerManager.Initialize(this);
@@ -657,7 +659,7 @@ public partial class BetaSharp
                         if (options.DebugMode) Profiler.Stop("updateLighting");
                     }
 
-                    if (!Keyboard.isKeyDown(Keyboard.KEY_F7))
+                    if (!Keyboard.IsLogicalKeyDown(Keys.F7))
                     {
                         if (options.DebugMode) Profiler.Start("wait");
                         Display.update();
@@ -765,7 +767,7 @@ public partial class BetaSharp
 
                     guiAchievement.updateAchievementWindow();
 
-                    if (Keyboard.isKeyDown(Keyboard.KEY_F7))
+                    if (Keyboard.IsLogicalKeyDown(Keys.F7))
                     {
                         Display.update();
                     }
@@ -870,7 +872,7 @@ public partial class BetaSharp
 
     private void screenshotListener()
     {
-        if (Keyboard.isKeyDown(Keyboard.KEY_F2))
+        if (Keyboard.IsLogicalKeyDown(Keys.F2))
         {
             if (!isTakingScreenshot)
             {
@@ -1498,11 +1500,13 @@ public partial class BetaSharp
 
         while (Keyboard.Next())
         {
-            player.handleKeyPress(Keyboard.getEventKey(), Keyboard.getEventKeyState());
+            int eventScanCode = Keyboard.getEventScancode();
+            Keys eventLogicalKey = Keyboard.getEventLogicalKey();
+            player.handleKeyPress(eventScanCode, Keyboard.getEventKeyState());
 
             if (Keyboard.getEventKeyState())
             {
-                if (Keyboard.getEventKey() == Keyboard.KEY_F11)
+                if (eventLogicalKey == Keys.F11)
                 {
                     toggleFullscreen();
                 }
@@ -1514,62 +1518,62 @@ public partial class BetaSharp
                     }
                     else
                     {
-                        if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE)
+                        if (eventLogicalKey == Keys.Escape)
                         {
                             displayInGameMenu();
                         }
 
-                        if (Keyboard.getEventKey() == Keyboard.KEY_S && Keyboard.isKeyDown(Keyboard.KEY_F3))
+                        if (eventLogicalKey == Keys.S && Keyboard.IsLogicalKeyDown(Keys.F3))
                         {
                             forceReload();
                         }
 
-                        if (Keyboard.getEventKey() == Keyboard.KEY_D && Keyboard.isKeyDown(Keyboard.KEY_F3))
+                        if (eventLogicalKey == Keys.D && Keyboard.IsLogicalKeyDown(Keys.F3))
                         {
                             ingameGUI.clearChatMessages();
                         }
 
-                        if (Keyboard.getEventKey() == Keyboard.KEY_C && Keyboard.isKeyDown(Keyboard.KEY_F3))
+                        if (eventLogicalKey == Keys.C && Keyboard.IsLogicalKeyDown(Keys.F3))
                         {
                             throw new Exception("Simulated crash triggered by pressing F3 + C");
                         }
 
-                        if (Keyboard.getEventKey() == Keyboard.KEY_F1)
+                        if (eventLogicalKey == Keys.F1)
                         {
                             options.HideGUI = !options.HideGUI;
                         }
 
-                        if (Keyboard.getEventKey() == Keyboard.KEY_F3)
+                        if (eventLogicalKey == Keys.F3)
                         {
                             options.ShowDebugInfo = !options.ShowDebugInfo;
                         }
 
-                        if (Keyboard.getEventKey() == Keyboard.KEY_F5)
+                        if (eventLogicalKey == Keys.F5)
                         {
                             options.CameraMode = (EnumCameraMode)((int)(options.CameraMode + 2) % 3);
                         }
 
-                        if (Keyboard.getEventKey() == Keyboard.KEY_F8)
+                        if (eventLogicalKey == Keys.F8)
                         {
                             options.SmoothCamera = !options.SmoothCamera;
                         }
 
-                        if (Keyboard.getEventKey() == options.KeyBindInventory.keyCode)
+                        if (eventScanCode == options.KeyBindInventory.scanCode)
                         {
                             displayGuiScreen(new GuiInventory(player));
                         }
 
-                        if (Keyboard.getEventKey() == options.KeyBindDrop.keyCode)
+                        if (eventScanCode == options.KeyBindDrop.scanCode)
                         {
                             player.dropSelectedItem();
                         }
 
-                        if (Keyboard.getEventKey() == options.KeyBindChat.keyCode)
+                        if (eventScanCode == options.KeyBindChat.scanCode)
                         {
                             displayGuiScreen(new GuiChat());
                         }
 
-                        if (Keyboard.getEventKey() == options.KeyBindCommand.keyCode)
+                        if (eventScanCode == options.KeyBindCommand.scanCode)
                         {
                             displayGuiScreen(new GuiChat("/"));
                         }
@@ -1577,15 +1581,15 @@ public partial class BetaSharp
 
                     for (int slotIndex = 0; slotIndex < 9; ++slotIndex)
                     {
-                        if (Keyboard.getEventKey() == Keyboard.KEY_1 + slotIndex)
+                        if ((int)eventLogicalKey == (int)Keys.Number1 + slotIndex)
                         {
                             player.inventory.selectedSlot = slotIndex;
                         }
                     }
 
-                    if (Keyboard.getEventKey() == options.KeyBindToggleFog.keyCode)
+                    if (eventScanCode == options.KeyBindToggleFog.scanCode)
                     {
-                        options.RenderDistanceOption.Value = System.Math.Clamp(options.RenderDistanceOption.Value + (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ? 1.0f / 28.0f : -1.0f / 28.0f), 0.0f, 1.0f);
+                        options.RenderDistanceOption.Value = System.Math.Clamp(options.RenderDistanceOption.Value + (!Keyboard.IsLogicalKeyDown(Keys.ShiftLeft) && !Keyboard.IsLogicalKeyDown(Keys.ShiftRight) ? 1.0f / 28.0f : -1.0f / 28.0f), 0.0f, 1.0f);
                     }
                 }
             }

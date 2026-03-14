@@ -1,6 +1,7 @@
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Options;
 using BetaSharp.NBT;
+using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Guis;
 
@@ -117,6 +118,7 @@ public class GuiMultiplayer : GuiScreen
     public override void OnGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
+        base.OnGuiClosed();
     }
 
     public override void UpdateScreen()
@@ -234,9 +236,9 @@ public class GuiMultiplayer : GuiScreen
         }
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, Keys eventKey)
     {
-        if (eventKey == 28) // Enter
+        if (eventKey == Keys.Enter)
         {
             if (_btnSelect != null && _btnSelect.Enabled) ActionPerformed(_btnSelect);
         }

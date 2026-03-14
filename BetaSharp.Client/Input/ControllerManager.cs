@@ -85,7 +85,7 @@ public static class ControllerManager
         // Jump
         if (jumpHeld != s_wasJumpDown)
         {
-            s_game.player.movementInput.checkKeyForMovementInput(s_game.options.KeyBindJump.keyCode, jumpHeld);
+            s_game.player.movementInput.checkKeyForMovementInput(s_game.options.KeyBindJump.scanCode, jumpHeld);
         }
 
         // Attack

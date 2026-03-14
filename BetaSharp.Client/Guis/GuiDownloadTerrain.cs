@@ -1,5 +1,6 @@
 using BetaSharp.Client.Network;
 using BetaSharp.Network.Packets.Play;
+using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Guis;
 
@@ -16,7 +17,7 @@ public class GuiDownloadTerrain : GuiScreen
         this._networkHandler = networkHandler;
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, Keys eventKey)
     {
     }
 

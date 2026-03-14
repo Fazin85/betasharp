@@ -2,6 +2,7 @@ using System.Text;
 using BetaSharp.Client.Input;
 using BetaSharp.Util;
 using BetaSharp.Util.Maths;
+using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Guis;
 
@@ -16,20 +17,19 @@ public class GuiChat : GuiScreen
 
     public GuiChat(string prefix = "")
     {
-        Keyboard.OnCharacterTyped += CharTyped;
         _message = prefix;
     }
 
     public override void InitGui()
     {
         Keyboard.enableRepeatEvents(true);
-        _isSubscribedToKeyboard = true;
         _historyIndex = s_history.Count;
     }
 
     public override void OnGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
+        base.OnGuiClosed();
     }
 
     public override void UpdateScreen()
@@ -37,15 +37,15 @@ public class GuiChat : GuiScreen
         ++_updateCounter;
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, Keys eventKey)
     {
-        if (eventKey == Keyboard.KEY_ESCAPE)
+        if (eventKey == Keys.Escape)
         {
             Game.displayGuiScreen(null);
             return;
         }
 
-        if (eventKey == Keyboard.KEY_RETURN)
+        if (eventKey == Keys.Enter)
         {
             string msg = _message.Trim();
             if (msg.Length > 0)
@@ -64,9 +64,9 @@ public class GuiChat : GuiScreen
             return;
         }
 
-        if (eventKey == Keyboard.KEY_UP)
+        if (eventKey == Keys.Up)
         {
-            if (Keyboard.isKeyDown(Keyboard.KEY_LMENU) || Keyboard.isKeyDown(Keyboard.KEY_RMENU))
+            if (Keyboard.IsLogicalKeyDown(Keys.AltLeft) || Keyboard.IsLogicalKeyDown(Keys.AltRight))
             {
                 if (_historyIndex > 0)
                 {
@@ -81,9 +81,9 @@ public class GuiChat : GuiScreen
             return;
         }
 
-        if (eventKey == Keyboard.KEY_DOWN)
+        if (eventKey == Keys.Down)
         {
-            if (Keyboard.isKeyDown(Keyboard.KEY_LMENU) || Keyboard.isKeyDown(Keyboard.KEY_RMENU))
+            if (Keyboard.IsLogicalKeyDown(Keys.AltLeft) || Keyboard.IsLogicalKeyDown(Keys.AltRight))
             {
                 if (_historyIndex < s_history.Count - 1)
                 {
@@ -103,7 +103,7 @@ public class GuiChat : GuiScreen
             return;
         }
 
-        if (eventKey == Keyboard.KEY_BACK)
+        if (eventKey == Keys.Backspace)
         {
             if (_message.Length > 0)
             {

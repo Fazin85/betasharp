@@ -56,9 +56,9 @@ public class GuiAchievements : GuiScreen
         base.ActionPerformed(var1);
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, Keys eventKey)
     {
-        if (eventKey == Game.options.KeyBindInventory.keyCode)
+        if (Keyboard.getEventScancode() == Game.options.KeyBindInventory.scanCode)
         {
             Game.displayGuiScreen(null);
             Game.setIngameFocus();

@@ -1,6 +1,7 @@
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util.Maths;
 using Microsoft.Extensions.Logging;
+using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Guis;
 
@@ -53,7 +54,7 @@ public class GuiMainMenu : GuiScreen
 
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, Keys eventKey)
     {
     }
 
