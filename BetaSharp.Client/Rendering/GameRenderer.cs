@@ -351,12 +351,12 @@ public class GameRenderer
         updateTargetedEntity(tickDelta);
         Profiler.Stop("getMouseOver");
 
-        EntityLiving var4 = _client.camera;
-        WorldRenderer var5 = _client.terrainRenderer;
-        ParticleManager var6 = _client.particleManager;
-        double var7 = var4.lastTickX + (var4.x - var4.lastTickX) * (double)tickDelta;
-        double var9 = var4.lastTickY + (var4.y - var4.lastTickY) * (double)tickDelta;
-        double var11 = var4.lastTickZ + (var4.z - var4.lastTickZ) * (double)tickDelta;
+        EntityLiving entity = _client.camera;
+        WorldRenderer worldRenderer = _client.terrainRenderer;
+        ParticleManager particleManager = _client.particleManager;
+        double entX = entity.lastTickX + (entity.x - entity.lastTickX) * (double)tickDelta;
+        double entY = entity.lastTickY + (entity.y - entity.lastTickY) * (double)tickDelta;
+        double entZ = entity.lastTickZ + (entity.z - entity.lastTickZ) * (double)tickDelta;
         ChunkSource var13 = _client.world.GetChunkSource();
 
         Profiler.Start("updateFog");
@@ -370,14 +370,14 @@ public class GameRenderer
         if (_client.options.renderDistance >= 8)
         {
             applyFog(-1);
-            var5.renderSky(tickDelta);
+            worldRenderer.renderSky(tickDelta);
         }
 
         GLManager.GL.Enable(GLEnum.Fog);
         applyFog(1);
 
-        FrustrumCuller var19 = new();
-        var19.setPosition(var7, var9, var11);
+        FrustrumCuller frustrumCuller = new();
+        frustrumCuller.setPosition(entX, entY, entZ);
 
         applyFog(0);
         GLManager.GL.Enable(GLEnum.Fog);
@@ -385,32 +385,32 @@ public class GameRenderer
         Lighting.turnOff();
 
         Profiler.Start("sortAndRender");
-        var5.sortAndRender(var4, 0, (double)tickDelta, var19);
+        worldRenderer.sortAndRender(entity, 0, (double)tickDelta, frustrumCuller);
         Profiler.Stop("sortAndRender");
 
         GLManager.GL.ShadeModel(GLEnum.Flat);
         Lighting.turnOn();
 
         Profiler.Start("renderEntities");
-        var5.renderEntities(var4.getPosition(tickDelta), var19, tickDelta);
+        worldRenderer.renderEntities(entity.getPosition(tickDelta), frustrumCuller, tickDelta);
         Profiler.Stop("renderEntities");
 
-        var6.func_1187_b(var4, tickDelta);
+        particleManager.func_1187_b(entity, tickDelta);
 
         Lighting.turnOff();
         applyFog(0);
 
         Profiler.Start("renderParticles");
-        var6.renderParticles(var4, tickDelta);
+        particleManager.renderParticles(entity, tickDelta);
         Profiler.Stop("renderParticles");
 
-        EntityPlayer entityPlayer;
-        if (_client.objectMouseOver.Type != HitResultType.MISS && var4.isInFluid(Material.Water) && var4 is EntityPlayer)
+        EntityPlayer entityPlayer = default;
+        if (_client.objectMouseOver.Type != HitResultType.MISS && entity.isInFluid(Material.Water) && entity is EntityPlayer)
         {
-            entityPlayer = (EntityPlayer)var4;
+            entityPlayer = (EntityPlayer)entity;
             GLManager.GL.Disable(GLEnum.AlphaTest);
-            var5.drawBlockBreaking(entityPlayer, _client.objectMouseOver, entityPlayer.inventory.getSelectedItem(), tickDelta);
-            var5.drawSelectionBox(entityPlayer, _client.objectMouseOver, 0, entityPlayer.inventory.getSelectedItem(), tickDelta);
+            worldRenderer.drawBlockBreaking(entityPlayer, _client.objectMouseOver, entityPlayer.inventory.getSelectedItem(), tickDelta);
+            worldRenderer.drawSelectionBox(entityPlayer, _client.objectMouseOver, 0, entityPlayer.inventory.getSelectedItem(), tickDelta);
             GLManager.GL.Enable(GLEnum.AlphaTest);
         }
 
@@ -422,7 +422,7 @@ public class GameRenderer
 
         Profiler.Start("sortAndRender2");
 
-        var5.sortAndRender(var4, 1, tickDelta, var19);
+        worldRenderer.sortAndRender(entity, 1, tickDelta, frustrumCuller);
 
         GLManager.GL.ShadeModel(GLEnum.Flat);
 
@@ -433,12 +433,12 @@ public class GameRenderer
         GLManager.GL.DepthMask(true);
         GLManager.GL.Enable(GLEnum.CullFace);
         GLManager.GL.Disable(GLEnum.Blend);
-        if (cameraController.CameraZoom == 1.0D && var4 is EntityPlayer && _client.objectMouseOver.Type != HitResultType.MISS && !var4.isInFluid(Material.Water))
+        if (cameraController.CameraZoom == 1.0D && entity is EntityPlayer && _client.objectMouseOver.Type != HitResultType.MISS && !entity.isInFluid(Material.Water))
         {
-            entityPlayer = (EntityPlayer)var4;
+            entityPlayer = (EntityPlayer)entity;
             GLManager.GL.Disable(GLEnum.AlphaTest);
-            var5.drawBlockBreaking(entityPlayer, _client.objectMouseOver, entityPlayer.inventory.getSelectedItem(), tickDelta);
-            var5.drawSelectionBox(entityPlayer, _client.objectMouseOver, 0, entityPlayer.inventory.getSelectedItem(), tickDelta);
+            worldRenderer.drawBlockBreaking(entityPlayer, _client.objectMouseOver, entityPlayer.inventory.getSelectedItem(), tickDelta);
+            worldRenderer.drawSelectionBox(entityPlayer, _client.objectMouseOver, 0, entityPlayer.inventory.getSelectedItem(), tickDelta);
             GLManager.GL.Enable(GLEnum.AlphaTest);
         }
 
@@ -451,12 +451,12 @@ public class GameRenderer
         applyFog(0);
         GLManager.GL.Enable(GLEnum.Fog);
 
-        if (_client.ShowChunkBorders)
+        if (_client.ShowChunkBorders && entityPlayer != null)
         {
-            renderChunkBorders(var4, tickDelta);
+                renderChunkBorders(entityPlayer, tickDelta);
         }
 
-        var5.renderClouds(tickDelta);
+        worldRenderer.renderClouds(tickDelta);
         GLManager.GL.Disable(GLEnum.Fog);
         applyFog(1);
 
@@ -467,11 +467,11 @@ public class GameRenderer
         }
     }
 
-    private void renderChunkBorders(EntityLiving camera, float tickDelta)
+    private void renderChunkBorders(EntityPlayer entityPlayer, float tickDelta)
     {
-        double camX = camera.lastTickX + (camera.x - camera.lastTickX) * (double)tickDelta;
-        double camY = camera.lastTickY + (camera.y - camera.lastTickY) * (double)tickDelta;
-        double camZ = camera.lastTickZ + (camera.z - camera.lastTickZ) * (double)tickDelta;
+        double camX = entityPlayer.lastTickX + (entityPlayer.x - entityPlayer.lastTickX) * (double)tickDelta;
+        double camY = entityPlayer.lastTickY + (entityPlayer.y - entityPlayer.lastTickY) * (double)tickDelta;
+        double camZ = entityPlayer.lastTickZ + (entityPlayer.z - entityPlayer.lastTickZ) * (double)tickDelta;
 
         int playerChunkX = _client.player.chunkX;
         int playerChunkZ = _client.player.chunkZ;
