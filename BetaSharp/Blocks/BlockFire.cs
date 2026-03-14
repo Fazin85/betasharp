@@ -64,10 +64,8 @@ internal class BlockFire : Block
 
     public override void onTick(OnTickEvent @event)
     {
-        if (!@event.World.Rules.GetBool(DefaultRules.DoFireTick))
-        {
-            return;
-        }
+        if (!@event.World.Rules.GetBool(DefaultRules.DoFireTick))    return;
+        
 
         bool isOnNetherrack = @event.World.Reader.GetBlockId(@event.X, @event.Y - 1, @event.Z) == Netherrack.id;
         if (!canPlaceAt(new CanPlaceAtContext(@event.World, 0, @event.X, @event.Y, @event.Z)))
@@ -112,29 +110,29 @@ internal class BlockFire : Block
 
                 for (int checkX = @event.X - 1; checkX <= @event.X + 1; ++checkX)
                 {
-                    for (int checkY = @event.Z - 1; checkY <= @event.Z + 1; ++checkY)
+                    for (int checkZ = @event.Z - 1; checkZ <= @event.Z + 1; ++checkZ)
                     {
-                        for (int checkZ = @event.Y - 1; checkZ <= @event.Y + 4; ++checkZ)
+                        for (int checkY = @event.Y - 1; checkY <= @event.Y + 4; ++checkY)
                         {
-                            if (checkX != @event.X || checkZ != @event.Y || checkY != @event.Z)
+                            if (checkX != @event.X || checkY != @event.Y || checkZ != @event.Z)
                             {
                                 int spreadDifficulty = 100;
-                                if (checkZ > @event.Y + 1)
+                                if (checkY > @event.Y + 1)
                                 {
-                                    spreadDifficulty += (checkZ - (@event.Y + 1)) * 100;
+                                    spreadDifficulty += (checkY - (@event.Y + 1)) * 100;
                                 }
 
-                                int burnChance = getBurnChance(@event.World.Reader, checkX, checkZ, checkY);
+                                int burnChance = getBurnChance(@event.World.Reader, checkX, checkY, checkZ);
                                 if (burnChance > 0)
                                 {
                                     int var13 = (burnChance + 40) / (fireAge + 30);
                                     if (var13 > 0 &&
                                         @event.World.Random.NextInt(spreadDifficulty) <= var13 &&
-                                        (!@event.World.Environment.IsRaining || !@event.World.Environment.IsRainingAt(checkX, checkZ, checkY)) &&
-                                        !@event.World.Environment.IsRainingAt(checkX - 1, checkZ, checkY) &&
-                                        !@event.World.Environment.IsRainingAt(checkX + 1, checkZ, checkY) &&
-                                        !@event.World.Environment.IsRainingAt(checkX, checkZ, checkY - 1) &&
-                                        !@event.World.Environment.IsRainingAt(checkX, checkZ, checkY + 1))
+                                        (!@event.World.Environment.IsRaining || !@event.World.Environment.IsRainingAt(checkX, checkY, checkZ)) &&
+                                        !@event.World.Environment.IsRainingAt(checkX - 1, checkY, checkZ) &&
+                                        !@event.World.Environment.IsRainingAt(checkX + 1, checkY, checkZ) &&
+                                        !@event.World.Environment.IsRainingAt(checkX, checkY - 1, checkZ) &&
+                                        !@event.World.Environment.IsRainingAt(checkX, checkY + 1, checkZ))
                                     {
                                         int spreadChance = fireAge + @event.World.Random.NextInt(5) / 4;
                                         if (spreadChance > 15)
@@ -142,7 +140,7 @@ internal class BlockFire : Block
                                             spreadChance = 15;
                                         }
 
-                                        @event.World.Writer.SetBlock(checkX, checkZ, checkY, id, spreadChance);
+                                        @event.World.Writer.SetBlock(checkX, checkY, checkZ, id, spreadChance);
                                     }
                                 }
                             }

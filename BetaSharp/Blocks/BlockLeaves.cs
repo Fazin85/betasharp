@@ -89,18 +89,17 @@ public class BlockLeaves : BlockLeavesBase
                     {
                         int dx;
                         int dy;
-                        int dz;
 
                         for (dx = -decayRadius; dx <= decayRadius; ++dx)
                         {
                             for (dy = -decayRadius; dy <= decayRadius; ++dy)
                             {
-                                dz = @event.World.Reader.GetBlockId(@event.X + distanceToLog, @event.Y + dx, @event.Z + dy);
-                                if (dz == Log.id)
+                                int blockId = @event.World.Reader.GetBlockId(@event.X + distanceToLog, @event.Y + dx, @event.Z + dy);
+                                if (blockId == Log.id)
                                 {
                                     decayRegion[(distanceToLog + centerOffset) * planeSize + (dx + centerOffset) * regionSize + dy + centerOffset] = 0;
                                 }
-                                else if (dz == Leaves.id)
+                                else if (blockId == Leaves.id)
                                 {
                                     decayRegion[(distanceToLog + centerOffset) * planeSize + (dx + centerOffset) * regionSize + dy + centerOffset] = -2;
                                 }
