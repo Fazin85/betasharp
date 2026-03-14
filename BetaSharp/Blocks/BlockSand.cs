@@ -41,7 +41,7 @@ internal class BlockSand : Block
             {
                 @event.World.Writer.SetBlock(x, y, z, 0);
 
-                while (canFallThrough(@event) && @event.Y > 0)
+                while (canFallThrough(new OnTickEvent(@event.World, x, y - 1, z, 0, @event.BlockId)) && y > 0)
                 {
                     --y;
                 }
