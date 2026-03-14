@@ -65,7 +65,7 @@ public class BlockPistonBase : Block
 
     public override void neighborUpdate(OnTickEvent @event)
     {
-        if (!@event.World.IsRemote && @event.World.Entities.GetBlockEntity(@event.X, @event.Y, @event.Z) == null)
+        if (!@event.World.IsRemote && @event.World.Entities.GetBlockEntity<BlockEntity>(@event.X, @event.Y, @event.Z) == null)
         {
             checkExtended(@event.World, @event.X, @event.Y, @event.Z);
         }
@@ -133,7 +133,7 @@ public class BlockPistonBase : Block
             int headY = @event.Y + PistonConstants.HEAD_OFFSET_Y[facing];
             int headZ = @event.Z + PistonConstants.HEAD_OFFSET_Z[facing];
 
-            BlockEntity? entityAtHead = @event.World.Entities.GetBlockEntity(headX, headY, headZ);
+            BlockEntity? entityAtHead = @event.World.Entities.GetBlockEntity<BlockEntityPiston>(headX, headY, headZ);
             if (entityAtHead is BlockEntityPiston extendingPiston)
             {
                 extendingPiston.finish();
@@ -154,7 +154,7 @@ public class BlockPistonBase : Block
 
                 if (targetId == MovingPiston.id)
                 {
-                    BlockEntity? movingTarget = @event.World.Entities.GetBlockEntity(targetX, targetY, targetZ);
+                    BlockEntity? movingTarget = @event.World.Entities.GetBlockEntity<BlockEntityPiston>(targetX, targetY, targetZ);
                     if (movingTarget is BlockEntityPiston movingPistonTarget)
                     {
                         if (movingPistonTarget.getFacing() == facing && movingPistonTarget.isExtending())
@@ -207,7 +207,7 @@ public class BlockPistonBase : Block
         deaf = false;
     }
 
-    public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager entities, int x, int y, int z)
     {
         int meta = iBlockReader.GetBlockMeta(x, y, z);
         if (isExtended(meta))
@@ -230,10 +230,10 @@ public class BlockPistonBase : Block
 
     public override void setupRenderBoundingBox() => setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 
-    public override void addIntersectingBoundingBox(IBlockReader world, int x, int y, int z, Box box, List<Box> boxes)
+    public override void addIntersectingBoundingBox(IBlockReader world, EntityManager entities, int x, int y, int z, Box box, List<Box> boxes)
     {
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-        base.addIntersectingBoundingBox(world, x, y, z, box, boxes);
+        base.addIntersectingBoundingBox(world, entities, x, y, z, box, boxes);
     }
 
     public override bool isFullCube() => false;
@@ -291,7 +291,7 @@ public class BlockPistonBase : Block
             return false;
         }
 
-        BlockEntity? targetEntity = ctx.Entities.GetBlockEntity(x, y, z);
+        BlockEntity? targetEntity = ctx.Entities.GetBlockEntity<BlockEntity>(x, y, z);
         return targetEntity == null;
     }
 

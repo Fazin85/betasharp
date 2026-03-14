@@ -51,12 +51,6 @@ public class WorldReader : IBlockReader
         return blockId == 0 ? Material.Air : Block.Blocks[blockId].material;
     }
 
-    public BlockEntity? GetBlockEntity(int x, int y, int z)
-    {
-        Chunk? chunk = _context.ChunkHost.GetChunk(x >> 4, z >> 4);
-        return chunk?.GetBlockEntity(x & 15, y, z & 15);
-    }
-
     public bool IsOpaque(int x, int y, int z)
     {
         Block? block = Block.Blocks[GetBlockId(x, y, z)];
@@ -198,10 +192,10 @@ public class WorldReader : IBlockReader
 
         // Notice we pass "this" as the IBlockReader
         if ((!ignoreNonSolid || initialBlock == null ||
-             initialBlock.getCollisionShape(this, currentX, currentY, currentZ) != null) &&
+             initialBlock.getCollisionShape(this, _context.Entities, currentX, currentY, currentZ) != null) &&
             initialId > 0 && initialBlock!.hasCollision(initialMeta, includeFluids))
         {
-            HitResult result = initialBlock.raycast(this, currentX, currentY, currentZ, start, target);
+            HitResult result = initialBlock.raycast(this, _context.Entities, currentX, currentY, currentZ, start, target);
             if (result.Type != HitResultType.MISS)
             {
                 return result;
@@ -333,10 +327,10 @@ public class WorldReader : IBlockReader
             Block? blockAtStep = Block.Blocks[blockIdAtStep];
 
             if ((!ignoreNonSolid || blockAtStep == null ||
-                 blockAtStep.getCollisionShape(this, currentX, currentY, currentZ) != null) &&
+                 blockAtStep.getCollisionShape(this, _context.Entities, currentX, currentY, currentZ) != null) &&
                 blockIdAtStep > 0 && blockAtStep!.hasCollision(metaAtStep, includeFluids))
             {
-                HitResult hit = blockAtStep.raycast(this, currentX, currentY, currentZ, start, target);
+                HitResult hit = blockAtStep.raycast(this, _context.Entities, currentX, currentY, currentZ, start, target);
                 if (hit.Type != HitResultType.MISS)
                 {
                     return hit;

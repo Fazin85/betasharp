@@ -3,7 +3,6 @@ using BetaSharp.Blocks.Entities;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds.Core;
 using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Worlds.Generation.Generators.Features;
@@ -121,7 +120,7 @@ internal class DungeonFeature : Feature
 
                     level.Writer.SetBlock(chestX, y, chestZ, Block.Chest.id, 0, doUpdate: true);
 
-                    BlockEntityChest? chest = (BlockEntityChest?)level.Entities.GetBlockEntity(chestX, y, chestZ);
+                    BlockEntityChest? chest = level.Entities.GetBlockEntity<BlockEntityChest>(chestX, y, chestZ);
                     for (int k = 0; k < 8; ++k)
                     {
                         ItemStack? loot = PickCheckLootItem(rand);
@@ -135,7 +134,7 @@ internal class DungeonFeature : Feature
         }
 
         level.Writer.SetBlock(x, y, z, Block.Spawner.id, 0, doUpdate: true);
-        BlockEntityMobSpawner? spawner = (BlockEntityMobSpawner?)level.Entities.GetBlockEntity(x, y, z);
+        BlockEntityMobSpawner? spawner = level.Entities.GetBlockEntity<BlockEntityMobSpawner>(x, y, z);
         spawner!.SetSpawnedEntityId(PickMobSpawner(rand));
         return true;
     }

@@ -1,7 +1,6 @@
 ﻿using BetaSharp.Blocks.Entities;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds.Core;
 using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Blocks;
@@ -18,7 +17,7 @@ public class BlockPistonMoving : BlockWithEntity
 
     public override void onBreak(OnBreakEvent @event)
     {
-        BlockEntity? var5 = @event.World.Entities.GetBlockEntity(@event.X, @event.Y, @event.Z);
+        BlockEntity? var5 = @event.World.Entities.GetBlockEntity<BlockEntity>(@event.X, @event.Y, @event.Z);
         if (var5 != null && var5 is BlockEntityPiston)
         {
             ((BlockEntityPiston)var5).finish();
@@ -39,7 +38,7 @@ public class BlockPistonMoving : BlockWithEntity
 
     public override bool onUse(OnUseEvent @event)
     {
-        if (!@event.World.IsRemote && @event.World.Entities.GetBlockEntity(@event.X, @event.Y, @event.Z) == null)
+        if (!@event.World.IsRemote && @event.World.Entities.GetBlockEntity<BlockEntity>(@event.X, @event.Y, @event.Z) == null)
         {
             @event.World.Writer.SetBlock(@event.X, @event.Y, @event.Z, 0);
             return true;
@@ -54,7 +53,7 @@ public class BlockPistonMoving : BlockWithEntity
     {
         if (!@event.World.IsRemote)
         {
-            BlockEntityPiston? piston = getPistonBlockEntity(@event.World.Reader, @event.X, @event.Y, @event.Z);
+            BlockEntityPiston? piston = @event.World.Entities.GetBlockEntity<BlockEntityPiston>(@event.X, @event.Y, @event.Z);
             if (piston != null)
             {
                 Blocks[piston.getPushedBlockId()].dropStacks(new OnDropEvent(@event.World, @event.X, @event.Y, @event.Z, piston.getPushedBlockData()));
@@ -64,16 +63,16 @@ public class BlockPistonMoving : BlockWithEntity
 
     public override void neighborUpdate(OnTickEvent @event)
     {
-        if (!@event.World.IsRemote && @event.World.Entities.GetBlockEntity(@event.X, @event.Y, @event.Z) == null)
+        if (!@event.World.IsRemote && @event.World.Entities.GetBlockEntity<BlockEntity>(@event.X, @event.Y, @event.Z) == null)
         {
         }
     }
 
     public static BlockEntity createPistonBlockEntity(int blockId, int blockMeta, int facing, bool extending, bool source) => new BlockEntityPiston(blockId, blockMeta, facing, extending, source);
 
-    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
+    public override Box? getCollisionShape(IBlockReader iBlockReader, EntityManager entities, int x, int y, int z)
     {
-        BlockEntityPiston var5 = getPistonBlockEntity(world, x, y, z);
+        BlockEntityPiston? var5 = entities.GetBlockEntity<BlockEntityPiston>(x, y, z);
         if (var5 == null)
         {
             return null;
@@ -85,12 +84,12 @@ public class BlockPistonMoving : BlockWithEntity
             var6 = 1.0F - var6;
         }
 
-        return getPushedBlockCollisionShape(world, x, y, z, var5.getPushedBlockId(), var6, var5.getFacing());
+        return getPushedBlockCollisionShape(iBlockReader, entities, x, y, z, var5.getPushedBlockId(), var6, var5.getFacing());
     }
 
-    public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager entities, int x, int y, int z)
     {
-        BlockEntityPiston var5 = getPistonBlockEntity(iBlockReader, x, y, z);
+        BlockEntityPiston? var5 = entities.GetBlockEntity<BlockEntityPiston>(x, y, z);
         if (var5 != null)
         {
             Block var6 = Blocks[var5.getPushedBlockId()];
@@ -99,7 +98,7 @@ public class BlockPistonMoving : BlockWithEntity
                 return;
             }
 
-            var6.updateBoundingBox(iBlockReader, x, y, z);
+            var6.updateBoundingBox(iBlockReader, entities, x, y, z);
             float var7 = var5.getProgress(0.0F);
             if (var5.isExtending())
             {
@@ -111,11 +110,11 @@ public class BlockPistonMoving : BlockWithEntity
         }
     }
 
-    public Box? getPushedBlockCollisionShape(IBlockReader world, int x, int y, int z, int blockId, float sizeMultiplier, int facing)
+    public Box? getPushedBlockCollisionShape(IBlockReader world, EntityManager entities, int x, int y, int z, int blockId, float sizeMultiplier, int facing)
     {
         if (blockId != 0 && blockId != id)
         {
-            Box? shape = Blocks[blockId].getCollisionShape(world, x, y, z);
+            Box? shape = Blocks[blockId].getCollisionShape(world, entities, x, y, z);
             if (shape == null)
             {
                 return null;
@@ -132,11 +131,5 @@ public class BlockPistonMoving : BlockWithEntity
         }
 
         return null;
-    }
-
-    private BlockEntityPiston? getPistonBlockEntity(IBlockReader iBlockReader, int x, int y, int z)
-    {
-        BlockEntity? piston = iBlockReader.GetBlockEntity(x, y, z);
-        return piston != null && piston is BlockEntityPiston ? (BlockEntityPiston)piston : null;
     }
 }

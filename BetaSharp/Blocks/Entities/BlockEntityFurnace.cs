@@ -4,6 +4,7 @@ using BetaSharp.Inventorys;
 using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Recipes;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Blocks.Entities;
 
@@ -69,7 +70,7 @@ public class BlockEntityFurnace : BlockEntity, IInventory
 
     public bool canPlayerUse(EntityPlayer player)
     {
-        return World.Reader.GetBlockEntity(X, Y, Z) != this ? false : player.getSquaredDistance(X + 0.5D, Y + 0.5D, Z + 0.5D) <= 64.0D;
+        return World.Entities.GetBlockEntity<BlockEntityFurnace>(X, Y, Z) == this && player.getSquaredDistance(X + 0.5D, Y + 0.5D, Z + 0.5D) <= 64.0D;
     }
 
     public override void readNbt(NBTTagCompound nbt)
@@ -134,7 +135,7 @@ public class BlockEntityFurnace : BlockEntity, IInventory
         return burnTime > 0;
     }
 
-    public override void tick()
+    public override void tick(EntityManager entities)
     {
         bool wasBurning = burnTime > 0;
         bool stateChanged = false;

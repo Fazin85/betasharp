@@ -14,7 +14,7 @@ public class BlockRedstoneWire : Block
 
     public override int getTexture(int var1, int var2) => textureId;
 
-    public override Box? getCollisionShape(IBlockReader var1, int var2, int var3, int var4) => null;
+    public override Box? getCollisionShape(IBlockReader var1, EntityManager entities, int var2, int var3, int var4) => null;
 
     public override bool isOpaque() => false;
 

@@ -1,7 +1,6 @@
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds.Core;
 using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Blocks;
@@ -10,7 +9,7 @@ internal class BlockTorch : Block
 {
     public BlockTorch(int id, int textureId) : base(id, textureId, Material.PistonBreakable) => setTickRandomly(true);
 
-    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z) => null;
+    public override Box? getCollisionShape(IBlockReader world, EntityManager entities, int x, int y, int z) => null;
 
     public override bool isOpaque() => false;
 
@@ -145,7 +144,7 @@ internal class BlockTorch : Block
         return true;
     }
 
-    public override HitResult raycast(IBlockReader world, int x, int y, int z, Vec3D startPos, Vec3D endPos)
+    public override HitResult raycast(IBlockReader world, EntityManager entities, int x, int y, int z, Vec3D startPos, Vec3D endPos)
     {
         int meta = world.GetBlockMeta(x, y, z) & 7;
         float torchWidth = 0.15F;
@@ -171,7 +170,7 @@ internal class BlockTorch : Block
             setBoundingBox(0.5F - torchWidth, 0.0F, 0.5F - torchWidth, 0.5F + torchWidth, 0.6F, 0.5F + torchWidth);
         }
 
-        return base.raycast(world, x, y, z, startPos, endPos);
+        return base.raycast(world, entities, x, y, z, startPos, endPos);
     }
 
     public override void randomDisplayTick(OnTickEvent @event)

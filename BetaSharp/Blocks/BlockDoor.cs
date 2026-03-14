@@ -61,19 +61,19 @@ internal class BlockDoor : Block
         return BlockRendererType.Door;
     }
 
-    public override Box getBoundingBox(IBlockReader world, int x, int y, int z)
+    public override Box getBoundingBox(IBlockReader world, EntityManager entities, int x, int y, int z)
     {
-        updateBoundingBox(world, x, y, z);
-        return base.getBoundingBox(world, x, y, z);
+        updateBoundingBox(world, entities, x, y, z);
+        return base.getBoundingBox(world, entities, x, y, z);
     }
 
-    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
+    public override Box? getCollisionShape(IBlockReader world, EntityManager entities, int x, int y, int z)
     {
-        updateBoundingBox(world, x, y, z);
-        return base.getCollisionShape(world, x, y, z);
+        updateBoundingBox(world, entities, x, y, z);
+        return base.getCollisionShape(world, entities, x, y, z);
     }
 
-    public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z) => rotate(setOpen(iBlockReader.GetBlockMeta(x, y, z)));
+    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager entities, int x, int y, int z) => rotate(setOpen(iBlockReader.GetBlockMeta(x, y, z)));
 
     public void rotate(int meta)
     {
@@ -215,10 +215,10 @@ internal class BlockDoor : Block
         return (blockMeta & 8) != 0 ? 0 : material == Material.Metal ? Item.IronDoor.id : Item.WoodenDoor.id;
     }
 
-    public override HitResult raycast(IBlockReader world, int x, int y, int z, Vec3D startPos, Vec3D endPos)
+    public override HitResult raycast(IBlockReader world, EntityManager entities, int x, int y, int z, Vec3D startPos, Vec3D endPos)
     {
-        updateBoundingBox(world, x, y, z);
-        return base.raycast(world, x, y, z, startPos, endPos);
+        updateBoundingBox(world, entities, x, y, z);
+        return base.raycast(world, entities, x, y, z, startPos, endPos);
     }
 
     public int setOpen(int meta)

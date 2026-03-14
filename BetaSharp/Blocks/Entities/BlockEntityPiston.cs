@@ -1,6 +1,7 @@
 using BetaSharp.Entities;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Blocks.Entities;
 
@@ -69,7 +70,7 @@ public class BlockEntityPiston : BlockEntity
 
     public float getRenderOffsetZ(float tickDelta) => _extending ? (getProgress(tickDelta) - 1.0F) * PistonConstants.HEAD_OFFSET_Z[_facing] : (1.0F - getProgress(tickDelta)) * PistonConstants.HEAD_OFFSET_Z[_facing];
 
-    private void pushEntities(float collisionShapeSizeMultiplier, float entityMoveMultiplier)
+    private void pushEntities( EntityManager entities,float collisionShapeSizeMultiplier, float entityMoveMultiplier)
     {
         if (!_extending)
         {
@@ -80,7 +81,7 @@ public class BlockEntityPiston : BlockEntity
             collisionShapeSizeMultiplier = 1.0F - collisionShapeSizeMultiplier;
         }
 
-        Box? pushCollisionBox = Block.MovingPiston.getPushedBlockCollisionShape(World.Reader, X, Y, Z, _pushedBlockId, collisionShapeSizeMultiplier, _facing);
+        Box? pushCollisionBox = Block.MovingPiston.getPushedBlockCollisionShape(World.Reader, entities, X, Y, Z, _pushedBlockId, collisionShapeSizeMultiplier, _facing);
         if (pushCollisionBox != null)
         {
             List<Entity> entitiesToPush = World.Entities.GetEntities(null!, pushCollisionBox.Value);
@@ -116,12 +117,12 @@ public class BlockEntityPiston : BlockEntity
         }
     }
 
-    public override void tick()
+    public override void tick( EntityManager entities)
     {
         _progress = _lastProgess;
         if (_progress >= 1.0F)
         {
-            pushEntities(1.0F, 0.25F);
+            pushEntities(entities, 1.0F, 0.25F);
             World.Entities.RemoveBlockEntity(X, Y, Z);
             markRemoved();
             if (World.Reader.GetBlockId(X, Y, Z) == Block.MovingPiston.id)
@@ -139,7 +140,7 @@ public class BlockEntityPiston : BlockEntity
 
             if (_extending)
             {
-                pushEntities(_lastProgess, _lastProgess - _progress + 1.0F / 16.0F);
+                pushEntities(entities, _lastProgess, _lastProgess - _progress + 1.0F / 16.0F);
             }
         }
     }

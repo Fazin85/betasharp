@@ -421,7 +421,7 @@ internal class ChunkMap
                     sendPacketToPlayers(BlockUpdateS2CPacket.Get(var2, var3, var4, var1));
                     if (Block.BlocksWithEntity[var1.Reader.GetBlockId(var2, var3, var4)])
                     {
-                        sendBlockEntityUpdate(var1.Reader.GetBlockEntity(var2, var3, var4));
+                        sendBlockEntityUpdate(var1.Entities.GetBlockEntity<BlockEntity>(var2, var3, var4));
                     }
                 }
                 else if (dirtyBlockCount == 10)
@@ -453,7 +453,7 @@ internal class ChunkMap
                         int var16 = chunkZ * 16 + (dirtyBlocks[var11] >> 8 & 15);
                         if (Block.BlocksWithEntity[var1.Reader.GetBlockId(var13, var15, var16)])
                         {
-                            sendBlockEntityUpdate(var1.Reader.GetBlockEntity(var13, var15, var16));
+                            sendBlockEntityUpdate(var1.Entities.GetBlockEntity<BlockEntity>(var13, var15, var16));
                         }
                     }
                 }

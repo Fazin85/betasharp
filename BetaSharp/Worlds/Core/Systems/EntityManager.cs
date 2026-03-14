@@ -307,7 +307,7 @@ public class EntityManager
             BlockEntity blockEntity = BlockEntities[i];
             if (!blockEntity.isRemoved())
             {
-                blockEntity.tick();
+                blockEntity.tick(this);
             }
 
             if (blockEntity.isRemoved())
@@ -567,7 +567,7 @@ public class EntityManager
                         Block block = Block.Blocks[_blocks.GetBlockId(x, y, z)];
                         if (block != null)
                         {
-                            block.addIntersectingBoundingBox(_blocks, x, y, z, area, collidingBoundingBoxes);
+                            block.addIntersectingBoundingBox(_blocks, this, x, y, z, area, collidingBoundingBoxes);
                         }
                     }
                 }
@@ -753,10 +753,12 @@ public class EntityManager
         }
     }
 
-    public BlockEntity? GetBlockEntity(int x, int y, int z)
+    public T? GetBlockEntity<T>(int x, int y, int z) where T : BlockEntity
     {
         Chunk chunk = _host.GetChunk(x >> 4, z >> 4);
-        return chunk.GetBlockEntity(x & 15, y, z & 15) ?? BlockEntities.FirstOrDefault(e => e.X == x && e.Y == y && e.Z == z);
+        BlockEntity? entity = chunk.GetBlockEntity(x & 15, y, z & 15)
+                            ?? BlockEntities.FirstOrDefault(e => e.X == x && e.Y == y && e.Z == z);
+        return entity as T;
     }
 
     public void SetBlockEntity(int x, int y, int z, BlockEntity blockEntity)
@@ -780,7 +782,7 @@ public class EntityManager
 
     public void RemoveBlockEntity(int x, int y, int z)
     {
-        BlockEntity? entity = GetBlockEntity(x, y, z);
+        BlockEntity? entity = GetBlockEntity<BlockEntity>(x, y, z);
         if (entity != null && _processingDeferred)
         {
             entity.markRemoved();

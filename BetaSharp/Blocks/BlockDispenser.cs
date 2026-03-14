@@ -116,7 +116,7 @@ internal class BlockDispenser : BlockWithEntity
             return true;
         }
 
-        BlockEntityDispenser? dispenser = (BlockEntityDispenser?)@event.World.Reader.GetBlockEntity(@event.X, @event.Y, @event.Z);
+        BlockEntityDispenser? dispenser = @event.World.Entities.GetBlockEntity<BlockEntityDispenser>(@event.X, @event.Y, @event.Z);
         if (dispenser != null)
         {
             @event.Player.openDispenserScreen(dispenser);
@@ -148,7 +148,7 @@ internal class BlockDispenser : BlockWithEntity
             dirX = -1;
         }
 
-        BlockEntityDispenser? dispenser = (BlockEntityDispenser?)@event.World.Reader.GetBlockEntity(@event.X, @event.Y, @event.Z);
+        BlockEntityDispenser? dispenser = @event.World.Entities.GetBlockEntity<BlockEntityDispenser>(@event.X, @event.Y, @event.Z);
         if (dispenser == null)
         {
             return;
@@ -232,7 +232,7 @@ internal class BlockDispenser : BlockWithEntity
 
     public override void onBreak(OnBreakEvent @event)
     {
-        BlockEntityDispenser? dispenser = (BlockEntityDispenser?)@event.World.Reader.GetBlockEntity(@event.X, @event.Y, @event.Z);
+        BlockEntityDispenser? dispenser = @event.World.Entities.GetBlockEntity<BlockEntityDispenser>(@event.X, @event.Y, @event.Z);
 
         if (dispenser != null)
         {

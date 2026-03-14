@@ -34,13 +34,13 @@ internal class BlockCactus : Block
         }
     }
 
-    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
+    public override Box? getCollisionShape(IBlockReader world, EntityManager entities, int x, int y, int z)
     {
         float edgeInset = 1.0F / 16.0F;
         return new Box(x + edgeInset, y, z + edgeInset, x + 1 - edgeInset, y + 1 - edgeInset, z + 1 - edgeInset);
     }
 
-    public override Box getBoundingBox(IBlockReader world, int x, int y, int z)
+    public override Box getBoundingBox(IBlockReader world, EntityManager entities, int x, int y, int z)
     {
         float edgeInset = 1.0F / 16.0F;
         return new Box(x + edgeInset, y, z + edgeInset, x + 1 - edgeInset, y + 1, z + 1 - edgeInset);

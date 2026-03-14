@@ -65,7 +65,7 @@ internal class BlockReed : Block
 
     public override bool canGrow(OnTickEvent @event) => canPlaceAt(new CanPlaceAtContext(@event.World, 0, @event.X, @event.Y, @event.Z));
 
-    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z) => null;
+    public override Box? getCollisionShape(IBlockReader world, EntityManager entities, int x, int y, int z) => null;
 
     public override int getDroppedItemId(int blockMeta) => Item.SugarCane.id;
 

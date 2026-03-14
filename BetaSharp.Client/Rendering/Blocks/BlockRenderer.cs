@@ -33,7 +33,7 @@ public class BlockRenderer
     {
         BlockRendererType type = block.getRenderType();
 
-        block.updateBoundingBox(world, pos.x, pos.y, pos.z);
+        //block.updateBoundingBox(world.Reader, world.Entities, pos.x, pos.y, pos.z);
 
         var ctx = new BlockRenderContext(
             tess: tess,

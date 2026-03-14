@@ -83,7 +83,7 @@ public abstract class BlockFluid : Block
             side == 1 ? true : base.isSideVisible(iBlockReader, x, y, z, side);
     }
 
-    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
+    public override Box? getCollisionShape(IBlockReader world, EntityManager entities, int x, int y, int z)
     {
         return null;
     }

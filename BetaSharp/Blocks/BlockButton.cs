@@ -12,7 +12,7 @@ internal class BlockButton : Block
         setTickRandomly(true);
     }
 
-    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
+    public override Box? getCollisionShape(IBlockReader world, EntityManager entities, int x, int y, int z)
     {
         return null;
     }
@@ -129,7 +129,7 @@ internal class BlockButton : Block
         return true;
     }
 
-    public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager entities, int x, int y, int z)
     {
         int meta = iBlockReader.GetBlockMeta(x, y, z);
         int facing = meta & 7;

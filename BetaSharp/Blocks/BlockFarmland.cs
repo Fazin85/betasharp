@@ -15,7 +15,7 @@ internal class BlockFarmland : Block
         setOpacity(255);
     }
 
-    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
+    public override Box? getCollisionShape(IBlockReader world, EntityManager entities, int x, int y, int z)
     {
         return new Box(x + 0, y + 0, z + 0, x + 1, y + 1, z + 1);
     }

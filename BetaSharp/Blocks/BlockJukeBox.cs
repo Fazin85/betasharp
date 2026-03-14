@@ -33,7 +33,7 @@ internal class BlockJukeBox : BlockWithEntity
     {
         if (!world.IsRemote)
         {
-            BlockEntityRecordPlayer? jukebox = (BlockEntityRecordPlayer?)world.Reader.GetBlockEntity(x, y, z);
+            BlockEntityRecordPlayer? jukebox = world.Entities.GetBlockEntity<BlockEntityRecordPlayer>(x, y, z);
             if (jukebox == null)
             {
                 s_logger.LogWarning("Jukebox at {x}, {y}, {z} is missing a block entity", x, y, z);
@@ -50,7 +50,7 @@ internal class BlockJukeBox : BlockWithEntity
     {
         if (!level.IsRemote)
         {
-            BlockEntityRecordPlayer? jukebox = (BlockEntityRecordPlayer?)level.Reader.GetBlockEntity(x, y, z);
+            BlockEntityRecordPlayer? jukebox = level.Entities.GetBlockEntity<BlockEntityRecordPlayer>(x, y, z);
             int recordId = jukebox?.recordId ?? 0;
             if (recordId != 0)
             {

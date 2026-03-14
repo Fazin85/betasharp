@@ -26,17 +26,17 @@ public class BlockRail : Block
 
     public bool isAlwaysStraight() => alwaysStraight;
 
-    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z) => null;
+    public override Box? getCollisionShape(IBlockReader world, EntityManager entities, int x, int y, int z) => null;
 
     public override bool isOpaque() => false;
 
-    public override HitResult raycast(IBlockReader world, int x, int y, int z, Vec3D startPos, Vec3D endPos)
+    public override HitResult raycast(IBlockReader world, EntityManager entities, int x, int y, int z, Vec3D startPos, Vec3D endPos)
     {
-        updateBoundingBox(world, x, y, z);
-        return base.raycast(world, x, y, z, startPos, endPos);
+        updateBoundingBox(world, entities, x, y, z);
+        return base.raycast(world, entities, x, y, z, startPos, endPos);
     }
 
-    public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager entities, int x, int y, int z)
     {
         int meta = iBlockReader.GetBlockMeta(x, y, z);
         if (meta >= 2 && meta <= 5)

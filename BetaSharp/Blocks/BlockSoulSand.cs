@@ -11,7 +11,7 @@ internal class BlockSoulSand : Block
     {
     }
 
-    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
+    public override Box? getCollisionShape(IBlockReader world, EntityManager entities, int x, int y, int z)
     {
         float height = 2.0F / 16.0F;
         return new Box(x, y, z, x + 1, y + 1 - height, z + 1);

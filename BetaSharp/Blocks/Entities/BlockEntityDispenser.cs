@@ -70,7 +70,7 @@ public class BlockEntityDispenser : BlockEntity, IInventory
 
     public bool canPlayerUse(EntityPlayer player)
     {
-        return World.Reader.GetBlockEntity(X, Y, Z) != this ? false : player.getSquaredDistance(X + 0.5D, Y + 0.5D, Z + 0.5D) <= 64.0D;
+        return World.Entities.GetBlockEntity<BlockEntityDispenser>(X, Y, Z) == this && player.getSquaredDistance(X + 0.5D, Y + 0.5D, Z + 0.5D) <= 64.0D;
     }
 
     public ItemStack getItemToDispose()

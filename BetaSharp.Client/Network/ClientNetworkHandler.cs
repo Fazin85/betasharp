@@ -733,11 +733,10 @@ public class ClientNetworkHandler : NetHandler
     {
         if (_game.world.BlockHost.IsPosLoaded(packet.x, packet.y, packet.z))
         {
-            BlockEntity? blockEnt = _game.world.Entities.GetBlockEntity(packet.x, packet.y, packet.z);
-            if (blockEnt is BlockEntitySign)
-            {
-                BlockEntitySign signEntity = (BlockEntitySign)blockEnt;
+            var signEntity = _game.world.Entities.GetBlockEntity<BlockEntitySign>(packet.x, packet.y, packet.z);
 
+            if (signEntity != null)
+            {
                 for (int i = 0; i < 4; ++i)
                 {
                     signEntity.Texts[i] = packet.text[i];
@@ -746,7 +745,6 @@ public class ClientNetworkHandler : NetHandler
                 signEntity.markDirty();
             }
         }
-
     }
 
     public override void onScreenHandlerPropertyUpdate(ScreenHandlerPropertyUpdateS2CPacket packet)

@@ -156,7 +156,7 @@ internal class BlockFurnace : BlockWithEntity
             return true;
         }
 
-        BlockEntityFurnace? furnace = (BlockEntityFurnace?)@event.World.Reader.GetBlockEntity(@event.X, @event.Y, @event.Z);
+        BlockEntityFurnace? furnace = @event.World.Entities.GetBlockEntity<BlockEntityFurnace>(@event.X, @event.Y, @event.Z);
         if (furnace == null)
         {
             return false;
@@ -169,7 +169,7 @@ internal class BlockFurnace : BlockWithEntity
     public static void updateLitState(bool lit, IWorldContext world, int x, int y, int z)
     {
         int meta = world.Reader.GetBlockMeta(x, y, z);
-        BlockEntity? furnace = world.Reader.GetBlockEntity(x, y, z);
+        BlockEntity? furnace = world.Entities.GetBlockEntity<BlockEntity>(x, y, z);
         s_ignoreBlockRemoval.Value = true;
         if (lit)
         {
@@ -195,7 +195,8 @@ internal class BlockFurnace : BlockWithEntity
     {
         if (!s_ignoreBlockRemoval.Value)
         {
-            BlockEntityFurnace? furnace = (BlockEntityFurnace?)@event.World.Reader.GetBlockEntity(@event.X, @event.Y, @event.Z);
+            BlockEntityFurnace? furnace = @event.World.Entities.GetBlockEntity<BlockEntityFurnace>(@event.X, @event.Y, @event.Z);
+
             if (furnace == null)
             {
                 s_logger.LogWarning("BlockEntityFurnace not found at {X}, {Y}, {Z}", @event.X, @event.Y, @event.Z);

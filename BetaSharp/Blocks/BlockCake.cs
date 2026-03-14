@@ -9,7 +9,7 @@ internal class BlockCake : Block
 {
     public BlockCake(int id, int textureId) : base(id, textureId, Material.Cake) => setTickRandomly(true);
 
-    public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager entities, int x, int y, int z)
     {
         int slicesEaten = iBlockReader.GetBlockMeta(x, y, z);
         float edgeInset = 1.0F / 16.0F;
@@ -25,7 +25,7 @@ internal class BlockCake : Block
         setBoundingBox(edgeInset, 0.0F, edgeInset, 1.0F - edgeInset, height, 1.0F - edgeInset);
     }
 
-    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
+    public override Box? getCollisionShape(IBlockReader world, EntityManager entities, int x, int y, int z)
     {
         int slicesEaten = world.GetBlockMeta(x, y, z);
         float edgeInset = 1.0F / 16.0F;
@@ -34,7 +34,7 @@ internal class BlockCake : Block
         return new Box((double)((float)x + minX), (double)y, (double)((float)z + edgeInset), (double)((float)(x + 1) - edgeInset), (double)((float)y + height - edgeInset), (double)((float)(z + 1) - edgeInset));
     }
 
-    public override Box getBoundingBox(IBlockReader world, int x, int y, int z)
+    public override Box getBoundingBox(IBlockReader world, EntityManager entities, int x, int y, int z)
     {
         int slicesEaten = world.GetBlockMeta(x, y, z);
         float edgeInset = 1.0F / 16.0F;

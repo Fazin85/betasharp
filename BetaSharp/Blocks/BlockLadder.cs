@@ -11,7 +11,7 @@ internal class BlockLadder : Block
     {
     }
 
-    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
+    public override Box? getCollisionShape(IBlockReader world, EntityManager entities, int x, int y, int z)
     {
         int meta = world.GetBlockMeta(x, y, z);
         float thickness = 2.0F / 16.0F;
@@ -35,10 +35,10 @@ internal class BlockLadder : Block
             setBoundingBox(0.0F, 0.0F, 0.0F, thickness, 1.0F, 1.0F);
         }
 
-        return base.getCollisionShape(world, x, y, z);
+        return base.getCollisionShape(world, entities, x, y, z);
     }
 
-    public override Box getBoundingBox(IBlockReader world, int x, int y, int z)
+    public override Box getBoundingBox(IBlockReader world, EntityManager entities, int x, int y, int z)
     {
         int meta = world.GetBlockMeta(x, y, z);
         float thickness = 2.0F / 16.0F;
@@ -62,7 +62,7 @@ internal class BlockLadder : Block
             setBoundingBox(0.0F, 0.0F, 0.0F, thickness, 1.0F, 1.0F);
         }
 
-        return base.getBoundingBox(world, x, y, z);
+        return base.getBoundingBox(world, entities, x, y, z);
     }
 
     public override bool isOpaque() => false;

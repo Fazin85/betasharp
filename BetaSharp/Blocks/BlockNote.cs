@@ -19,7 +19,7 @@ internal class BlockNote : BlockWithEntity
         }
 
         bool isPowered = @event.World.Redstone.IsStrongPowered(@event.X, @event.Y, @event.Z);
-        BlockEntityNote? blockEntity = (BlockEntityNote?)@event.World.Entities.GetBlockEntity(@event.X, @event.Y, @event.Z);
+        BlockEntityNote? blockEntity = @event.World.Entities.GetBlockEntity<BlockEntityNote>(@event.X, @event.Y, @event.Z);
         if (blockEntity != null && blockEntity.powered != isPowered)
         {
             if (isPowered)
@@ -38,7 +38,7 @@ internal class BlockNote : BlockWithEntity
             return true;
         }
 
-        BlockEntityNote? blockEntity = (BlockEntityNote?)@event.World.Entities.GetBlockEntity(@event.X, @event.Y, @event.Z);
+        BlockEntityNote? blockEntity = @event.World.Entities.GetBlockEntity<BlockEntityNote>(@event.X, @event.Y, @event.Z);
         if (blockEntity == null)
         {
             return false;
@@ -53,7 +53,7 @@ internal class BlockNote : BlockWithEntity
     {
         if (!@event.World.IsRemote)
         {
-            BlockEntityNote? blockEntity = (BlockEntityNote?)@event.World.Entities.GetBlockEntity(@event.X, @event.Y, @event.Z);
+            BlockEntityNote? blockEntity = @event.World.Entities.GetBlockEntity<BlockEntityNote>(@event.X, @event.Y, @event.Z);
             blockEntity?.playNote(@event.World, @event.X, @event.Y, @event.Z);
         }
     }

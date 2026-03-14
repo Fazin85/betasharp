@@ -74,7 +74,7 @@ internal class ItemBlock : Item
         }
 
         Block block = Block.Blocks[blockID];
-        Box? collisionBox = block.getCollisionShape(world.Reader, x, y, z);
+        Box? collisionBox = block.getCollisionShape(world.Reader, world.Entities, x, y, z);
         if (collisionBox is { } box)
         {
             List<Entity> entitiesInBox = world.Entities.CollectEntitiesOfType<Entity>(box);

@@ -1,6 +1,7 @@
 using BetaSharp.Entities;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
+using BetaSharp.Worlds.Core.Systems;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Blocks.Entities;
@@ -34,7 +35,7 @@ public class BlockEntityMobSpawner : BlockEntity
         return World.Entities.GetClosestPlayer(X + 0.5D, Y + 0.5D, Z + 0.5D, 16.0D) != null;
     }
 
-    public override void tick()
+    public override void tick(EntityManager entities)
     {
         LastRotation = Rotation;
         if (IsPlayerInRange())
@@ -106,7 +107,7 @@ public class BlockEntityMobSpawner : BlockEntity
                 }
             }
 
-            base.tick();
+            base.tick(entities);
         }
     }
 

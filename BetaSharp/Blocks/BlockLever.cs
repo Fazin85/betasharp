@@ -11,7 +11,7 @@ internal class BlockLever : Block
     {
     }
 
-    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z) => null;
+    public override Box? getCollisionShape(IBlockReader world, EntityManager entities, int x, int y, int z) => null;
 
     public override bool isOpaque() => false;
 
@@ -138,7 +138,7 @@ internal class BlockLever : Block
         return true;
     }
 
-    public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager entities, int x, int y, int z)
     {
         int meta = iBlockReader.GetBlockMeta(x, y, z) & 7;
         float width = 3.0F / 16.0F;

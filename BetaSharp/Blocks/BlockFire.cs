@@ -32,7 +32,7 @@ internal class BlockFire : Block
         _spreadChances[block] = spreadChance;
     }
 
-    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
+    public override Box? getCollisionShape(IBlockReader world, EntityManager entities, int x, int y, int z)
     {
         return null;
     }

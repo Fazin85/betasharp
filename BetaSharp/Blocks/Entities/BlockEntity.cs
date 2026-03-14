@@ -48,7 +48,7 @@ public class BlockEntity
         nbt.SetInteger("z", Z);
     }
 
-    public virtual void tick()
+    public virtual void tick(EntityManager entities)
     {
     }
 

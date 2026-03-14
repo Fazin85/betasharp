@@ -22,15 +22,15 @@ internal class BlockSign : BlockWithEntity
         setBoundingBox(0.5F - width, 0.0F, 0.5F - width, 0.5F + width, height, 0.5F + width);
     }
 
-    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z) => null;
+    public override Box? getCollisionShape(IBlockReader world, EntityManager entities, int x, int y, int z) => null;
 
-    public override Box getBoundingBox(IBlockReader world, int x, int y, int z)
+    public override Box getBoundingBox(IBlockReader world, EntityManager entities, int x, int y, int z)
     {
-        updateBoundingBox(world, x, y, z);
-        return base.getBoundingBox(world, x, y, z);
+        updateBoundingBox(world, entities, x, y, z);
+        return base.getBoundingBox(world, entities, x, y, z);
     }
 
-    public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager entities, int x, int y, int z)
     {
         if (!_standing)
         {

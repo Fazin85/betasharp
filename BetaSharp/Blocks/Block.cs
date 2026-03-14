@@ -287,21 +287,21 @@ public class Block
         return textureId;
     }
 
-    public virtual Box getBoundingBox(IBlockReader world, int x, int y, int z)
+    public virtual Box getBoundingBox(IBlockReader world, EntityManager entities, int x, int y, int z)
     {
         return BoundingBox.Offset(x, y, z);
     }
 
-    public virtual void addIntersectingBoundingBox(IBlockReader world, int x, int y, int z, Box box, List<Box> boxes)
+    public virtual void addIntersectingBoundingBox(IBlockReader world,EntityManager entities, int x, int y, int z, Box box, List<Box> boxes)
     {
-        Box? collisionBox = getCollisionShape(world, x, y, z);
+        Box? collisionBox = getCollisionShape(world, entities, x, y, z);
         if (collisionBox != null && box.Intersects(collisionBox.Value))
         {
             boxes.Add(collisionBox.Value);
         }
     }
 
-    public virtual Box? getCollisionShape(IBlockReader world, int x, int y, int z)
+    public virtual Box? getCollisionShape(IBlockReader world, EntityManager entities, int x, int y, int z)
     {
         return BoundingBox.Offset(x, y, z);
     }
@@ -407,9 +407,9 @@ public class Block
         return resistance / 5.0F;
     }
 
-    public virtual HitResult raycast(IBlockReader world, int x, int y, int z, Vec3D startPos, Vec3D endPos)
+    public virtual HitResult raycast(IBlockReader world, EntityManager entities, int x, int y, int z, Vec3D startPos, Vec3D endPos)
     {
-        updateBoundingBox(world, x, y, z);
+        updateBoundingBox(world, entities, x, y, z);
         Vec3D pos = new(x, y, z);
         HitResult res = BoundingBox.Raycast(startPos - pos, endPos - pos);
         if (res.Type == HitResultType.MISS)
@@ -454,7 +454,7 @@ public class Block
         return Vec3D.Zero;
     }
 
-    public virtual void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
+    public virtual void updateBoundingBox(IBlockReader iBlockReader, EntityManager entities, int x, int y, int z)
     {
     }
 

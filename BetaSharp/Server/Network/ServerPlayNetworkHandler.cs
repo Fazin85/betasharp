@@ -651,7 +651,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         ServerWorld var2 = server.getWorld(player.dimensionId);
         if (var2.Reader.IsPosLoaded(packet.x, packet.y, packet.z))
         {
-            BlockEntity var3 = var2.Reader.GetBlockEntity(packet.x, packet.y, packet.z);
+            BlockEntity var3 = var2.Entities.GetBlockEntity<BlockEntitySign>(packet.x, packet.y, packet.z);
             if (var3 is BlockEntitySign var4)
             {
                 if (!var4.IsEditable())

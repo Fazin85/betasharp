@@ -15,7 +15,7 @@ internal class BlockSnow : Block
         setTickRandomly(true);
     }
 
-    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
+    public override Box? getCollisionShape(IBlockReader world, EntityManager entities, int x, int y, int z)
     {
         int meta = world.GetBlockMeta(x, y, z) & 7;
         return meta >= 3 ? new Box(x + BoundingBox.MinX, y + BoundingBox.MinY, z + BoundingBox.MinZ, x + BoundingBox.MaxX, y + 0.5F, z + BoundingBox.MaxZ) : null;
@@ -25,7 +25,7 @@ internal class BlockSnow : Block
 
     public override bool isFullCube() => false;
 
-    public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager entities, int x, int y, int z)
     {
         int meta = iBlockReader.GetBlockMeta(x, y, z) & 7;
         float height = 2 * (1 + meta) / 16.0F;

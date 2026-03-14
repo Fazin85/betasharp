@@ -68,7 +68,7 @@ internal class ItemSign : Item
                 }
 
                 --itemStack.count;
-                BlockEntitySign? blockEntitySign = (BlockEntitySign?)world.Reader.GetBlockEntity(x, y, z);
+                BlockEntitySign? blockEntitySign = world.Entities.GetBlockEntity<BlockEntitySign>(x, y, z);
                 if (blockEntitySign != null)
                 {
                     entityPlayer.openEditSignScreen(blockEntitySign);

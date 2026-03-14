@@ -58,53 +58,53 @@ public class BlockPistonExtension : Block
 
     public override int getDroppedItemCount() => 0;
 
-    public override void addIntersectingBoundingBox(IBlockReader reader, int x, int y, int z, Box box, List<Box> boxes)
+    public override void addIntersectingBoundingBox(IBlockReader reader, EntityManager entities, int x, int y, int z, Box box, List<Box> boxes)
     {
         int var7 = reader.GetBlockMeta(x, y, z);
         switch (getFacing(var7))
         {
             case 0:
                 setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 0.25F, 1.0F);
-                base.addIntersectingBoundingBox(reader, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(reader, entities, x, y, z, box, boxes);
                 setBoundingBox(6.0F / 16.0F, 0.25F, 6.0F / 16.0F, 10.0F / 16.0F, 1.0F, 10.0F / 16.0F);
-                base.addIntersectingBoundingBox(reader, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(reader, entities, x, y, z, box, boxes);
                 break;
             case 1:
                 setBoundingBox(0.0F, 12.0F / 16.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-                base.addIntersectingBoundingBox(reader, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(reader, entities, x, y, z, box, boxes);
                 setBoundingBox(6.0F / 16.0F, 0.0F, 6.0F / 16.0F, 10.0F / 16.0F, 12.0F / 16.0F, 10.0F / 16.0F);
-                base.addIntersectingBoundingBox(reader, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(reader, entities, x, y, z, box, boxes);
                 break;
             case 2:
                 setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.25F);
-                base.addIntersectingBoundingBox(reader, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(reader, entities, x, y, z, box, boxes);
                 setBoundingBox(0.25F, 6.0F / 16.0F, 0.25F, 12.0F / 16.0F, 10.0F / 16.0F, 1.0F);
-                base.addIntersectingBoundingBox(reader, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(reader, entities, x, y, z, box, boxes);
                 break;
             case 3:
                 setBoundingBox(0.0F, 0.0F, 12.0F / 16.0F, 1.0F, 1.0F, 1.0F);
-                base.addIntersectingBoundingBox(reader, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(reader, entities, x, y, z, box, boxes);
                 setBoundingBox(0.25F, 6.0F / 16.0F, 0.0F, 12.0F / 16.0F, 10.0F / 16.0F, 12.0F / 16.0F);
-                base.addIntersectingBoundingBox(reader, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(reader, entities, x, y, z, box, boxes);
                 break;
             case 4:
                 setBoundingBox(0.0F, 0.0F, 0.0F, 0.25F, 1.0F, 1.0F);
-                base.addIntersectingBoundingBox(reader, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(reader, entities, x, y, z, box, boxes);
                 setBoundingBox(6.0F / 16.0F, 0.25F, 0.25F, 10.0F / 16.0F, 12.0F / 16.0F, 1.0F);
-                base.addIntersectingBoundingBox(reader, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(reader, entities, x, y, z, box, boxes);
                 break;
             case 5:
                 setBoundingBox(12.0F / 16.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-                base.addIntersectingBoundingBox(reader, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(reader, entities, x, y, z, box, boxes);
                 setBoundingBox(0.0F, 6.0F / 16.0F, 0.25F, 12.0F / 16.0F, 10.0F / 16.0F, 12.0F / 16.0F);
-                base.addIntersectingBoundingBox(reader, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(reader, entities, x, y, z, box, boxes);
                 break;
         }
 
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
     }
 
-    public override void updateBoundingBox(IBlockReader reader, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader reader, EntityManager entities, int x, int y, int z)
     {
         int var5 = reader.GetBlockMeta(x, y, z);
         switch (getFacing(var5))

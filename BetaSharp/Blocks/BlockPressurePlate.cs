@@ -20,7 +20,7 @@ internal class BlockPressurePlate : Block
 
     public override int getTickRate() => 20;
 
-    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z) => null;
+    public override Box? getCollisionShape(IBlockReader world, EntityManager entities, int x, int y, int z) => null;
 
     public override bool isOpaque() => false;
 
@@ -131,7 +131,7 @@ internal class BlockPressurePlate : Block
         base.onBreak(@event);
     }
 
-    public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager entities, int x, int y, int z)
     {
         bool isPressed = iBlockReader.GetBlockMeta(x, y, z) == 1;
         float edgeInset = 1.0F / 16.0F;
