@@ -15,51 +15,52 @@ public class CreeperEntityRenderer : LivingEntityRenderer
     {
     }
 
-    protected void updateCreeperScale(EntityCreeper var1, float var2)
+    protected void updateCreeperScale(EntityCreeper ent, float partialTick)
     {
-        float var4 = var1.setCreeperFlashTime(var2);
-        float var5 = 1.0F + MathHelper.Sin(var4 * 100.0F) * var4 * 0.01F;
-        if (var4 < 0.0F)
+        float progress = ent.setCreeperFlashTime(partialTick);
+        float pulse = 1.0F + MathHelper.Sin(progress * 100.0F) * progress * 0.01F;
+
+        if (progress < 0.0F)
         {
-            var4 = 0.0F;
+            progress = 0.0F;
         }
 
-        if (var4 > 1.0F)
+        if (progress > 1.0F)
         {
-            var4 = 1.0F;
+            progress = 1.0F;
         }
 
-        var4 *= var4;
-        var4 *= var4;
-        float var6 = (1.0F + var4 * 0.4F) * var5;
-        float var7 = (1.0F + var4 * 0.1F) / var5;
-        GLManager.GL.Scale(var6, var7, var6);
+        progress *= progress;
+        progress *= progress;
+        float scaleX = (1.0F + progress * 0.4F) * pulse;
+        float scaleY = (1.0F + progress * 0.1F) / pulse;
+        GLManager.GL.Scale(scaleX, scaleY, scaleX);
     }
 
-    protected int updateCreeperColorMultiplier(EntityCreeper var1, float var2, float var3)
+    protected int updateCreeperColorMultiplier(EntityCreeper ent, float var2, float partialTick)
     {
-        float var5 = var1.setCreeperFlashTime(var3);
-        if ((int)(var5 * 10.0F) % 2 == 0)
+        float progress = ent.setCreeperFlashTime(partialTick);
+        if ((int)(progress * 10.0F) % 2 == 0)
         {
             return 0;
         }
         else
         {
-            int var6 = (int)(var5 * 0.2F * 255.0F);
-            if (var6 < 0)
+            int a = (int)(progress * 0.2F * 255.0F);
+            if (a < 0)
             {
-                var6 = 0;
+                a = 0;
             }
 
-            if (var6 > 255)
+            if (a > 255)
             {
-                var6 = 255;
+                a = 255;
             }
 
-            int var7 = 255;
-            int var8 = 255;
-            int var9 = 255;
-            return var6 << 24 | var7 << 16 | var8 << 8 | var9;
+            int r = 255;
+            int g = 255;
+            int b = 255;
+            return a << 24 | r << 16 | g << 8 | b;
         }
     }
 
