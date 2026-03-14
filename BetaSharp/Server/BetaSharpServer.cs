@@ -6,13 +6,14 @@ using BetaSharp.Server.Internal;
 using BetaSharp.Server.Network;
 using BetaSharp.Server.Worlds;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
 using BetaSharp.Worlds.Storage;
 using java.lang;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Maths;
-using Exception = System.Exception;
+using BetaSharp.Worlds;
+using ServerWorld = BetaSharp.Worlds.Core.ServerWorld;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Server;
 
@@ -44,6 +45,11 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
     private int _ticksThisSecond;
     private float _currentTps;
 
+    // Accumulated tick timing, used to compute mean tick time for diagnostics.
+    private long _tickTimeAccumulated;
+    private int _tickTimeCount;
+    private float _meanTickTimeMs;
+
     private volatile bool _isPaused;
 
     public float Tps
@@ -53,6 +59,17 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
             lock (_tpsLock)
             {
                 return _currentTps;
+            }
+        }
+    }
+
+    public float MeanTickTimeMs
+    {
+        get
+        {
+            lock (_tpsLock)
+            {
+                return _meanTickTimeMs;
             }
         }
     }
@@ -106,7 +123,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
         string optionsString = config.GetLevelOptions("");
 
         _logger.LogInformation($"Preparing level \"{worldName}\"");
-        loadWorld(worldName, new WorldSettings(seed, worldType, optionsString));
+        loadWorld(worldName, seed, worldType, optionsString);
 
         if (logHelp)
         {
@@ -116,7 +133,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
         return true;
     }
 
-    private void loadWorld(string worldDir, WorldSettings settings)
+    private void loadWorld(string worldDir, long seed, WorldType worldType, string generatorOptions)
     {
         worlds = new ServerWorld[2];
         RegionWorldStorage worldStorage = new(getFile(".").getAbsolutePath(), worldDir, true);
@@ -125,15 +142,15 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
         {
             if (i == 0)
             {
-                worlds[i] = new ServerWorld(this, worldStorage, worldDir, i == 0 ? 0 : -1, settings);
+                worlds[i] = new ServerWorld(this, worldStorage, worldDir, i == 0 ? 0 : -1, new WorldSettings(seed, worldType, generatorOptions), null);
             }
             else
             {
-                worlds[i] = new ReadOnlyServerWorld(this, worldStorage, worldDir, i == 0 ? 0 : -1, settings, worlds[0]);
+                worlds[i] = new ReadOnlyServerWorld(this, worldStorage, worldDir, i == 0 ? 0 : -1, new WorldSettings(seed, worldType, generatorOptions), worlds[0]);
             }
 
-            worlds[i].addWorldAccess(new ServerWorldEventListener(this, worlds[i]));
-            worlds[i].difficulty = config.GetSpawnMonsters(true) ? 1 : 0;
+            worlds[i].EventListeners.Add(new ServerWorldEventListener(this, worlds[i]));
+            worlds[i].SetDifficulty(config.GetSpawnMonsters(true) ? 1 : 0);
             worlds[i].allowSpawning(config.GetSpawnMonsters(true), spawnAnimals);
             playerManager.saveAllPlayers(worlds);
         }
@@ -151,7 +168,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
             if (i == 0)
             {
                 ServerWorld world = worlds[i];
-                Vec3i spawnPos = world.getSpawnPos();
+                Vec3i spawnPos = world.Properties.GetSpawnPos();
 
                 var chunkList = new List<Vector2D<int>>();
                 for (int x = -startRegionSize; x <= startRegionSize; x += 16)
@@ -168,7 +185,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
 
                 // Phase 1: Parallel terrain generation
                 var sw1 = Stopwatch.StartNew();
-                var threadLocalGen = new ThreadLocal<ChunkSource>(world.chunkCache.CreateParallelGenerator, trackAllValues: false);
+                var threadLocalGen = new ThreadLocal<IChunkSource>(world.ChunkCache.CreateParallelGenerator, trackAllValues: false);
                 Parallel.For(0, totalChunks, idx =>
                 {
                     if (!running) return;
@@ -179,20 +196,20 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                 sw1.Stop();
                 _logger.LogInformation($"  Level {i} terrain: {sw1.ElapsedMilliseconds}ms");
 
-                // Phase 2: Sequential insert + decoration
+                // Phase 2a: Insert all chunks first (required so decoration can write to neighbors without hitting EmptyChunk)
                 var sw2 = Stopwatch.StartNew();
                 for (int idx = 0; idx < totalChunks && running; idx++)
                 {
                     long currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     if (currentTime > lastTimeLogged + 1000L)
                     {
-                        logProgress("Preparing spawn area", (idx + 1) * 100 / totalChunks);
+                        logProgress("Preparing spawn area", (idx + 1) * 50 / totalChunks);
                         lastTimeLogged = currentTime;
                     }
 
                     Vector2D<int> chunkPos = chunkList[idx];
-                    world.chunkCache.InsertPreGeneratedChunk(chunkPos.X, chunkPos.Y, preGenerated[idx]);
-                    world.chunkCache.DecorateIfReady(chunkPos.X, chunkPos.Y);
+                    world.ChunkCache.InsertPreGeneratedChunk(chunkPos.X, chunkPos.Y, preGenerated[idx]);
+                    world.ChunkCache.DecorateIfReady(chunkPos.X, chunkPos.Y);
                 }
                 sw2.Stop();
                 _logger.LogInformation($"  Level {i} decoration: {sw2.ElapsedMilliseconds}ms");
@@ -200,7 +217,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                 // Phase 3: Batch lighting drain — all neighbors already loaded so sky-light
                 // propagates without border re-queuing.
                 var sw3 = Stopwatch.StartNew();
-                while (world.doLightingUpdates() && running) { }
+                while (world.Lighting.DoLightingUpdates() && running) { }
                 sw3.Stop();
                 _logger.LogInformation($"  Level {i} lighting: {sw3.ElapsedMilliseconds}ms");
             }
@@ -228,7 +245,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
 
         foreach (ServerWorld world in worlds)
         {
-            world.saveWithLoadingDisplay(true, null);
+            world.SaveWithLoadingDisplay(true, null);
             world.forceSave();
         }
     }
@@ -301,10 +318,9 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                         continue;
                     }
 
-                    if (worlds[0].canSkipNight())
+                    if (worlds[0].Entities.AreAllPlayersAsleep())
                     {
-                        tick();
-                        _ticksThisSecond++;
+                        TickWithProfiling();
                         accumulatedTime = 0L;
                     }
                     else
@@ -312,8 +328,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                         while (accumulatedTime > 50L)
                         {
                             accumulatedTime -= 50L;
-                            tick();
-                            _ticksThisSecond++;
+                            TickWithProfiling();
                         }
                     }
 
@@ -325,6 +340,18 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                         lock (_tpsLock)
                         {
                             _currentTps = _ticksThisSecond * 1000.0f / tpsElapsed;
+                            if (_tickTimeCount > 0)
+                            {
+                                // Convert Stopwatch ticks to milliseconds and average over the samples.
+                                _meanTickTimeMs = (float)(_tickTimeAccumulated * 1000.0 / Stopwatch.Frequency / _tickTimeCount);
+                            }
+                            else
+                            {
+                                _meanTickTimeMs = 0.0f;
+                            }
+
+                            _tickTimeAccumulated = 0;
+                            _tickTimeCount = 0;
                         }
                         _ticksThisSecond = 0;
                         _lastTpsTime = tpsNow;
@@ -350,7 +377,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                 }
             }
         }
-        catch (Exception ex)
+        catch (System.Exception ex)
         {
             _logger.LogError(ex, "Exception");
 
@@ -389,6 +416,21 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
         }
     }
 
+    private void TickWithProfiling()
+    {
+        long startTicks = Stopwatch.GetTimestamp();
+        tick();
+        long elapsedTicks = Stopwatch.GetTimestamp() - startTicks;
+
+        lock (_tpsLock)
+        {
+            _tickTimeAccumulated += elapsedTicks;
+            _tickTimeCount++;
+        }
+
+        _ticksThisSecond++;
+    }
+
     private void tick()
     {
         // Snapshot keys to allow safe mutation during iteration.
@@ -413,7 +455,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                 ServerWorld world = worlds[i];
                 if (ticks % 20 == 0)
                 {
-                    playerManager.sendToDimension(WorldTimeUpdateS2CPacket.Get(world.getTime()), world.dimension.Id);
+                    playerManager.sendToDimension(WorldTimeUpdateS2CPacket.Get(world.GetTime()), world.dimension.Id);
                 }
 
                 world.Tick();
@@ -424,11 +466,11 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                 // >2-second stalls and "Can't keep up" spam.  Any remaining work
                 // carries over and is processed across subsequent ticks.
                 var lightSw = Stopwatch.StartNew();
-                while (lightSw.ElapsedMilliseconds < 15L && world.doLightingUpdates())
+                while (lightSw.ElapsedMilliseconds < 15L && world.Lighting.DoLightingUpdates())
                 {
                 }
 
-                world.tickEntities();
+                world.Entities.TickEntities();
             }
         }
 
@@ -444,7 +486,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
         {
             runPendingCommands();
         }
-        catch (Exception e)
+        catch (System.Exception e)
         {
             _logger.LogWarning($"Unexpected exception while parsing console command: {e}");
         }

@@ -1,6 +1,8 @@
 using System.Net.Sockets;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
+using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
@@ -13,7 +15,7 @@ public class ChunkDeltaUpdateS2CPacket() : Packet(PacketId.ChunkDeltaUpdateS2C)
     public byte[] blockMetadata;
     public int _size;
 
-    public static ChunkDeltaUpdateS2CPacket Get(int x, int z, short[] positions, int size, World world)
+    public static ChunkDeltaUpdateS2CPacket Get(int x, int z, short[] positions, int size, IWorldContext world)
     {
         var p = Get<ChunkDeltaUpdateS2CPacket>(PacketId.ChunkDeltaUpdateS2C);
         p.x = x;
@@ -22,7 +24,7 @@ public class ChunkDeltaUpdateS2CPacket() : Packet(PacketId.ChunkDeltaUpdateS2C)
         p.positions = new short[size];
         p.blockRawIds = new byte[size];
         p.blockMetadata = new byte[size];
-        Chunk chunk = world.GetChunk(x, z);
+        Chunk chunk = world.ChunkHost.GetChunk(x, z);
 
         for (int i = 0; i < size; i++)
         {
@@ -37,7 +39,7 @@ public class ChunkDeltaUpdateS2CPacket() : Packet(PacketId.ChunkDeltaUpdateS2C)
         return p;
     }
 
-    public override void Read(NetworkStream stream)
+    public override void Read(Stream stream)
     {
         x = stream.ReadInt();
         z = stream.ReadInt();
@@ -56,7 +58,7 @@ public class ChunkDeltaUpdateS2CPacket() : Packet(PacketId.ChunkDeltaUpdateS2C)
         stream.ReadExactly(blockMetadata);
     }
 
-    public override void Write(NetworkStream stream)
+    public override void Write(Stream stream)
     {
         stream.WriteInt(x);
         stream.WriteInt(z);

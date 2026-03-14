@@ -1,19 +1,19 @@
 using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Client.Entities.FX;
 
 public class EntitySmokeFX : EntityFX
 {
-    readonly float baseScale;
+    private readonly float baseScale;
 
 
-    public EntitySmokeFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) : this(world, x, y, z, velocityX, velocityY, velocityZ, 1.0F)
+    public EntitySmokeFX(IWorldContext world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) : this(world, x, y, z, velocityX, velocityY, velocityZ, 1.0F)
     {
     }
 
-    public EntitySmokeFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, float particleScale) : base(world, x, y, z, 0.0D, 0.0D, 0.0D)
+    public EntitySmokeFX(IWorldContext world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, float particleScale) : base(world, x, y, z, 0.0D, 0.0D, 0.0D)
     {
         base.velocityX *= (double)0.1F;
         base.velocityY *= (double)0.1F;

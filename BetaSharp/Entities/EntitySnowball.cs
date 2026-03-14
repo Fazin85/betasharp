@@ -2,25 +2,48 @@ using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Entities;
 
 public class EntitySnowball : Entity
 {
+    private readonly EntityLiving thrower;
+    private bool inGroundSnowball;
+    private int inTileSnowball;
+    public int shakeSnowball;
+    private int ticksInAirSnowball;
+    private int ticksInGroundSnowball;
     private int xTileSnowball = -1;
     private int yTileSnowball = -1;
     private int zTileSnowball = -1;
-    private int inTileSnowball;
-    private bool inGroundSnowball;
-    public int shakeSnowball;
-    private EntityLiving thrower;
-    private int ticksInGroundSnowball;
-    private int ticksInAirSnowball;
 
-    public EntitySnowball(World world) : base(world)
+    public EntitySnowball(IWorldContext world) : base(world) => setBoundingBoxSpacing(0.25F, 0.25F);
+
+    public EntitySnowball(IWorldContext world, EntityLiving var2) : base(world)
     {
+        thrower = var2;
         setBoundingBoxSpacing(0.25F, 0.25F);
+        setPositionAndAnglesKeepPrevAngles(var2.x, var2.y + var2.getEyeHeight(), var2.z, var2.yaw, var2.pitch);
+        x -= MathHelper.Cos(yaw / 180.0F * (float)Math.PI) * 0.16F;
+        y -= 0.1F;
+        z -= MathHelper.Sin(yaw / 180.0F * (float)Math.PI) * 0.16F;
+        setPosition(x, y, z);
+        standingEyeHeight = 0.0F;
+        float var3 = 0.4F;
+        velocityX = -MathHelper.Sin(yaw / 180.0F * (float)Math.PI) * MathHelper.Cos(pitch / 180.0F * (float)Math.PI) * var3;
+        velocityZ = MathHelper.Cos(yaw / 180.0F * (float)Math.PI) * MathHelper.Cos(pitch / 180.0F * (float)Math.PI) * var3;
+        velocityY = -MathHelper.Sin(pitch / 180.0F * (float)Math.PI) * var3;
+        setSnowballHeading(velocityX, velocityY, velocityZ, 1.5F, 1.0F);
+    }
+
+    public EntitySnowball(IWorldContext world, double x, double y, double z) : base(world)
+    {
+        ticksInGroundSnowball = 0;
+        setBoundingBoxSpacing(0.25F, 0.25F);
+        setPosition(x, y, z);
+        standingEyeHeight = 0.0F;
     }
 
 
@@ -31,49 +54,24 @@ public class EntitySnowball : Entity
         return var1 < var3 * var3;
     }
 
-    public EntitySnowball(World world, EntityLiving var2) : base(world)
-    {
-        thrower = var2;
-        setBoundingBoxSpacing(0.25F, 0.25F);
-        setPositionAndAnglesKeepPrevAngles(var2.x, var2.y + (double)var2.getEyeHeight(), var2.z, var2.yaw, var2.pitch);
-        x -= (double)(MathHelper.Cos(yaw / 180.0F * (float)System.Math.PI) * 0.16F);
-        y -= (double)0.1F;
-        z -= (double)(MathHelper.Sin(yaw / 180.0F * (float)System.Math.PI) * 0.16F);
-        setPosition(x, y, z);
-        standingEyeHeight = 0.0F;
-        float var3 = 0.4F;
-        velocityX = (double)(-MathHelper.Sin(yaw / 180.0F * (float)System.Math.PI) * MathHelper.Cos(pitch / 180.0F * (float)System.Math.PI) * var3);
-        velocityZ = (double)(MathHelper.Cos(yaw / 180.0F * (float)System.Math.PI) * MathHelper.Cos(pitch / 180.0F * (float)System.Math.PI) * var3);
-        velocityY = (double)(-MathHelper.Sin(pitch / 180.0F * (float)System.Math.PI) * var3);
-        setSnowballHeading(velocityX, velocityY, velocityZ, 1.5F, 1.0F);
-    }
-
-    public EntitySnowball(World world, double x, double y, double z) : base(world)
-    {
-        ticksInGroundSnowball = 0;
-        setBoundingBoxSpacing(0.25F, 0.25F);
-        setPosition(x, y, z);
-        standingEyeHeight = 0.0F;
-    }
-
     public void setSnowballHeading(double var1, double var3, double var5, float var7, float var8)
     {
         float var9 = MathHelper.Sqrt(var1 * var1 + var3 * var3 + var5 * var5);
-        var1 /= (double)var9;
-        var3 /= (double)var9;
-        var5 /= (double)var9;
-        var1 += random.NextGaussian() * (double)0.0075F * (double)var8;
-        var3 += random.NextGaussian() * (double)0.0075F * (double)var8;
-        var5 += random.NextGaussian() * (double)0.0075F * (double)var8;
-        var1 *= (double)var7;
-        var3 *= (double)var7;
-        var5 *= (double)var7;
+        var1 /= var9;
+        var3 /= var9;
+        var5 /= var9;
+        var1 += random.NextGaussian() * 0.0075F * var8;
+        var3 += random.NextGaussian() * 0.0075F * var8;
+        var5 += random.NextGaussian() * 0.0075F * var8;
+        var1 *= var7;
+        var3 *= var7;
+        var5 *= var7;
         velocityX = var1;
         velocityY = var3;
         velocityZ = var5;
         float var10 = MathHelper.Sqrt(var1 * var1 + var5 * var5);
-        prevYaw = yaw = (float)(System.Math.Atan2(var1, var5) * 180.0D / (double)((float)System.Math.PI));
-        prevPitch = pitch = (float)(System.Math.Atan2(var3, (double)var10) * 180.0D / (double)((float)System.Math.PI));
+        prevYaw = yaw = (float)(Math.Atan2(var1, var5) * 180.0D / (float)Math.PI);
+        prevPitch = pitch = (float)(Math.Atan2(var3, var10) * 180.0D / (float)Math.PI);
         ticksInGroundSnowball = 0;
     }
 
@@ -85,10 +83,9 @@ public class EntitySnowball : Entity
         if (prevPitch == 0.0F && prevYaw == 0.0F)
         {
             float var7 = MathHelper.Sqrt(var1 * var1 + var5 * var5);
-            prevYaw = yaw = (float)(System.Math.Atan2(var1, var5) * 180.0D / (double)((float)System.Math.PI));
-            prevPitch = pitch = (float)(System.Math.Atan2(var3, (double)var7) * 180.0D / (double)((float)System.Math.PI));
+            prevYaw = yaw = (float)(Math.Atan2(var1, var5) * 180.0D / (float)Math.PI);
+            prevPitch = pitch = (float)(Math.Atan2(var3, var7) * 180.0D / (float)Math.PI);
         }
-
     }
 
     public override void tick()
@@ -104,7 +101,7 @@ public class EntitySnowball : Entity
 
         if (inGroundSnowball)
         {
-            int var1 = world.getBlockId(xTileSnowball, yTileSnowball, zTileSnowball);
+            int var1 = world.Reader.GetBlockId(xTileSnowball, yTileSnowball, zTileSnowball);
             if (var1 == inTileSnowball)
             {
                 ++ticksInGroundSnowball;
@@ -117,9 +114,9 @@ public class EntitySnowball : Entity
             }
 
             inGroundSnowball = false;
-            velocityX *= (double)(random.NextFloat() * 0.2F);
-            velocityY *= (double)(random.NextFloat() * 0.2F);
-            velocityZ *= (double)(random.NextFloat() * 0.2F);
+            velocityX *= random.NextFloat() * 0.2F;
+            velocityY *= random.NextFloat() * 0.2F;
+            velocityZ *= random.NextFloat() * 0.2F;
             ticksInGroundSnowball = 0;
             ticksInAirSnowball = 0;
         }
@@ -128,9 +125,9 @@ public class EntitySnowball : Entity
             ++ticksInAirSnowball;
         }
 
-        Vec3D var15 = new Vec3D(x, y, z);
-        Vec3D var2 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
-        HitResult var3 = world.raycast(var15, var2);
+        Vec3D var15 = new(x, y, z);
+        Vec3D var2 = new(x + velocityX, y + velocityY, z + velocityZ);
+        HitResult var3 = world.Reader.Raycast(var15, var2);
         var15 = new Vec3D(x, y, z);
         var2 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
         if (var3.Type != HitResultType.MISS)
@@ -138,10 +135,10 @@ public class EntitySnowball : Entity
             var2 = new Vec3D(var3.Pos.x, var3.Pos.y, var3.Pos.z);
         }
 
-        if (!world.isRemote)
+        if (!world.IsRemote)
         {
             Entity var4 = null;
-            var var5 = world.getEntities(this, boundingBox.Stretch(velocityX, velocityY, velocityZ).Expand(1.0D, 1.0D, 1.0D));
+            var var5 = world.Entities.GetEntities(this, boundingBox.Stretch(velocityX, velocityY, velocityZ).Expand(1.0D, 1.0D, 1.0D));
             double var6 = 0.0D;
 
             for (int var8 = 0; var8 < var5.Count; ++var8)
@@ -150,7 +147,7 @@ public class EntitySnowball : Entity
                 if (var9.isCollidable() && (var9 != thrower || ticksInAirSnowball >= 5))
                 {
                     float var10 = 0.3F;
-                    Box var11 = var9.boundingBox.Expand((double)var10, (double)var10, (double)var10);
+                    Box var11 = var9.boundingBox.Expand(var10, var10, var10);
                     HitResult var12 = var11.Raycast(var15, var2);
                     if (var12.Type != HitResultType.MISS)
                     {
@@ -178,7 +175,7 @@ public class EntitySnowball : Entity
 
             for (int var16 = 0; var16 < 8; ++var16)
             {
-                world.addParticle("snowballpoof", x, y, z, 0.0D, 0.0D, 0.0D);
+                world.Broadcaster.AddParticle("snowballpoof", x, y, z, 0.0D, 0.0D, 0.0D);
             }
 
             markDead();
@@ -188,9 +185,9 @@ public class EntitySnowball : Entity
         y += velocityY;
         z += velocityZ;
         float var17 = MathHelper.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
-        yaw = (float)(System.Math.Atan2(velocityX, velocityZ) * 180.0D / (double)((float)System.Math.PI));
+        yaw = (float)(Math.Atan2(velocityX, velocityZ) * 180.0D / (float)Math.PI);
 
-        for (pitch = (float)(System.Math.Atan2(velocityY, (double)var17) * 180.0D / (double)((float)System.Math.PI)); pitch - prevPitch < -180.0F; prevPitch -= 360.0F)
+        for (pitch = (float)(Math.Atan2(velocityY, var17) * 180.0D / (float)Math.PI); pitch - prevPitch < -180.0F; prevPitch -= 360.0F)
         {
         }
 
@@ -218,16 +215,16 @@ public class EntitySnowball : Entity
             for (int var7 = 0; var7 < 4; ++var7)
             {
                 float var20 = 0.25F;
-                world.addParticle("bubble", x - velocityX * (double)var20, y - velocityY * (double)var20, z - velocityZ * (double)var20, velocityX, velocityY, velocityZ);
+                world.Broadcaster.AddParticle("bubble", x - velocityX * var20, y - velocityY * var20, z - velocityZ * var20, velocityX, velocityY, velocityZ);
             }
 
             var18 = 0.8F;
         }
 
-        velocityX *= (double)var18;
-        velocityY *= (double)var18;
-        velocityZ *= (double)var18;
-        velocityY -= (double)var19;
+        velocityX *= var18;
+        velocityY *= var18;
+        velocityZ *= var18;
+        velocityY -= var19;
         setPosition(x, y, z);
     }
 
@@ -255,15 +252,11 @@ public class EntitySnowball : Entity
     {
         if (inGroundSnowball && thrower == player && shakeSnowball <= 0 && player.inventory.addItemStackToInventory(new ItemStack(Item.ARROW, 1)))
         {
-            world.playSound(this, "random.pop", 0.2F, ((random.NextFloat() - random.NextFloat()) * 0.7F + 1.0F) * 2.0F);
+            world.Broadcaster.PlaySoundAtEntity(this, "random.pop", 0.2F, ((random.NextFloat() - random.NextFloat()) * 0.7F + 1.0F) * 2.0F);
             player.sendPickup(this, 1);
             markDead();
         }
-
     }
 
-    public override float getShadowRadius()
-    {
-        return 0.0F;
-    }
+    public override float getShadowRadius() => 0.0F;
 }

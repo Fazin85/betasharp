@@ -8,8 +8,8 @@ namespace BetaSharp.Blocks.Entities;
 
 public class BlockEntityDispenser : BlockEntity, IInventory
 {
-    private ItemStack[] inventory = new ItemStack[9];
     private readonly JavaRandom random = new();
+    private ItemStack[] inventory = new ItemStack[9];
 
     public int size()
     {
@@ -33,22 +33,44 @@ public class BlockEntityDispenser : BlockEntity, IInventory
                 markDirty();
                 return removedStack;
             }
-            else
-            {
-                removedStack = inventory[slot].split(amount);
-                if (inventory[slot].count == 0)
-                {
-                    inventory[slot] = null;
-                }
 
-                markDirty();
-                return removedStack;
+            removedStack = inventory[slot].split(amount);
+            if (inventory[slot].count == 0)
+            {
+                inventory[slot] = null;
             }
+
+            markDirty();
+            return removedStack;
         }
-        else
+
+        return null;
+    }
+
+    public void setStack(int slot, ItemStack? stack)
+    {
+        inventory[slot] = stack;
+        if (stack != null && stack.count > getMaxCountPerStack())
         {
-            return null;
+            stack.count = getMaxCountPerStack();
         }
+
+        markDirty();
+    }
+
+    public string getName()
+    {
+        return "Trap";
+    }
+
+    public int getMaxCountPerStack()
+    {
+        return 64;
+    }
+
+    public bool canPlayerUse(EntityPlayer player)
+    {
+        return World.Reader.GetBlockEntity(X, Y, Z) != this ? false : player.getSquaredDistance(X + 0.5D, Y + 0.5D, Z + 0.5D) <= 64.0D;
     }
 
     public ItemStack getItemToDispose()
@@ -68,26 +90,8 @@ public class BlockEntityDispenser : BlockEntity, IInventory
         {
             return removeStack(selectedSlot, 1);
         }
-        else
-        {
-            return null;
-        }
-    }
 
-    public void setStack(int slot, ItemStack? stack)
-    {
-        inventory[slot] = stack;
-        if (stack != null && stack.count > getMaxCountPerStack())
-        {
-            stack.count = getMaxCountPerStack();
-        }
-
-        markDirty();
-    }
-
-    public string getName()
-    {
-        return "Trap";
+        return null;
     }
 
     public override void readNbt(NBTTagCompound nbt)
@@ -105,19 +109,18 @@ public class BlockEntityDispenser : BlockEntity, IInventory
                 inventory[slotIndex] = new ItemStack(itemTag);
             }
         }
-
     }
 
     public override void writeNbt(NBTTagCompound nbt)
     {
         base.writeNbt(nbt);
-        NBTTagList itemList = new NBTTagList();
+        NBTTagList itemList = new();
 
         for (int slotIndex = 0; slotIndex < inventory.Length; ++slotIndex)
         {
             if (inventory[slotIndex] != null)
             {
-                NBTTagCompound itemTag = new NBTTagCompound();
+                NBTTagCompound itemTag = new();
                 itemTag.SetByte("Slot", (sbyte)slotIndex);
                 inventory[slotIndex].writeToNBT(itemTag);
                 itemList.SetTag(itemTag);
@@ -125,15 +128,5 @@ public class BlockEntityDispenser : BlockEntity, IInventory
         }
 
         nbt.SetTag("Items", itemList);
-    }
-
-    public int getMaxCountPerStack()
-    {
-        return 64;
-    }
-
-    public bool canPlayerUse(EntityPlayer player)
-    {
-        return World.getBlockEntity(X, Y, Z) != this ? false : player.getSquaredDistance(X + 0.5D, Y + 0.5D, Z + 0.5D) <= 64.0D;
     }
 }

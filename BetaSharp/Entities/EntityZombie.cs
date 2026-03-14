@@ -1,12 +1,13 @@
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Entities;
 
 public class EntityZombie : EntityMonster
 {
-    public EntityZombie(World world) : base(world)
+    public EntityZombie(IWorldContext world) : base(world)
     {
         texture = "/mob/zombie.png";
         movementSpeed = 0.5F;
@@ -15,10 +16,10 @@ public class EntityZombie : EntityMonster
 
     public override void tickMovement()
     {
-        if (world.canMonsterSpawn())
+        if (world.Environment.CanMonsterSpawn())
         {
             float brightness = getBrightnessAtEyes(1.0F);
-            if (brightness > 0.5F && world.hasSkyLight(MathHelper.Floor(x), MathHelper.Floor(y), MathHelper.Floor(z)) && random.NextFloat() * 30.0F < (brightness - 0.4F) * 2.0F)
+            if (brightness > 0.5F && world.Lighting.HasSkyLight(MathHelper.Floor(x), MathHelper.Floor(y), MathHelper.Floor(z)) && random.NextFloat() * 30.0F < (brightness - 0.4F) * 2.0F)
             {
                 fireTicks = 300;
             }
@@ -27,23 +28,11 @@ public class EntityZombie : EntityMonster
         base.tickMovement();
     }
 
-    protected override String getLivingSound()
-    {
-        return "mob.zombie";
-    }
+    protected override string getLivingSound() => "mob.zombie";
 
-    protected override String getHurtSound()
-    {
-        return "mob.zombiehurt";
-    }
+    protected override string getHurtSound() => "mob.zombiehurt";
 
-    protected override String getDeathSound()
-    {
-        return "mob.zombiedeath";
-    }
+    protected override string getDeathSound() => "mob.zombiedeath";
 
-    protected override int getDropItemId()
-    {
-        return Item.Feather.id;
-    }
+    protected override int getDropItemId() => Item.Feather.id;
 }

@@ -2,28 +2,28 @@ using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Entities;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Client.Entities.FX;
 
 public class EntityFX : Entity
 {
+    public static double interpPosX;
+    public static double interpPosY;
+    public static double interpPosZ;
+    protected int particleAge;
+    protected float particleBlue;
+    protected float particleGravity;
+    protected float particleGreen;
+    protected int particleMaxAge;
+    protected float particleRed;
+    protected float particleScale;
 
     protected int particleTextureIndex;
     protected float particleTextureJitterX;
     protected float particleTextureJitterY;
-    protected int particleAge;
-    protected int particleMaxAge;
-    protected float particleScale;
-    protected float particleGravity;
-    protected float particleRed;
-    protected float particleGreen;
-    protected float particleBlue;
-    public static double interpPosX;
-    public static double interpPosY;
-    public static double interpPosZ;
 
-    public EntityFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) : base(world)
+    public EntityFX(IWorldContext world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) : base(world)
     {
         setBoundingBoxSpacing(0.2F, 0.2F);
         standingEyeHeight = height / 2.0F;
@@ -59,10 +59,7 @@ public class EntityFX : Entity
         return this;
     }
 
-    protected override bool bypassesSteppingEffects()
-    {
-        return false;
-    }
+    protected override bool bypassesSteppingEffects() => false;
 
     public override void tick()
     {
@@ -84,7 +81,6 @@ public class EntityFX : Entity
             velocityX *= (double)0.7F;
             velocityZ *= (double)0.7F;
         }
-
     }
 
     public virtual void renderParticle(Tessellator t, float partialTick, float rotX, float rotY, float rotZ, float upX, float upZ)

@@ -1,6 +1,7 @@
 using System.IO.Compression;
 using System.Net.Sockets;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
@@ -16,7 +17,7 @@ public class ChunkDataS2CPacket() : Packet(PacketId.ChunkDataS2C)
     private int chunkDataSize;
     public byte[] rawData;
 
-    public static ChunkDataS2CPacket Get(int x, int y, int z, int sizeX, int sizeY, int sizeZ, World world)
+    public static ChunkDataS2CPacket Get(int x, int y, int z, int sizeX, int sizeY, int sizeZ, IWorldContext world)
     {
         var p = Get<ChunkDataS2CPacket>(PacketId.ChunkDataS2C);
         p.x = x;
@@ -25,7 +26,7 @@ public class ChunkDataS2CPacket() : Packet(PacketId.ChunkDataS2C)
         p.sizeX = sizeX;
         p.sizeY = sizeY;
         p.sizeZ = sizeZ;
-        p.rawData = world.GetChunkData(x, y, z, sizeX, sizeY, sizeZ);
+        p.rawData = world.ChunkHost.GetChunkData(x, y, z, sizeX, sizeY, sizeZ);
 
         using var output = new MemoryStream(sizeX * sizeY * sizeZ * 5 / 2);
         using var stream = new ZLibStream(output, CompressionLevel.Optimal);
@@ -39,7 +40,7 @@ public class ChunkDataS2CPacket() : Packet(PacketId.ChunkDataS2C)
         return p;
     }
 
-    public override void Read(NetworkStream stream)
+    public override void Read(Stream stream)
     {
         x = stream.ReadInt();
         y = stream.ReadShort();
@@ -60,7 +61,7 @@ public class ChunkDataS2CPacket() : Packet(PacketId.ChunkDataS2C)
         chunkData = output.GetBuffer();
     }
 
-    public override void Write(NetworkStream stream)
+    public override void Write(Stream stream)
     {
         stream.WriteInt(x);
         stream.WriteShort((short)y);
@@ -86,4 +87,9 @@ public class ChunkDataS2CPacket() : Packet(PacketId.ChunkDataS2C)
     {
         chunkData = rawData;
     }
+
+    /// <summary>
+    /// Not round-trippable: ProcessForInternal() replaces compressed payload with raw, so serialize/deserialize would fail on Read (expects zlib).
+    /// </summary>
+    public override bool SkipCloneForInternal => true;
 }

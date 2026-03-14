@@ -1,16 +1,17 @@
 using BetaSharp.Blocks;
 using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Client.Entities.FX;
 
 public class EntityDiggingFX : EntityFX
 {
-
-    private readonly Block targetedBlock;
     private readonly int hitFace;
 
-    public EntityDiggingFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, Block targetedBlock, int hitFace, int meta) : base(world, x, y, z, velocityX, velocityY, velocityZ)
+    private readonly Block targetedBlock;
+
+    public EntityDiggingFX(IWorldContext world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, Block targetedBlock, int hitFace, int meta) : base(world, x, y, z, velocityX, velocityY, velocityZ)
     {
         this.targetedBlock = targetedBlock;
         particleTextureIndex = targetedBlock.getTexture(0, meta);
@@ -28,7 +29,7 @@ public class EntityDiggingFX : EntityFX
         }
         else
         {
-            int color = targetedBlock.getColorMultiplier(world, x, y, z);
+            int color = targetedBlock.getColorMultiplier(world.Reader, x, y, z);
             particleRed *= (float)(color >> 16 & 255) / 255.0F;
             particleGreen *= (float)(color >> 8 & 255) / 255.0F;
             particleBlue *= (float)(color & 255) / 255.0F;
@@ -36,10 +37,7 @@ public class EntityDiggingFX : EntityFX
         }
     }
 
-    public override int getFXLayer()
-    {
-        return 1;
-    }
+    public override int getFXLayer() => 1;
 
     public override void renderParticle(Tessellator t, float partialTick, float rotX, float rotY, float rotZ, float upX, float upZ)
     {

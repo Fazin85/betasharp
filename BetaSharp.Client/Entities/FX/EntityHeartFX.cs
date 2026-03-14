@@ -1,18 +1,19 @@
 using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Client.Entities.FX;
 
 public class EntityHeartFX : EntityFX
 {
-    readonly float baseScale;
+    private readonly float baseScale;
 
 
-    public EntityHeartFX(World world, double x, double y, double z, double motionX, double motionY, double motionZ) : this(world, x, y, z, motionX, motionY, motionZ, 2.0F)
+    public EntityHeartFX(IWorldContext world, double x, double y, double z, double motionX, double motionY, double motionZ) : this(world, x, y, z, motionX, motionY, motionZ, 2.0F)
     {
     }
 
-    public EntityHeartFX(World world, double x, double y, double z, double motionX, double motionY, double motionZ, float particleScale) : base(world, x, y, z, 0.0D, 0.0D, 0.0D)
+    public EntityHeartFX(IWorldContext world, double x, double y, double z, double motionX, double motionY, double motionZ, float particleScale) : base(world, x, y, z, 0.0D, 0.0D, 0.0D)
     {
         velocityX *= (double)0.01F;
         velocityY *= (double)0.01F;
@@ -68,6 +69,5 @@ public class EntityHeartFX : EntityFX
             velocityX *= (double)0.7F;
             velocityZ *= (double)0.7F;
         }
-
     }
 }

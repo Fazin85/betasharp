@@ -1,24 +1,24 @@
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
-using BetaSharp.Worlds.Chunks.Storage;
+using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Storage.RegionFormat;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server.Worlds;
 
-public class ServerChunkCache : ChunkSource
+public class ServerChunkCache : IChunkSource
 {
     private readonly ILogger<ServerChunkCache> _logger = Log.Instance.For<ServerChunkCache>();
     private readonly HashSet<int> _chunksToUnload = [];
     private readonly Chunk _empty;
-    private readonly ChunkSource _generator;
+    private readonly IChunkSource _generator;
     private readonly IChunkStorage _storage;
     public bool forceLoad = false;
     private readonly Dictionary<int, Chunk> _chunksByPos = [];
     private readonly List<Chunk> _chunks = [];
     private readonly ServerWorld _world;
 
-    public ServerChunkCache(ServerWorld world, IChunkStorage storage, ChunkSource generator)
+    public ServerChunkCache(ServerWorld world, IChunkStorage storage, IChunkSource generator)
     {
         _empty = new EmptyChunk(world, new byte[32768], 0, 0);
         _world = world;
@@ -34,7 +34,7 @@ public class ServerChunkCache : ChunkSource
 
     public void isLoaded(int chunkX, int chunkZ)
     {
-        Vec3i var3 = _world.getSpawnPos();
+        Vec3i var3 = _world.Properties.GetSpawnPos();
         int var4 = chunkX * 16 + 8 - var3.X;
         int var5 = chunkZ * 16 + 8 - var3.Z;
         short var6 = 128;
@@ -118,7 +118,7 @@ public class ServerChunkCache : ChunkSource
         _chunksByPos.TryGetValue(ChunkPos.GetHashCode(chunkX, chunkZ), out Chunk? var3);
         if (var3 == null)
         {
-            return !_world.eventProcessingEnabled && !forceLoad ? _empty : LoadChunk(chunkX, chunkZ);
+            return !_world.EventProcessingEnabled && !forceLoad ? _empty : LoadChunk(chunkX, chunkZ);
         }
         else
         {
@@ -137,7 +137,7 @@ public class ServerChunkCache : ChunkSource
             try
             {
                 Chunk var3 = _storage.LoadChunk(_world, chunkX, chunkZ);
-                var3?.LastSaveTime = _world.getTime();
+                var3?.LastSaveTime = _world.GetTime();
 
                 return var3;
             }
@@ -170,7 +170,7 @@ public class ServerChunkCache : ChunkSource
         {
             try
             {
-                chunk.LastSaveTime = _world.getTime();
+                chunk.LastSaveTime = _world.GetTime();
                 _storage.SaveChunk(_world, chunk, null, -1);
             }
             catch (java.io.IOException ex)
@@ -185,7 +185,7 @@ public class ServerChunkCache : ChunkSource
     }
 
 
-    public void DecorateTerrain(ChunkSource source, int x, int z)
+    public void DecorateTerrain(IChunkSource source, int x, int z)
     {
         Chunk var4 = GetChunk(x, z);
         if (!var4.TerrainPopulated)
@@ -273,7 +273,7 @@ public class ServerChunkCache : ChunkSource
     }
 
     /// Creates a parallel-safe generator instance for off-thread terrain generation.
-    public ChunkSource CreateParallelGenerator() => _generator.CreateParallelInstance();
+    public IChunkSource CreateParallelGenerator() => _generator.CreateParallelInstance();
 
     // Inserts a pre-generated chunk without triggering terrain re-generation.
     // Checks storage first so that saved data is used correctly on server restart.

@@ -11,9 +11,9 @@ using BetaSharp.Entities;
 using BetaSharp.Profiling;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
-using BetaSharp.Worlds.Biomes;
 using BetaSharp.Worlds.Chunks;
+using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Generation.Biomes;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using GLEnum = BetaSharp.Client.Rendering.Core.OpenGL.GLEnum;
@@ -32,8 +32,7 @@ public class GameRenderer
     private readonly MouseFilter _mouseFilterXAxis = new();
     private readonly MouseFilter _mouseFilterYAxis = new();
 
-    private long _prevFrameTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-;
+    private long _prevFrameTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     private readonly JavaRandom _random = new();
     private int _rainSoundCounter;
     private readonly float[] _fogColorBuffer = new float[16];
@@ -92,7 +91,7 @@ public class GameRenderer
                 Vec3D var8 = var6 + var2 * var7;
                 _targetedEntity = null;
                 float var9 = 1.0F;
-                List<Entity> var10 = _client.world.getEntities(_client.camera, _client.camera.boundingBox.Stretch(var7.x * var2, var7.y * var2, var7.z * var2).Expand((double)var9, (double)var9, (double)var9));
+                List<Entity> var10 = _client.world.Entities.GetEntities(_client.camera, _client.camera.boundingBox.Stretch(var7.x * var2, var7.y * var2, var7.z * var2).Expand((double)var9, (double)var9, (double)var9));
                 double var11 = 0.0D;
 
                 for (int var13 = 0; var13 < var10.Count; ++var13)
@@ -127,11 +126,9 @@ public class GameRenderer
                 {
                     _client.objectMouseOver = new HitResult(_targetedEntity);
                 }
-
             }
         }
     }
-
 
 
     private void renderWorld(float tickDelta)
@@ -182,6 +179,7 @@ public class GameRenderer
             GLManager.GL.Translate((float)cameraController.CameraYaw, (float)-cameraController.CameraPitch, 0.0F);
             GLManager.GL.Scale(cameraController.CameraZoom, cameraController.CameraZoom, 1.0D);
         }
+
         GLU.gluPerspective(cameraController.GetFov(tickDelta, true), _client.displayWidth / (float)_client.displayHeight, 0.05F, _viewDistance * 2.0F);
         GLManager.GL.MatrixMode(GLEnum.Modelview);
         GLManager.GL.LoadIdentity();
@@ -209,23 +207,20 @@ public class GameRenderer
         {
             cameraController.ApplyViewBobbing(tickDelta);
         }
-
     }
 
     public void onFrameUpdate(float tickDelta)
     {
         if (!Display.isActive())
         {
-            if (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
- - _prevFrameTime > 500L)
+            if (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _prevFrameTime > 500L)
             {
                 _client.displayInGameMenu();
             }
         }
         else
         {
-            _prevFrameTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-;
+            _prevFrameTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         }
 
         if (_client.inGameHasFocus)
@@ -242,6 +237,7 @@ public class GameRenderer
             {
                 var6 = 1;
             }
+
             if (_client.options.SmoothCamera)
             {
                 var4 = _mouseFilterXAxis.Smooth(var4, 0.05F * var3);
@@ -286,6 +282,7 @@ public class GameRenderer
                 {
                     _client.ingameGUI.renderGameOverlay(tickDelta, _client.currentScreen != null, scaledMouseX, scaledMouseY);
                 }
+
                 Profiler.Stop("renderGameOverlay");
             }
             else
@@ -313,7 +310,9 @@ public class GameRenderer
                 }
             }
 
+            
             _client.PostProcessManager.End();
+            
 
             if (var7 < 240)
             {
@@ -357,7 +356,7 @@ public class GameRenderer
         double var7 = var4.lastTickX + (var4.x - var4.lastTickX) * (double)tickDelta;
         double var9 = var4.lastTickY + (var4.y - var4.lastTickY) * (double)tickDelta;
         double var11 = var4.lastTickZ + (var4.z - var4.lastTickZ) * (double)tickDelta;
-        ChunkSource var13 = _client.world.GetChunkSource();
+        IChunkSource var13 = _client.world.BlockHost.ChunkSource;
 
         Profiler.Start("updateFog");
         GLManager.GL.Viewport(0, 0, (uint)_client.displayWidth, (uint)_client.displayHeight);
@@ -462,7 +461,7 @@ public class GameRenderer
 
     private void renderRain()
     {
-        float var1 = _client.world.getRainGradient(1.0F);
+        float var1 = _client.world.Environment.GetRainGradient(1.0F);
 
         if (var1 != 0.0F)
         {
@@ -482,9 +481,9 @@ public class GameRenderer
             {
                 int var16 = var4 + _random.NextInt(var7) - _random.NextInt(var7);
                 int var17 = var6 + _random.NextInt(var7) - _random.NextInt(var7);
-                int var18 = var3.getTopSolidBlockY(var16, var17);
-                int var19 = var3.getBlockId(var16, var18 - 1, var17);
-                if (var18 <= var5 + var7 && var18 >= var5 - var7 && var3.getBiomeSource().GetBiome(var16, var17).CanSpawnLightningBolt())
+                int var18 = var3.Reader.GetTopSolidBlockY(var16, var17);
+                int var19 = var3.Reader.GetBlockId(var16, var18 - 1, var17);
+                if (var18 <= var5 + var7 && var18 >= var5 - var7 && var3.GetBiomeSource().GetBiome(var16, var17).CanSpawnLightningBolt())
                 {
                     float var20 = _random.NextFloat();
                     float var21 = _random.NextFloat();
@@ -513,22 +512,21 @@ public class GameRenderer
             if (var14 > 0 && _random.NextInt(3) < _rainSoundCounter++)
             {
                 _rainSoundCounter = 0;
-                if (var10 > var2.y + 1.0D && var3.getTopSolidBlockY(MathHelper.Floor(var2.x), MathHelper.Floor(var2.z)) > MathHelper.Floor(var2.y))
+                if (var10 > var2.y + 1.0D && var3.Reader.GetTopSolidBlockY(MathHelper.Floor(var2.x), MathHelper.Floor(var2.z)) > MathHelper.Floor(var2.y))
                 {
-                    _client.world.playSound(var8, var10, var12, "ambient.weather.rain", 0.1F, 0.5F);
+                    _client.world.Broadcaster.PlaySoundAtPos(var8, var10, var12, "ambient.weather.rain", 0.1F, 0.5F);
                 }
                 else
                 {
-                    _client.world.playSound(var8, var10, var12, "ambient.weather.rain", 0.2F, 1.0F);
+                    _client.world.Broadcaster.PlaySoundAtPos(var8, var10, var12, "ambient.weather.rain", 0.2F, 1.0F);
                 }
             }
-
         }
     }
 
     protected void renderSnow(float tickDelta)
     {
-        float var2 = _client.world.getRainGradient(tickDelta);
+        float var2 = _client.world.Environment.GetRainGradient(tickDelta);
         if (var2 > 0.0F)
         {
             EntityLiving var3 = _client.camera;
@@ -549,7 +547,7 @@ public class GameRenderer
             int var15 = MathHelper.Floor(var11);
             byte var16 = 10;
 
-            Biome[] var17 = var4.getBiomeSource().GetBiomesInArea(var5 - var16, var7 - var16, var16 * 2 + 1, var16 * 2 + 1);
+            Biome[] var17 = var4.GetBiomeSource().GetBiomesInArea(var5 - var16, var7 - var16, var16 * 2 + 1, var16 * 2 + 1);
             int var18 = 0;
 
             int var19;
@@ -566,7 +564,7 @@ public class GameRenderer
                     var21 = var17[var18++];
                     if (var21.GetEnableSnow())
                     {
-                        var22 = var4.getTopSolidBlockY(var19, var20);
+                        var22 = var4.Reader.GetTopSolidBlockY(var19, var20);
                         if (var22 < 0)
                         {
                             var22 = 0;
@@ -602,7 +600,7 @@ public class GameRenderer
                             double var33 = (double)(var20 + 0.5F) - var3.z;
                             float var35 = MathHelper.Sqrt(var31 * var31 + var33 * var33) / var16;
                             var8.startDrawingQuads();
-                            float var36 = var4.getLuminance(var19, var23, var20);
+                            float var36 = var4.GetLuminance(var19, var23, var20);
                             GLManager.GL.Color4(var36, var36, var36, ((1.0F - var35 * var35) * 0.3F + 0.5F) * var2);
                             var8.setTranslationD(-var9 * 1.0D, -var11 * 1.0D, -var13 * 1.0D);
                             var8.addVertexWithUV(var19 + 0, var24, var20 + 0.5D, (double)(0.0F * var26 + var29), (double)(var24 * var26 / 4.0F + var28 * var26 + var30));
@@ -632,7 +630,7 @@ public class GameRenderer
                     var21 = var17[var18++];
                     if (var21.CanSpawnLightningBolt())
                     {
-                        var22 = var4.getTopSolidBlockY(var19, var20);
+                        var22 = var4.Reader.GetTopSolidBlockY(var19, var20);
                         var23 = var6 - var16;
                         var24 = var6 + var16;
                         if (var23 < var22)
@@ -654,7 +652,7 @@ public class GameRenderer
                             double var39 = (double)(var20 + 0.5F) - var3.z;
                             float var40 = MathHelper.Sqrt(var38 * var38 + var39 * var39) / var16;
                             var8.startDrawingQuads();
-                            float var32 = var4.getLuminance(var19, 128, var20) * 0.85F + 0.15F;
+                            float var32 = var4.GetLuminance(var19, 128, var20) * 0.85F + 0.15F;
                             GLManager.GL.Color4(var32, var32, var32, ((1.0F - var40 * var40) * 0.5F + 0.5F) * var2);
                             var8.setTranslationD(-var9 * 1.0D, -var11 * 1.0D, -var13 * 1.0D);
                             var8.addVertexWithUV(var19 + 0, var23, var20 + 0.5D, (double)(0.0F * var37), (double)(var23 * var37 / 4.0F + var26 * var37));
@@ -730,18 +728,18 @@ public class GameRenderer
         float var4 = 4.0F / _client.options.renderDistance;
         var4 = System.Math.Clamp(var4, 0.25f, 1.0f);
         var4 = 1.0F - (float)Math.Pow(var4, 0.25D);
-        Vector3D<double> var5 = var2.getSkyColor(_client.camera, tickDelta);
+        Vector3D<double> var5 = var2.Environment.GetSkyColor(_client.camera, tickDelta);
         float var6 = (float)var5.X;
         float var7 = (float)var5.Y;
         float var8 = (float)var5.Z;
-        Vector3D<double> var9 = var2.getFogColor(tickDelta);
+        Vector3D<double> var9 = var2.GetFogColor(tickDelta);
         _fogColorRed = (float)var9.X;
         _fogColorGreen = (float)var9.Y;
         _fogColorBlue = (float)var9.Z;
         _fogColorRed += (var6 - _fogColorRed) * var4;
         _fogColorGreen += (var7 - _fogColorGreen) * var4;
         _fogColorBlue += (var8 - _fogColorBlue) * var4;
-        float var10 = var2.getRainGradient(tickDelta);
+        float var10 = var2.Environment.GetRainGradient(tickDelta);
         float var11;
         float var12;
         if (var10 > 0.0F)
@@ -753,7 +751,7 @@ public class GameRenderer
             _fogColorBlue *= var12;
         }
 
-        var11 = var2.getThunderGradient(tickDelta);
+        var11 = var2.Environment.GetThunderGradient(tickDelta);
         if (var11 > 0.0F)
         {
             var12 = 1.0F - var11 * 0.5F;
@@ -764,7 +762,7 @@ public class GameRenderer
 
         if (_cloudFog)
         {
-            Vector3D<double> var16 = var2.getCloudColor(tickDelta);
+            Vector3D<double> var16 = var2.Environment.GetCloudColor(tickDelta);
             _fogColorRed = (float)var16.X;
             _fogColorGreen = (float)var16.Y;
             _fogColorBlue = (float)var16.Z;

@@ -1,10 +1,10 @@
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Client.Chunks;
 
-public class MultiplayerChunkCache(World world) : ChunkSource
+public class MultiplayerChunkCache(World world) : IChunkSource
 {
     private readonly Chunk _empty = new EmptyChunk(world, new byte[-short.MinValue], 0, 0);
     private readonly Dictionary<ChunkPos, Chunk> _chunkByPos = [];
@@ -47,7 +47,7 @@ public class MultiplayerChunkCache(World world) : ChunkSource
 
     public bool CanSave() => false;
 
-    public void DecorateTerrain(ChunkSource source, int x, int y){ }
+    public void DecorateTerrain(IChunkSource source, int x, int y){ }
 
     public void markChunksForUnload(int _) { }
 

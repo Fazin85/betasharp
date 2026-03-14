@@ -4,7 +4,8 @@ using BetaSharp.Client.Rendering.Core.OpenGL;
 using BetaSharp.Profiling;
 using BetaSharp.Util;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Maths;
 
@@ -602,7 +603,7 @@ public class ChunkRenderer : IChunkVisibilityVisitor
 
     public bool MarkDirty(Vector3D<int> chunkPos, bool priority = false)
     {
-        if (!_world.isRegionLoaded(chunkPos.X - 1, chunkPos.Y - 1, chunkPos.Z - 1, chunkPos.X + SubChunkRenderer.Size + 1, chunkPos.Y + SubChunkRenderer.Size + 1, chunkPos.Z + SubChunkRenderer.Size + 1) | !IsChunkInRenderDistance(chunkPos, _lastViewPos))
+        if (!_world.BlockHost.IsRegionLoaded(chunkPos.X - 1, chunkPos.Y - 1, chunkPos.Z - 1, chunkPos.X + SubChunkRenderer.Size + 1, chunkPos.Y + SubChunkRenderer.Size + 1, chunkPos.Z + SubChunkRenderer.Size + 1) | !IsChunkInRenderDistance(chunkPos, _lastViewPos))
             return false;
 
         if (!_chunkVersions.TryGetValue(chunkPos, out ChunkMeshVersion? version))
@@ -703,5 +704,37 @@ public class ChunkRenderer : IChunkVisibilityVisitor
             version.Release();
         }
         _chunkVersions.Clear();
+    }
+
+    public void RemoveChunksInRegion(int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
+    {
+        foreach (SubChunkState state in _renderers.Values)
+        {
+            Vector3D<int> pos = state.Renderer.Position;
+
+            if (pos.X + SubChunkRenderer.Size - 1 < minX || pos.X > maxX ||
+                pos.Y + SubChunkRenderer.Size - 1 < minY || pos.Y > maxY ||
+                pos.Z + SubChunkRenderer.Size - 1 < minZ || pos.Z > maxZ)
+            {
+                continue;
+            }
+
+            _renderersToRemove.Add(state.Renderer);
+        }
+
+        foreach (SubChunkRenderer renderer in _renderersToRemove)
+        {
+            UpdateAdjacency(renderer, false);
+            _renderers.Remove(renderer.Position);
+            renderer.Dispose();
+
+            if (_chunkVersions.TryGetValue(renderer.Position, out ChunkMeshVersion? version))
+            {
+                version.Release();
+                _chunkVersions.Remove(renderer.Position);
+            }
+        }
+
+        _renderersToRemove.Clear();
     }
 }

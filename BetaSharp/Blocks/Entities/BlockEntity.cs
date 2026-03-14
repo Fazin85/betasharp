@@ -1,6 +1,7 @@
 using BetaSharp.NBT;
 using BetaSharp.Network.Packets;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Blocks.Entities;
@@ -10,11 +11,11 @@ public class BlockEntity
     private static readonly Dictionary<string, Type> s_idToClass = new();
     private static readonly Dictionary<Type, string> s_classToId = new();
     private static readonly ILogger<BlockEntity> s_logger = Log.Instance.For<BlockEntity>();
-    public World World;
+    public IWorldContext World;
+    protected bool Removed;
     public int X;
     public int Y;
     public int Z;
-    protected bool Removed;
 
     private static void Create(Type blockEntityClass, string id)
     {
@@ -47,7 +48,9 @@ public class BlockEntity
         nbt.SetInteger("z", Z);
     }
 
-    public virtual void tick() { }
+    public virtual void tick()
+    {
+    }
 
     public static BlockEntity? CreateFromNbt(NBTTagCompound nbt)
     {
@@ -57,7 +60,7 @@ public class BlockEntity
         {
             if (s_idToClass.TryGetValue(nbt.GetString("id"), out Type? blockEntityClass))
             {
-                blockEntity = ((BlockEntity)Activator.CreateInstance(blockEntityClass));
+                blockEntity = (BlockEntity)Activator.CreateInstance(blockEntityClass);
             }
             else
             {
@@ -82,59 +85,50 @@ public class BlockEntity
         return blockEntity;
     }
 
-    public virtual int getPushedBlockData()
-    {
-        return World.getBlockMeta(X, Y, Z);
-    }
+    public virtual int getPushedBlockData() => World.Reader.GetBlockMeta(X, Y, Z);
 
     public void markDirty()
     {
         if (World != null)
         {
-            World.updateBlockEntity(X, Y, Z, this);
+            World.Broadcaster.UpdateBlockEntity(X, Y, Z, this);
         }
     }
 
     public double distanceFrom(double x, double y, double z)
     {
-        double dx = this.X + 0.5D - x;
-        double dy = this.Y + 0.5D - y;
-        double dz = this.Z + 0.5D - z;
+        double dx = X + 0.5D - x;
+        double dy = Y + 0.5D - y;
+        double dz = Z + 0.5D - z;
         return dx * dx + dy * dy + dz * dz;
     }
 
-    public Block getBlock()
-    {
-        return Block.Blocks[World.getBlockId(X, Y, Z)];
-    }
+    public Block getBlock() => Block.Blocks[World.Reader.GetBlockId(X, Y, Z)];
 
-    public virtual Packet createUpdatePacket()
-    {
-        return null;
-    }
+    public virtual Packet createUpdatePacket() => null;
 
     public bool isRemoved()
     {
-        if (Removed) return true;
+        if (Removed)
+        {
+            return true;
+        }
 
         if (World != null)
         {
-            int id = World.getBlockId(X, Y, Z);
-            if (id == 0 || !Block.BlocksWithEntity[id]) return true;
+            int id = World.Reader.GetBlockId(X, Y, Z);
+            if (id == 0 || !Block.BlocksWithEntity[id])
+            {
+                return true;
+            }
         }
 
         return false;
     }
 
-    public void markRemoved()
-    {
-        Removed = true;
-    }
+    public void markRemoved() => Removed = true;
 
-    public void cancelRemoval()
-    {
-        Removed = false;
-    }
+    public void cancelRemoval() => Removed = false;
 
     static BlockEntity()
     {

@@ -1,15 +1,14 @@
 using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Client.Entities.FX;
 
 public class EntityFlameFX : EntityFX
 {
-
     private readonly float baseScale;
 
-    public EntityFlameFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) : base(world, x, y, z, velocityX, velocityY, velocityZ)
+    public EntityFlameFX(IWorldContext world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) : base(world, x, y, z, velocityX, velocityY, velocityZ)
     {
         base.velocityX = base.velocityX * (double)0.01F + velocityX;
         base.velocityY = base.velocityY * (double)0.01F + velocityY;
@@ -64,6 +63,5 @@ public class EntityFlameFX : EntityFX
             velocityX *= (double)0.7F;
             velocityZ *= (double)0.7F;
         }
-
     }
 }

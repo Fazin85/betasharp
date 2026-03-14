@@ -1,3 +1,4 @@
+using System.IO;
 using System.Net.Sockets;
 using BetaSharp.Network.Packets.C2SPlay;
 using BetaSharp.Network.Packets.Play;
@@ -84,7 +85,7 @@ public abstract class Packet
         return packetR.Get();
     }
 
-    public static Packet? Read(NetworkStream stream, bool server)
+    public static Packet? Read(Stream stream, bool server)
     {
         Packet packet = null;
         int rawId;
@@ -131,7 +132,7 @@ public abstract class Packet
         return packet;
     }
 
-    public static void Write(Packet packet, NetworkStream stream)
+    public static void Write(Packet packet, Stream stream)
     {
 #if DEBUG
         if (packet.IsReturned)
@@ -144,15 +145,30 @@ public abstract class Packet
         packet.Return();
     }
 
-    public abstract void Read(NetworkStream stream);
+    /// <summary>
+    /// Writes packet to stream without returning it to the pool (for internal clone/serialization).
+    /// </summary>
+    public static void WriteToStreamWithoutReturn(Packet packet, Stream stream)
+    {
+        stream.WriteByte((byte)packet.Id);
+        packet.Write(stream);
+    }
 
-    public abstract void Write(NetworkStream stream);
+    public abstract void Read(Stream stream);
+
+    public abstract void Write(Stream stream);
 
     public abstract void Apply(NetHandler handler);
 
     public abstract int Size();
 
     public virtual void ProcessForInternal() { }
+
+    /// <summary>
+    /// If true, InternalConnection will pass this packet by reference instead of cloning by serialize/deserialize.
+    /// Use for packets that are not round-trippable (e.g. ChunkDataS2CPacket substitutes compressed data with raw for internal).
+    /// </summary>
+    public virtual bool SkipCloneForInternal => false;
 
     static Packet()
     {

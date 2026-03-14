@@ -1,15 +1,14 @@
 using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Client.Entities.FX;
 
 public class EntityLavaFX : EntityFX
 {
-
     private readonly float baseScale;
 
-    public EntityLavaFX(World world, double x, double y, double z) : base(world, x, y, z, 0.0D, 0.0D, 0.0D)
+    public EntityLavaFX(IWorldContext world, double x, double y, double z) : base(world, x, y, z, 0.0D, 0.0D, 0.0D)
     {
         velocityX *= (double)0.8F;
         velocityY *= (double)0.8F;
@@ -48,7 +47,7 @@ public class EntityLavaFX : EntityFX
         float lifeProgress = (float)particleAge / (float)particleMaxAge;
         if (random.NextFloat() > lifeProgress)
         {
-            world.addParticle("smoke", x, y, z, velocityX, velocityY, velocityZ);
+            world.Broadcaster.AddParticle("smoke", x, y, z, velocityX, velocityY, velocityZ);
         }
 
         velocityY -= 0.03D;

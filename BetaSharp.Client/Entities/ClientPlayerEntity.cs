@@ -1,5 +1,4 @@
 using BetaSharp.Blocks.Entities;
-using BetaSharp.Client.Achievements;
 using BetaSharp.Client.Entities.FX;
 using BetaSharp.Client.Guis;
 using BetaSharp.Client.Input;
@@ -8,7 +7,8 @@ using BetaSharp.Inventorys;
 using BetaSharp.NBT;
 using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Client.Entities;
 
@@ -16,14 +16,14 @@ public class ClientPlayerEntity : EntityPlayer
 {
     public MovementInput movementInput;
     protected BetaSharp Game;
+    private readonly MouseFilter field_21902_bL = new();
     private readonly MouseFilter field_21903_bJ = new();
     private readonly MouseFilter field_21904_bK = new();
-    private readonly MouseFilter field_21902_bL = new();
 
-    public ClientPlayerEntity(BetaSharp game, World world, Session session, int dimensionId) : base(world)
+    public ClientPlayerEntity(BetaSharp game, IWorldContext world, Session session, int dimensionId) : base(world)
     {
         this.Game = game;
-        base.dimensionId = dimensionId;
+        this.dimensionId = dimensionId;
         name = session.username;
     }
 
@@ -50,14 +50,14 @@ public class ClientPlayerEntity : EntityPlayer
         lastScreenDistortion = changeDimensionCooldown;
         if (inTeleportationState)
         {
-            if (!world.isRemote && vehicle != null)
+            if (!world.IsRemote && vehicle != null)
             {
-                setVehicle((Entity)null);
+                setVehicle(null);
             }
 
             if (Game.currentScreen != null)
             {
-                Game.displayGuiScreen((GuiScreen)null);
+                Game.displayGuiScreen(null);
             }
 
             if (changeDimensionCooldown == 0.0F)
@@ -139,7 +139,7 @@ public class ClientPlayerEntity : EntityPlayer
 
     public override void openChestScreen(IInventory inventory)
     {
-        Game.displayGuiScreen(new GuiChest(base.inventory, inventory));
+        Game.displayGuiScreen(new GuiChest(this.inventory, inventory));
     }
 
     public override void openCraftingScreen(int x, int y, int z)
@@ -194,9 +194,7 @@ public class ClientPlayerEntity : EntityPlayer
             lastHealth = health;
             hearts = maxHealth;
             applyDamage(damageAmount);
-
         }
-
     }
 
     public override void respawn()
@@ -237,13 +235,12 @@ public class ClientPlayerEntity : EntityPlayer
             {
                 Game.statFileWriter.ReadStat(stat, value);
             }
-
         }
     }
 
     private bool isBlockTranslucent(int x, int y, int z)
     {
-        return world.shouldSuffocate(x, y, z);
+        return world.Reader.ShouldSuffocate(x, y, z);
     }
 
     protected override bool pushOutOfBlocks(double posX, double posY, double posZ)
@@ -251,8 +248,8 @@ public class ClientPlayerEntity : EntityPlayer
         int floorX = MathHelper.Floor(posX);
         int floorY = MathHelper.Floor(posY);
         int floorZ = MathHelper.Floor(posZ);
-        double fracX = posX - (double)floorX;
-        double fracZ = posZ - (double)floorZ;
+        double fracX = posX - floorX;
+        double fracZ = posZ - floorZ;
         if (isBlockTranslucent(floorX, floorY, floorZ) || isBlockTranslucent(floorX, floorY + 1, floorZ))
         {
             bool canPushWest = !isBlockTranslucent(floorX - 1, floorY, floorZ) && !isBlockTranslucent(floorX - 1, floorY + 1, floorZ);
