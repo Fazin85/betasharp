@@ -1,4 +1,4 @@
-﻿using BetaSharp.Blocks.Entities;
+using BetaSharp.Blocks.Entities;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core.Systems;
@@ -87,8 +87,13 @@ public class BlockPistonMoving : BlockWithEntity
         return getPushedBlockCollisionShape(iBlockReader, entities, x, y, z, var5.getPushedBlockId(), var6, var5.getFacing());
     }
 
-    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager entities, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager? entities, int x, int y, int z)
     {
+        if (entities is null)
+        {
+            return;
+        }
+
         BlockEntityPiston? var5 = entities.GetBlockEntity<BlockEntityPiston>(x, y, z);
         if (var5 != null)
         {

@@ -454,7 +454,12 @@ public class Block
         return Vec3D.Zero;
     }
 
-    public virtual void updateBoundingBox(IBlockReader iBlockReader, EntityManager entities, int x, int y, int z)
+    public void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
+    {
+        updateBoundingBox(iBlockReader, null, x, y, z);
+    }
+
+    public virtual void updateBoundingBox(IBlockReader iBlockReader, EntityManager? entities, int x, int y, int z)
     {
     }
 

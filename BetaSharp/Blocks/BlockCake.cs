@@ -9,7 +9,7 @@ internal class BlockCake : Block
 {
     public BlockCake(int id, int textureId) : base(id, textureId, Material.Cake) => setTickRandomly(true);
 
-    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager entities, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager? entities, int x, int y, int z)
     {
         int slicesEaten = iBlockReader.GetBlockMeta(x, y, z);
         float edgeInset = 1.0F / 16.0F;

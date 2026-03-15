@@ -134,7 +134,7 @@ public class BlockBed : Block
         return false;
     }
 
-    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager entities, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager? entities, int x, int y, int z)
     {
         setDefaultShape();
     }

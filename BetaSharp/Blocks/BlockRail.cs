@@ -32,11 +32,11 @@ public class BlockRail : Block
 
     public override HitResult raycast(IBlockReader world, EntityManager entities, int x, int y, int z, Vec3D startPos, Vec3D endPos)
     {
-        updateBoundingBox(world, entities, x, y, z);
+        updateBoundingBox(world, x, y, z);
         return base.raycast(world, entities, x, y, z, startPos, endPos);
     }
 
-    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager entities, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager? entities, int x, int y, int z)
     {
         int meta = iBlockReader.GetBlockMeta(x, y, z);
         if (meta >= 2 && meta <= 5)

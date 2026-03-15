@@ -26,11 +26,11 @@ internal class BlockSign : BlockWithEntity
 
     public override Box getBoundingBox(IBlockReader world, EntityManager entities, int x, int y, int z)
     {
-        updateBoundingBox(world, entities, x, y, z);
+        updateBoundingBox(world, x, y, z);
         return base.getBoundingBox(world, entities, x, y, z);
     }
 
-    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager entities, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, EntityManager? entities, int x, int y, int z)
     {
         if (!_standing)
         {
