@@ -3,7 +3,6 @@ using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds.Core;
 using BetaSharp.Worlds.Core.Systems;
 using Microsoft.Extensions.Logging;
 
@@ -30,67 +29,61 @@ internal class BlockFurnace : BlockWithEntity
 
     public override void onPlaced(OnPlacedEvent @event)
     {
+        base.onPlaced(@event);
+
         if (@event.Placer != null)
         {
             int direction = MathHelper.Floor(@event.Placer.yaw * 4.0F / 360.0F + 0.5D) & 3;
-            if (direction == 0)
-            {
-                @event.World.Writer.SetBlockMeta(@event.X, @event.Y, @event.Z, 2);
-            }
+            int meta = 2;
+            
+            if (direction == 0) meta = 2;
+            else if (direction == 1) meta = 5;
+            else if (direction == 2) meta = 3;
+            else if (direction == 3) meta = 4;
 
-            if (direction == 1)
-            {
-                @event.World.Writer.SetBlockMeta(@event.X, @event.Y, @event.Z, 5);
-            }
+            @event.World.Writer.SetBlockMeta(@event.X, @event.Y, @event.Z, meta);
 
-            if (direction == 2)
+            if (!@event.World.IsRemote) 
             {
-                @event.World.Writer.SetBlockMeta(@event.X, @event.Y, @event.Z, 3);
-            }
-
-            if (direction == 3)
-            {
-                @event.World.Writer.SetBlockMeta(@event.X, @event.Y, @event.Z, 4);
+                @event.World.Writer.SetBlockMeta(@event.X, @event.Y, @event.Z, meta);
             }
         }
-
-        base.onPlaced(@event);
-        updateDirection(@event);
+        else
+        {
+            updateDirection(@event); 
+        }
     }
 
     private void updateDirection(OnPlacedEvent @event)
     {
-        if (@event.World.IsRemote)
-        {
-            return;
-        }
+        if (@event.World.IsRemote) return;
 
-        int blockNorth = @event.World.Reader.GetBlockId(@event.X, @event.Y, @event.Z - 1);
-        int blockSouth = @event.World.Reader.GetBlockId(@event.X, @event.Y, @event.Z + 1);
-        int westBlockId = @event.World.Reader.GetBlockId(@event.X - 1, @event.Y, @event.Z);
-        int eastBlockId = @event.World.Reader.GetBlockId(@event.X + 1, @event.Y, @event.Z);
-        sbyte direction = 3;
-        if (BlocksOpaque[blockNorth] && !BlocksOpaque[blockSouth])
+        var reader = @event.World.Reader;
+        int x = @event.X, y = @event.Y, z = @event.Z;
+        
+        bool isNorthOpaque = BlocksOpaque[reader.GetBlockId(x, y, z - 1)];
+        bool isSouthOpaque = BlocksOpaque[reader.GetBlockId(x, y, z + 1)];
+        bool isWestOpaque = BlocksOpaque[reader.GetBlockId(x - 1, y, z)];
+        bool isEastOpaque = BlocksOpaque[reader.GetBlockId(x + 1, y, z)];
+
+        byte direction = 3;
+        if (isNorthOpaque && !isSouthOpaque)
         {
             direction = 3;
         }
-
-        if (BlocksOpaque[blockSouth] && !BlocksOpaque[blockNorth])
+        else if (isSouthOpaque && !isNorthOpaque)
         {
             direction = 2;
         }
-
-        if (BlocksOpaque[westBlockId] && !BlocksOpaque[eastBlockId])
+        if (isWestOpaque && !isEastOpaque)
         {
             direction = 5;
         }
-
-        if (BlocksOpaque[eastBlockId] && !BlocksOpaque[westBlockId])
+        else if (isEastOpaque && !isWestOpaque)
         {
             direction = 4;
         }
-
-        @event.World.Writer.SetBlockMeta(@event.X, @event.Y, @event.Z, direction);
+        @event.World.Writer.SetBlockMeta(x, y, z, direction);
     }
 
     public override int getTextureId(IBlockReader iBlockReader, int x, int y, int z, int side)

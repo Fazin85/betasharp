@@ -1,7 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds.Core;
 using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Items;
@@ -89,6 +88,7 @@ internal class ItemBlock : Item
         {
             if (world.Writer.SetBlock(x, y, z, blockID, getPlacementMetadata(itemStack.getDamage())))
             {
+                Block.Blocks[blockID].onPlaced(new OnPlacedEvent(world, entityPlayer, meta, meta, x, y, z));
                 world.Broadcaster.PlaySoundAtPos(x + 0.5F, y + 0.5F, z + 0.5F, block.soundGroup.StepSound, (block.soundGroup.Volume + 1.0F) / 2.0F, block.soundGroup.Pitch * 0.8F);
                 --itemStack.count;
             }

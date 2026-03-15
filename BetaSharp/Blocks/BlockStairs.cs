@@ -97,13 +97,13 @@ internal class BlockStairs : Block
 
     public override bool canPlaceAt(CanPlaceAtContext evt) => _baseBlock.canPlaceAt(evt);
 
-    public override void onPlaced(OnPlacedEvent @event)
+    public override void onPlaced(OnPlacedEvent evt)
     {
         int meta = 0;
-        if (@event.Placer != null)
+        if (evt.Placer != null)
         {
             // 1. Calculate facing based on placer entity yaw
-            int facing = MathHelper.Floor(@event.Placer.yaw * 4.0F / 360.0F + 0.5D) & 3;
+            int facing = MathHelper.Floor(evt.Placer.yaw * 4.0F / 360.0F + 0.5D) & 3;
 
             if (facing == 0)
             {
@@ -126,9 +126,9 @@ internal class BlockStairs : Block
             }
         }
 
-        @event.World.Writer.SetBlockMeta(@event.X, @event.Y, @event.Z, meta);
-        @event.World.Broadcaster.NotifyNeighbors(@event.X, @event.Y, @event.Z, id);
-        _baseBlock.onPlaced(@event);
+        evt.World.Writer.SetBlockMeta(evt.X, evt.Y, evt.Z, meta);
+        evt.World.Broadcaster.NotifyNeighbors(evt.X, evt.Y, evt.Z, id);
+        _baseBlock.onPlaced(evt);
     }
 
     // Migrated to OnBreakEvt

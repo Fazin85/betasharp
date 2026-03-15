@@ -67,7 +67,9 @@ public class Chunk
         return HeightMap[localZ << 4 | localX];
     }
 
-    public virtual void PopulateLight() { }
+    public virtual void PopulateLight()
+    {
+    }
 
     public virtual void PopulateHeightMapOnly()
     {
@@ -125,6 +127,7 @@ public class Chunk
                         {
                             SkyLight.SetNibble(localX, currentY, localZ, lightLevel);
                         }
+
                         --currentY;
                     } while (currentY > 0 && lightLevel > 0);
                 }
@@ -144,7 +147,9 @@ public class Chunk
         Dirty = true;
     }
 
-    public virtual void PopulateBlockLight() { }
+    public virtual void PopulateBlockLight()
+    {
+    }
 
     private void LightGaps(int localX, int localZ)
     {
@@ -208,6 +213,7 @@ public class Chunk
                     }
                 }
             }
+
             MinHeightMapValue = min;
         }
 
@@ -302,7 +308,7 @@ public class Chunk
 
         if (rawId != 0)
         {
-            Block.Blocks[rawId].onPlaced(new OnPlacedEvent(World, null, 0, worldX, y, worldZ));
+            Block.Blocks[rawId].onPlaced(new OnPlacedEvent(World, null, 0, 0, worldX, y, worldZ));
         }
 
         Dirty = true;
@@ -343,7 +349,7 @@ public class Chunk
 
         if (notifyBlockPlaced && rawId != 0 && !World.IsRemote)
         {
-            Block.Blocks[rawId].onPlaced(new OnPlacedEvent(World, null, 0, worldX, y, worldZ));
+            Block.Blocks[rawId].onPlaced(new OnPlacedEvent(World, null, 0, 0, worldX, y, worldZ));
         }
 
         Dirty = true;
@@ -506,7 +512,6 @@ public class Chunk
         {
             World.Entities.UnloadEntities(Entities[var3]);
         }
-
     }
 
     public virtual void MarkDirty() => Dirty = true;

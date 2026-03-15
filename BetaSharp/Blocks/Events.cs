@@ -5,7 +5,7 @@ namespace BetaSharp.Blocks;
 
 public readonly record struct OnTickEvent(IWorldContext World, int X, int Y, int Z, int Meta, int BlockId);
 
-public readonly record struct OnPlacedEvent(IWorldContext World, EntityLiving? Placer, int Direction, int X, int Y, int Z);
+public readonly record struct OnPlacedEvent(IWorldContext World, EntityLiving? Placer, int Direction, int Side, int X, int Y, int Z);
 
 public readonly record struct CanPlaceAtContext(IWorldContext World, int Direction, int X, int Y, int Z);
 

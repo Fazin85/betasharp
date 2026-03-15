@@ -3,7 +3,6 @@ using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds.Core;
 using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Blocks;
@@ -30,70 +29,56 @@ internal class BlockDispenser : BlockWithEntity
     public override void onPlaced(OnPlacedEvent @event)
     {
         base.onPlaced(@event);
-
-        // If a player/entity placed it, use their yaw. Otherwise, use neighbor logic.
         if (@event.Placer != null)
         {
             int direction = MathHelper.Floor(@event.Placer.yaw * 4.0F / 360.0F + 0.5D) & 3;
-            int meta = 0;
-
-            if (direction == 0)
-            {
-                meta = 2;
-            }
-            else if (direction == 1)
-            {
-                meta = 5;
-            }
-            else if (direction == 2)
-            {
-                meta = 3;
-            }
-            else if (direction == 3)
-            {
-                meta = 4;
-            }
-
+            int meta = 2;
+            if (direction == 0) meta = 2;
+            else if (direction == 1) meta = 5;
+            else if (direction == 2) meta = 3;
+            else if (direction == 3) meta = 4;
             @event.World.Writer.SetBlockMeta(@event.X, @event.Y, @event.Z, meta);
+            if (!@event.World.IsRemote)
+            {
+                @event.World.Writer.SetBlockMeta(@event.X, @event.Y, @event.Z, meta);
+            }
         }
         else
         {
-            updateDirection(@event.World.Reader, @event.World.Writer, @event.World.IsRemote, @event.X, @event.Y, @event.Z);
+            updateDirection(@event);
         }
     }
 
-    private void updateDirection(WorldReader worldRead, WorldWriter worldWrite, bool isRemote, int x, int y, int z)
+    private void updateDirection(OnPlacedEvent @event)
     {
-        if (!isRemote)
+        if (@event.World.IsRemote) return;
+
+        var reader = @event.World.Reader;
+        int x = @event.X, y = @event.Y, z = @event.Z;
+        
+        bool isNorthOpaque = BlocksOpaque[reader.GetBlockId(x, y, z - 1)];
+        bool isSouthOpaque = BlocksOpaque[reader.GetBlockId(x, y, z + 1)];
+        bool isWestOpaque = BlocksOpaque[reader.GetBlockId(x - 1, y, z)];
+        bool isEastOpaque = BlocksOpaque[reader.GetBlockId(x + 1, y, z)];
+
+        byte direction = 3;
+        if (isNorthOpaque && !isSouthOpaque)
         {
-            int blockNorth = worldRead.GetBlockId(x, y, z - 1);
-            int blockSouth = worldRead.GetBlockId(x, y, z + 1);
-            int blockWest = worldRead.GetBlockId(x - 1, y, z);
-            int blockEast = worldRead.GetBlockId(x + 1, y, z);
-
-            sbyte direction = 3;
-            if (BlocksOpaque[blockNorth] && !BlocksOpaque[blockSouth])
-            {
-                direction = 3;
-            }
-
-            if (BlocksOpaque[blockSouth] && !BlocksOpaque[blockNorth])
-            {
-                direction = 2;
-            }
-
-            if (BlocksOpaque[blockWest] && !BlocksOpaque[blockEast])
-            {
-                direction = 5;
-            }
-
-            if (BlocksOpaque[blockEast] && !BlocksOpaque[blockWest])
-            {
-                direction = 4;
-            }
-
-            worldWrite.SetBlockMeta(x, y, z, direction);
+            direction = 3;
         }
+        else if (isSouthOpaque && !isNorthOpaque)
+        {
+            direction = 2;
+        }
+        if (isWestOpaque && !isEastOpaque)
+        {
+            direction = 5;
+        }
+        else if (isEastOpaque && !isWestOpaque)
+        {
+            direction = 4;
+        }
+        @event.World.Writer.SetBlockMeta(x, y, z, direction);
     }
 
     public override int getTextureId(IBlockReader iBlockReader, int x, int y, int z, int side)

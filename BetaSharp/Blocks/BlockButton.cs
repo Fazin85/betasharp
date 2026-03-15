@@ -47,33 +47,33 @@ internal class BlockButton : Block
         return IsValidPlacementSide(context.World.Reader, context.X, context.Y, context.Z, context.Direction);
     }
 
-    public override void onPlaced(OnPlacedEvent @event)
+    public override void onPlaced(OnPlacedEvent evt)
     {
-        int facing = @event.World.Reader.GetBlockMeta(@event.X, @event.Y, @event.Z);
+        int facing = evt.World.Reader.GetBlockMeta(evt.X, evt.Y, evt.Z);
         int pressedBit = facing & 8;
         facing &= 7;
-        if (@event.Direction == 2 && @event.World.Reader.ShouldSuffocate(@event.X, @event.Y, @event.Z + 1))
+        if (evt.Direction == 2 && evt.World.Reader.ShouldSuffocate(evt.X, evt.Y, evt.Z + 1))
         {
             facing = 4;
         }
-        else if (@event.Direction == 3 && @event.World.Reader.ShouldSuffocate(@event.X, @event.Y, @event.Z - 1))
+        else if (evt.Direction == 3 && evt.World.Reader.ShouldSuffocate(evt.X, evt.Y, evt.Z - 1))
         {
             facing = 3;
         }
-        else if (@event.Direction == 4 && @event.World.Reader.ShouldSuffocate(@event.X + 1, @event.Y, @event.Z))
+        else if (evt.Direction == 4 && evt.World.Reader.ShouldSuffocate(evt.X + 1, evt.Y, evt.Z))
         {
             facing = 2;
         }
-        else if (@event.Direction == 5 && @event.World.Reader.ShouldSuffocate(@event.X - 1, @event.Y, @event.Z))
+        else if (evt.Direction == 5 && evt.World.Reader.ShouldSuffocate(evt.X - 1, evt.Y, evt.Z))
         {
             facing = 1;
         }
         else
         {
-            facing = getPlacementSide(@event.World.Reader, @event.X, @event.Y, @event.Z);
+            facing = getPlacementSide(evt.World.Reader, evt.X, evt.Y, evt.Z);
         }
 
-        @event.World.Writer.SetBlockMeta(@event.X, @event.Y, @event.Z, facing + pressedBit);
+        evt.World.Writer.SetBlockMeta(evt.X, evt.Y, evt.Z, facing + pressedBit);
     }
 
     private int getPlacementSide(IBlockReader world, int x, int y, int z)
