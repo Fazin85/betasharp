@@ -36,6 +36,20 @@ public sealed class WorldWriter : IBlockWrite
 
     public bool SetBlock(int x, int y, int z, int blockId, int meta) => SetBlock(x, y, z, blockId, meta, true);
 
+    public bool SetBlockWithoutCallingOnPlaced(int x, int y, int z, int blockId, int meta)
+    {
+        int prevId = _reader.GetBlockId(x, y, z);
+        int prevMeta = _reader.GetBlockMeta(x, y, z);
+        if (SetBlockWithoutNotifyingNeighbors(x, y, z, blockId, meta, notifyBlockPlaced: false))
+        {
+            OnBlockChanged?.Invoke(x, y, z, blockId);
+            OnBlockChangedWithPrev?.Invoke(x, y, z, prevId, prevMeta, blockId, meta);
+            return true;
+        }
+
+        return false;
+    }
+
     public void SetBlockMeta(int x, int y, int z, int meta)
     {
         if (SetBlockMetaWithoutNotifyingNeighbors(x, y, z, meta))

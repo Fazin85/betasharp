@@ -86,7 +86,8 @@ internal class ItemBlock : Item
 
         if (block.canPlaceAt(new CanPlaceAtContext(world, 0, x, y, z)))
         {
-            if (world.Writer.SetBlock(x, y, z, blockID, getPlacementMetadata(itemStack.getDamage())))
+            int placementMeta = getPlacementMetadata(itemStack.getDamage());
+            if (world.Writer.SetBlockWithoutCallingOnPlaced(x, y, z, blockID, placementMeta))
             {
                 Block.Blocks[blockID].onPlaced(new OnPlacedEvent(world, entityPlayer, meta, meta, x, y, z));
                 world.Broadcaster.PlaySoundAtPos(x + 0.5F, y + 0.5F, z + 0.5F, block.soundGroup.StepSound, (block.soundGroup.Volume + 1.0F) / 2.0F, block.soundGroup.Pitch * 0.8F);

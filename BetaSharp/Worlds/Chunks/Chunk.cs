@@ -306,7 +306,7 @@ public class Chunk
         LightGaps(localX, localZ);
         Meta.SetNibble(localX, y, localZ, meta);
 
-        if (rawId != 0)
+        if (notifyBlockPlaced && rawId != 0 && !World.IsRemote)
         {
             Block.Blocks[rawId].onPlaced(new OnPlacedEvent(World, null, 0, 0, worldX, y, worldZ));
         }
