@@ -47,33 +47,34 @@ public class ServerChunkCache : IChunkSource
 
     public Chunk LoadChunk(int chunkX, int chunkZ)
     {
-        int var3 = ChunkPos.GetHashCode(chunkX, chunkZ);
-        _chunksToUnload.Remove(var3);
-        _chunksByPos.TryGetValue(var3, out Chunk? var4);
-        if (var4 == null)
+        int hash = ChunkPos.GetHashCode(chunkX, chunkZ);
+        _chunksToUnload.Remove(hash);
+        _chunksByPos.TryGetValue(hash, out Chunk? chunk);
+        if (chunk == null)
         {
-            var4 = LoadChunkFromStorage(chunkX, chunkZ);
-            if (var4 == null)
+            chunk = LoadChunkFromStorage(chunkX, chunkZ);
+            if (chunk == null)
             {
                 if (_generator == null)
                 {
-                    var4 = _empty;
+                    chunk = _empty;
                 }
                 else
                 {
-                    var4 = _generator.GetChunk(chunkX, chunkZ);
+                    chunk = _generator.GetChunk(chunkX, chunkZ);
                 }
             }
 
-            _chunksByPos.Add(var3, var4);
-            _chunks.Add(var4);
-            if (var4 != null)
+            _chunksByPos.Add(hash, chunk);
+            _chunks.Add(chunk);
+            if (chunk != null)
             {
-                var4.PopulateBlockLight();
-                var4.Load();
+                chunk.PopulateBlockLight();
+                chunk.Load();
+                chunk.WakeUpActiveRedstone(_world);
             }
 
-            if (!var4.TerrainPopulated
+            if (!chunk.TerrainPopulated
                 && IsChunkLoaded(chunkX + 1, chunkZ + 1)
                 && IsChunkLoaded(chunkX, chunkZ + 1)
                 && IsChunkLoaded(chunkX + 1, chunkZ))
@@ -109,7 +110,7 @@ public class ServerChunkCache : IChunkSource
             }
         }
 
-        return var4;
+        return chunk;
     }
 
 

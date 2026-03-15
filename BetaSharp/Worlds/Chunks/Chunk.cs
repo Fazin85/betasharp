@@ -499,6 +499,36 @@ public class Chunk
         }
     }
 
+    public void WakeUpActiveRedstone(IWorldContext world)
+    {
+        for (int x = 0; x < 16; x++)
+        {
+            for (int z = 0; z < 16; z++)
+            {
+                for (int y = 0; y < 128; y++)
+                {
+                    int index = (x << 11) | (z << 7) | y;
+                    byte blockId = Blocks[index];
+
+                    if (blockId == 76 || blockId == 94)
+                    {
+                        int worldX = this.X * 16 + x;
+                        int worldZ = this.Z * 16 + z;
+
+                        int delay = Block.Blocks[blockId].getTickRate();
+                        if (blockId == 94)
+                        {
+                            int meta = Meta.GetNibble(x, y, z);
+                            delay = ((meta & 12) >> 2 + 1) * 2;
+                        }
+
+                        world.TickScheduler.ScheduleBlockUpdate(worldX, y, worldZ, blockId, delay);
+                    }
+                }
+            }
+        }
+    }
+
     public virtual void Unload()
     {
         Loaded = false;
