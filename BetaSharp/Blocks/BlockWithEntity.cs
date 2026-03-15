@@ -21,5 +21,5 @@ public abstract class BlockWithEntity : Block
         ctx.World.Entities.RemoveBlockEntity(ctx.X, ctx.Y, ctx.Z);
     }
 
-    protected abstract BlockEntity getBlockEntity();
+    public abstract BlockEntity getBlockEntity();
 }

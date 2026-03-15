@@ -186,7 +186,7 @@ internal class BlockFurnace : BlockWithEntity
         world.Entities.SetBlockEntity(x, y, z, furnace!);
     }
 
-    protected override BlockEntity getBlockEntity()
+    public override BlockEntity getBlockEntity()
     {
         return new BlockEntityFurnace();
     }

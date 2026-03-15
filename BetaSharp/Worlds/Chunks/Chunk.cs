@@ -423,20 +423,22 @@ public class Chunk
     {
         BlockPos pos = new(localX, y, localZ);
 
-        if (!BlockEntities.TryGetValue(pos, out BlockEntity? entity))
+        if (BlockEntities.TryGetValue(pos, out BlockEntity? entity))
         {
-            int id = GetBlockId(localX, y, localZ);
-            if (id == 0 || !Block.BlocksWithEntity[id]) return null;
-
-            BlockWithEntity blockWithEntity = (BlockWithEntity)Block.Blocks[id];
-            blockWithEntity.onPlaced(new OnPlacedEvent(World, null, 0, X * 16 + localX, y, Z * 16 + localZ));
-            BlockEntities.TryGetValue(pos, out entity);
+            if (entity != null && !entity.isRemoved())
+            {
+                return entity;
+            }
         }
 
-        if (entity != null && entity.isRemoved())
+        int worldX = X * 16 + localX;
+        int worldZ = Z * 16 + localZ;
+
+        entity = World.Entities.GetOrCreateBlockEntity<BlockEntity>(worldX, y, worldZ);
+
+        if (entity != null)
         {
-            BlockEntities.Remove(pos);
-            return null;
+            BlockEntities[pos] = entity;
         }
 
         return entity;

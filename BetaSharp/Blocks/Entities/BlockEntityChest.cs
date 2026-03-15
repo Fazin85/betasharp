@@ -2,6 +2,7 @@ using BetaSharp.Entities;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;
 using BetaSharp.NBT;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Blocks.Entities;
 

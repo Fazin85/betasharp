@@ -58,7 +58,7 @@ internal class BlockNote : BlockWithEntity
         }
     }
 
-    protected override BlockEntity getBlockEntity() => new BlockEntityNote();
+    public override BlockEntity getBlockEntity() => new BlockEntityNote();
 
     public override void onBlockAction(OnBlockActionEvent @event)
     {

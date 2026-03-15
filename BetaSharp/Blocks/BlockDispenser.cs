@@ -228,7 +228,7 @@ internal class BlockDispenser : BlockWithEntity
         }
     }
 
-    protected override BlockEntity getBlockEntity() => new BlockEntityDispenser();
+    public override BlockEntity getBlockEntity() => new BlockEntityDispenser();
 
     public override void onBreak(OnBreakEvent @event)
     {

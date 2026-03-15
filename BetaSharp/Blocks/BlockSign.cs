@@ -69,7 +69,7 @@ internal class BlockSign : BlockWithEntity
 
     public override bool isOpaque() => false;
 
-    protected override BlockEntity getBlockEntity()
+    public override BlockEntity getBlockEntity()
     {
         try
         {

@@ -9,7 +9,7 @@ internal class BlockMobSpawner : BlockWithEntity
     {
     }
 
-    protected override BlockEntity getBlockEntity() => new BlockEntityMobSpawner();
+    public override BlockEntity getBlockEntity() => new BlockEntityMobSpawner();
 
     public override int getDroppedItemId(int blockMeta) => 0;
 

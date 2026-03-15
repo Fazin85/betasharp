@@ -9,7 +9,7 @@ public class BlockPistonMoving : BlockWithEntity
 {
     public BlockPistonMoving(int id) : base(id, Material.Piston) => setHardness(-1.0F);
 
-    protected override BlockEntity getBlockEntity() => null;
+    public override BlockEntity getBlockEntity() => null;
 
     public override void onPlaced(OnPlacedEvent @event)
     {

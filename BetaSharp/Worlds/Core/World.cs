@@ -68,7 +68,7 @@ public abstract class World : IWorldContext
         TickScheduler = new WorldTickScheduler(this);
 
         Environment = new EnvironmentManager(Properties, dim, Reader, Random);
-        Entities = new EntityManager(Reader, Rules, BlockHost);
+        Entities = new EntityManager(this);
 
         Entities.OnBlockUpdateRequired += (x, y, z) => Broadcaster.BlockUpdateEvent(x, y, z);
 

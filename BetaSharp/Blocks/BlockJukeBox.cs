@@ -84,5 +84,5 @@ internal class BlockJukeBox : BlockWithEntity
         }
     }
 
-    protected override BlockEntity getBlockEntity() => new BlockEntityRecordPlayer();
+    public override BlockEntity getBlockEntity() => new BlockEntityRecordPlayer();
 }
