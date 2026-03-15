@@ -56,7 +56,6 @@ public class ChunkRenderer : IChunkVisibilityVisitor
     private Matrix4X4<float> _projection;
     private readonly ChunkOcclusionCuller _occlusionCuller = new();
     private readonly List<SubChunkRenderer> _visibleRenderers = [];
-    private readonly List<SubChunkRenderer> _occludedRenderersBuffer = [];
     private readonly TranslucentDistanceComparer _translucentDistanceComparer = new();
     private int _frameIndex = 0;
     private bool _firstRender = true;
@@ -186,7 +185,7 @@ public class ChunkRenderer : IChunkVisibilityVisitor
 
         if (renderParams.RenderOccluded)
         {
-            _occludedRenderersBuffer.Clear();
+            _visibleRenderers.Clear();
             foreach (SubChunkState state in _renderers.Values)
             {
                 SubChunkRenderer renderer = state.Renderer;
@@ -194,12 +193,10 @@ public class ChunkRenderer : IChunkVisibilityVisitor
                 {
                     if (renderer.IsVisible(renderParams.Camera, renderParams.ViewPos, renderDistWorld))
                     {
-                        _occludedRenderersBuffer.Add(renderer);
+                        _visibleRenderers.Add(renderer);
                     }
                 }
             }
-            _visibleRenderers.Clear();
-            _visibleRenderers.AddRange(_occludedRenderersBuffer);
             ChunksRendered = _visibleRenderers.Count;
         }
 
@@ -224,25 +221,6 @@ public class ChunkRenderer : IChunkVisibilityVisitor
         }
 
         TranslucentMeshes = translucentCount;
-
-        foreach (SubChunkState state in _renderers.Values)
-        {
-            if (!IsChunkInRenderDistance(state.Renderer.Position, renderParams.ViewPos))
-            {
-                _renderersToRemove.Add(state.Renderer);
-            }
-        }
-
-        foreach (SubChunkRenderer renderer in _renderersToRemove)
-        {
-            UpdateAdjacency(renderer, false);
-            _renderers.Remove(renderer.Position);
-            renderer.Dispose();
-
-            _chunkVersions.Remove(renderer.Position);
-        }
-
-        _renderersToRemove.Clear();
 
         ProcessUpdates();
         LoadNewMeshes(renderParams.ViewPos);
@@ -459,6 +437,26 @@ public class ChunkRenderer : IChunkVisibilityVisitor
         }
 
         _chunkVersionsToRemove.Clear();
+
+        foreach (SubChunkState state in _renderers.Values)
+        {
+            if (!IsChunkInRenderDistance(state.Renderer.Position, _lastViewPos))
+            {
+                _renderersToRemove.Add(state.Renderer);
+            }
+        }
+
+        foreach (SubChunkRenderer renderer in _renderersToRemove)
+        {
+            UpdateAdjacency(renderer, false);
+            _renderers.Remove(renderer.Position);
+            renderer.Dispose();
+
+            _chunkVersions.Remove(renderer.Position);
+        }
+
+        _renderersToRemove.Clear();
+
         Profiler.Stop("ChunkRenderer.Tick.RemoveVersions");
 
         Profiler.Stop("ChunkRenderer.Tick");
