@@ -171,11 +171,14 @@ public class ChunkRenderer : IChunkVisibilityVisitor
         int frustumCount = 0;
         int visitedVisibleCount = _visibleRenderers.Count;
 
-        foreach (SubChunkState state in _renderers.Values)
+        if (renderParams.DebugMode)
         {
-            if (renderParams.Camera.isBoundingBoxInFrustum(state.Renderer.BoundingBox))
+            foreach (SubChunkState state in _renderers.Values)
             {
-                frustumCount++;
+                if (renderParams.Camera.isBoundingBoxInFrustum(state.Renderer.BoundingBox))
+                {
+                    frustumCount++;
+                }
             }
         }
 

@@ -302,7 +302,8 @@ public class WorldRenderer : IWorldAccess
             DeltaTime = _game.Timer.DeltaTime,
             EnvironmentAnimation = _game.options.EnvironmentAnimation,
             ChunkFade = _game.options.ChunkFade,
-            RenderOccluded = _game.options.RenderOccluded
+            RenderOccluded = _game.options.RenderOccluded,
+            DebugMode = _game.options.DebugMode
         };
 
         if (pass == 0)
