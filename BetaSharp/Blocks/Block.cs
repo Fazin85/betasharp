@@ -475,6 +475,11 @@ public class Block
         return 0xFFFFFF;
     }
 
+    public virtual int getColorMultiplier(IBlockReader iBlockReader, int x, int y, int z, int knownMeta)
+    {
+        return getColorMultiplier(iBlockReader, x, y, z);
+    }
+
     public virtual bool isPoweringSide(IBlockReader iBlockReader, int x, int y, int z, int side)
     {
         return false;

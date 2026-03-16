@@ -153,7 +153,7 @@ public class ParticleManager
                         block, randomSide, meta
                     );
 
-                    addEffect(particle.colorMultiplier(x, y, z));
+                    addEffect(particle.GetColorMultiplier(x, y, z));
                 }
             }
         }
@@ -200,7 +200,7 @@ public class ParticleManager
                 var8 = var1 + blockBB.MaxX + var7;
             }
 
-            addEffect(new EntityDiggingFX(worldObj, var8, var10, var12, 0.0D, 0.0D, 0.0D, var6, var4, worldObj.Reader.GetBlockMeta(var1, var2, var3)).colorMultiplier(var1, var2, var3).scaleVelocity(0.2F).scaleSize(0.6F));
+            addEffect(new EntityDiggingFX(worldObj, var8, var10, var12, 0.0D, 0.0D, 0.0D, var6, var4, worldObj.Reader.GetBlockMeta(var1, var2, var3)).GetColorMultiplier(var1, var2, var3).scaleVelocity(0.2F).scaleSize(0.6F));
         }
     }
 
