@@ -56,7 +56,7 @@ internal class SkyChunkGenerator : ChunkSource
     private readonly SpringFeature _featureWaterSpring = new(Block.FlowingWater.id);
     private readonly SpringFeature _featureLavaSpring = new(Block.FlowingLava.id);
 
-    public ChunkSource CreateParallelInstance() => new SkyChunkGenerator(_world, _seed, new BiomeSource(_world));
+    public ChunkSource CreateParallelInstance() => new SkyChunkGenerator(_world, _seed, _world.getBiomeSource());
 
     private SkyChunkGenerator(World world, long seed, BiomeSource biomeSource)
     {
@@ -547,7 +547,7 @@ internal class SkyChunkGenerator : ChunkSource
             _featureLavaSpring.Generate(_world, _random, featureX, featureY, featureZ);
         }
 
-        _temperatures = _biomeSource.GetTemperatures(_temperatures, blockX + 8, blockZ + 8, 16, 16);
+        _temperatures = _biomeSource.GetWeirdTemperatures(_temperatures, blockX + 8, blockZ + 8, 16, 16);
 
         for (int x = blockX + 8; x < blockX + 8 + 16; ++x)
         {

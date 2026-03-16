@@ -82,10 +82,10 @@ internal class OverworldChunkGenerator : ChunkSource
         InitFeatures();
     }
 
-    // Creates a thread-safe parallel generator with its own BiomeSource and _random state.
+    // Creates a thread-safe parallel generator with its own _random state.
     // All noise samplers are deterministically equivalent (same seed), so chunk output is identical.
     public ChunkSource CreateParallelInstance()
-        => new OverworldChunkGenerator(_world, _seed, new BiomeSource(_world));
+        => new OverworldChunkGenerator(_world, _seed, _world.getBiomeSource());
 
     private OverworldChunkGenerator(World world, long seed, BiomeSource biomeSource)
     {
@@ -359,7 +359,7 @@ internal class OverworldChunkGenerator : ChunkSource
         byte[] blocks = new byte[-short.MinValue];
         Chunk chunk = new Chunk(_world, blocks, chunkX, chunkZ);
         _biomes = _biomeSource.GetBiomesInArea(_biomes, chunkX * 16, chunkZ * 16, 16, 16);
-        double[] temperatureMap = _biomeSource.TemperatureMap;
+        double[] temperatureMap = _biomeSource.TemperatureMap.Value;
         BuildTerrain(chunkX, chunkZ, blocks, _biomes, temperatureMap);
         BuildSurfaces(chunkX, chunkZ, blocks, _biomes);
         _carver.carve(this, _world, chunkX, chunkZ, blocks);
@@ -394,8 +394,8 @@ internal class OverworldChunkGenerator : ChunkSource
 
         double horizontalScale = 684.412D;
         double verticalScale = 684.412D;
-        double[] temperatureBuffer = _biomeSource.TemperatureMap;
-        double[] downfallBuffer = _biomeSource.DownfallMap;
+        double[] temperatureBuffer = _biomeSource.TemperatureMap.Value;
+        double[] downfallBuffer = _biomeSource.DownfallMap.Value;
         _scaleNoiseBuffer = _floatingIslandScale.create(_scaleNoiseBuffer, x, z, sizeX, sizeZ, 1.121D, 1.121D, 0.5D);
         _depthNoiseBuffer = _floatingIslandNoise.create(_depthNoiseBuffer, x, z, sizeX, sizeZ, 200.0D, 200.0D, 0.5D);
         _selectorNoiseBuffer = _selectorNoise.create(_selectorNoiseBuffer, x, y, z, sizeX, sizeY, sizeZ, horizontalScale / 80.0D, verticalScale / 160.0D, horizontalScale / 80.0D);
@@ -873,7 +873,7 @@ internal class OverworldChunkGenerator : ChunkSource
         }
 
         // Place Snow in cold regions
-        _temperatures = _biomeSource.GetTemperatures(_temperatures, blockX + 8, blockZ + 8, 16, 16);
+        _temperatures = _biomeSource.GetWeirdTemperatures(_temperatures, blockX + 8, blockZ + 8, 16, 16);
 
         for (int x = blockX + 8; x < blockX + 8 + 16; ++x)
         {

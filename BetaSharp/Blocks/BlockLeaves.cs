@@ -37,8 +37,8 @@ public class BlockLeaves : BlockLeavesBase
         else
         {
             iBlockAccess.getBiomeSource().GetBiomesInArea(x, z, 1, 1);
-            double temperature = iBlockAccess.getBiomeSource().TemperatureMap[0];
-            double downfall = iBlockAccess.getBiomeSource().DownfallMap[0];
+            double temperature = iBlockAccess.getBiomeSource().TemperatureMap.Value[0];
+            double downfall = iBlockAccess.getBiomeSource().DownfallMap.Value[0];
             return FoliageColors.getFoliageColor(temperature, downfall);
         }
     }
