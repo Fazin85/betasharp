@@ -3,13 +3,12 @@ using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Entities;
 using BetaSharp.Worlds;
-using java.lang;
 
 namespace BetaSharp.Client.Rendering.Blocks.Entities;
 
 public class BlockEntityRenderer
 {
-    private readonly Dictionary<Class, BlockEntitySpecialRenderer?> _specialRendererMap = [];
+    private readonly Dictionary<Type, BlockEntitySpecialRenderer?> _specialRendererMap = [];
     public static BlockEntityRenderer Instance { get; } = new();
     private TextRenderer _fontRenderer;
     public static double StaticPlayerX;
@@ -36,21 +35,21 @@ public class BlockEntityRenderer
         }
     }
 
-    public BlockEntitySpecialRenderer? GetSpecialRendererForClass(Type clazz)
+    public BlockEntitySpecialRenderer? GetSpecialRendererForClass(Type t)
     {
-        _specialRendererMap.TryGetValue(clazz, out BlockEntitySpecialRenderer? renderer);
-        if (renderer == null && clazz != typeof(BlockEntity))
+        _specialRendererMap.TryGetValue(t, out BlockEntitySpecialRenderer? renderer);
+        if (renderer == null && t != typeof(BlockEntity))
         {
-            renderer = GetSpecialRendererForClass(clazz.BaseType);
-            _specialRendererMap[clazz] = renderer;
+            renderer = GetSpecialRendererForClass(t.BaseType);
+            _specialRendererMap[t] = renderer;
         }
 
         return renderer;
     }
 
-    public BlockEntitySpecialRenderer? GetSpecialRendererForEntity(BlockEntity var1)
+    public BlockEntitySpecialRenderer? GetSpecialRendererForEntity(BlockEntity? be)
     {
-        return var1 == null ? null : GetSpecialRendererForClass(var1.GetType());
+        return be == null ? null : GetSpecialRendererForClass(be.GetType());
     }
 
     public void CacheActiveRenderInfo(World var1, TextureManager var2, TextRenderer var3, EntityLiving var4, float var5)

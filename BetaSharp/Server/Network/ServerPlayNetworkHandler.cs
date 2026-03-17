@@ -516,7 +516,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         {
             string commandText = message[1..];
             _logger.LogInformation($"{player.name} issued server command: {commandText}");
-            server.queueCommands(commandText, this);
+            server.QueueCommands(commandText, this);
         }
         else
         {

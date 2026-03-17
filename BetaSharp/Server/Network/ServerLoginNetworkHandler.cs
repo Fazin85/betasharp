@@ -7,7 +7,6 @@ using BetaSharp.Network.Packets.S2CPlay;
 using BetaSharp.Server.Internal;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.lang;
 using Microsoft.Extensions.Logging;
 using Exception = System.Exception;
 
@@ -76,7 +75,7 @@ public class ServerLoginNetworkHandler : NetHandler
     {
         if (server.onlineMode)
         {
-            serverId = Long.toHexString(random.NextLong());
+            serverId = random.NextLong().ToString("x");
             connection.sendPacket(new HandshakePacket(serverId));
         }
         else
@@ -118,7 +117,7 @@ public class ServerLoginNetworkHandler : NetHandler
             {
                 //TODO: ADD SOME KIND OF AUTH
                 //new C_15575233(this, packet).start();
-                throw new IllegalStateException("Auth not supported");
+                throw new InvalidOperationException("Auth not supported");
             }
         }
     }

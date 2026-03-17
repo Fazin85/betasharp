@@ -7,6 +7,7 @@ namespace BetaSharp.Blocks.Entities;
 
 internal class BlockEntityChest : BlockEntity, IInventory
 {
+    public override BlockEntityType Type => BlockEntity.Chest;
     private ItemStack[] inventory = new ItemStack[36];
 
     public int size()

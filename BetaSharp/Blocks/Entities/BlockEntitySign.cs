@@ -6,6 +6,7 @@ namespace BetaSharp.Blocks.Entities;
 
 public class BlockEntitySign : BlockEntity
 {
+    public override BlockEntityType Type => BlockEntity.Sign;
     public string[] Texts { get; set; } = ["", "", "", ""];
     public int CurrentRow { get; set; } = -1;
     private bool _editable = true;

@@ -8,16 +8,16 @@ namespace BetaSharp.Worlds.Chunks.Storage;
 internal class RegionChunkStorage : IChunkStorage
 {
     private readonly ILogger<RegionChunkStorage> _logger = Log.Instance.For<RegionChunkStorage>();
-    private readonly string dir;
+    private readonly string _dir;
 
     public RegionChunkStorage(string inputDir)
     {
-        this.dir = inputDir;
+        _dir = inputDir;
     }
 
-    public Chunk LoadChunk(World world, int chunkX, int chunkZ)
+    public Chunk? LoadChunk(World world, int chunkX, int chunkZ)
     {
-        using ChunkDataStream s = RegionIo.GetChunkInputStream(dir, chunkX, chunkZ);
+        using ChunkDataStream? s = RegionIo.GetChunkInputStream(_dir, chunkX, chunkZ);
         if (s == null)
         {
             return null;
@@ -63,14 +63,19 @@ internal class RegionChunkStorage : IChunkStorage
     {
         try
         {
-            using Stream stream = RegionIo.GetChunkOutputStream(dir, chunk.X, chunk.Z);
+            using Stream? stream = RegionIo.GetChunkOutputStream(_dir, chunk.X, chunk.Z);
+            if (stream == null)
+            {
+                return;
+            }
+
             NBTTagCompound tag = new();
             NBTTagCompound levelTag = new();
             tag.SetTag("Level", levelTag);
             storeChunkInCompound(chunk, world, levelTag);
             NbtIo.Write(tag, stream);
             WorldProperties properties = world.getProperties();
-            properties.SizeOnDisk = properties.SizeOnDisk + (long)RegionIo.GetSizeDelta(dir, chunk.X, chunk.Z);
+            properties.SizeOnDisk += RegionIo.GetSizeDelta(_dir, chunk.X, chunk.Z);
         }
         catch (Exception exception)
         {
@@ -123,13 +128,15 @@ internal class RegionChunkStorage : IChunkStorage
     {
         int chunkX = nbt.GetInteger("xPos");
         int chunkZ = nbt.GetInteger("zPos");
-        Chunk chunk = new(world, chunkX, chunkZ);
-        chunk.Blocks = nbt.GetByteArray("Blocks");
-        chunk.Meta = new ChunkNibbleArray(nbt.GetByteArray("Data"));
-        chunk.SkyLight = new ChunkNibbleArray(nbt.GetByteArray("SkyLight"));
-        chunk.BlockLight = new ChunkNibbleArray(nbt.GetByteArray("BlockLight"));
-        chunk.HeightMap = nbt.GetByteArray("HeightMap");
-        chunk.TerrainPopulated = nbt.GetBoolean("TerrainPopulated");
+        Chunk chunk = new(world, chunkX, chunkZ)
+        {
+            Blocks = nbt.GetByteArray("Blocks"),
+            Meta = new ChunkNibbleArray(nbt.GetByteArray("Data")),
+            SkyLight = new ChunkNibbleArray(nbt.GetByteArray("SkyLight")),
+            BlockLight = new ChunkNibbleArray(nbt.GetByteArray("BlockLight")),
+            HeightMap = nbt.GetByteArray("HeightMap"),
+            TerrainPopulated = nbt.GetBoolean("TerrainPopulated")
+        };
         if (!chunk.Meta.IsInitialized)
         {
             chunk.Meta = new ChunkNibbleArray(chunk.Blocks.Length);
@@ -154,7 +161,7 @@ internal class RegionChunkStorage : IChunkStorage
             for (int entityIndex = 0; entityIndex < entityTags.TagCount(); ++entityIndex)
             {
                 NBTTagCompound entityTag = (NBTTagCompound)entityTags.TagAt(entityIndex);
-                Entity entity = EntityRegistry.getEntityFromNbt(entityTag, world);
+                Entity? entity = EntityRegistry.GetEntityFromNbt(entityTag, world);
                 chunk.LastSaveHadEntities = true;
                 if (entity != null)
                 {
@@ -169,7 +176,7 @@ internal class RegionChunkStorage : IChunkStorage
             for (int blockEntityIndex = 0; blockEntityIndex < blockEntityTags.TagCount(); ++blockEntityIndex)
             {
                 NBTTagCompound blockEntityTag = (NBTTagCompound)blockEntityTags.TagAt(blockEntityIndex);
-                BlockEntity blockEntity = BlockEntity.CreateFromNbt(blockEntityTag);
+                BlockEntity? blockEntity = BlockEntity.CreateFromNbt(blockEntityTag);
                 if (blockEntity != null)
                 {
                     chunk.AddBlockEntity(blockEntity);

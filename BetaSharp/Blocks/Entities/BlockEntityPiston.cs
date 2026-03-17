@@ -6,6 +6,7 @@ namespace BetaSharp.Blocks.Entities;
 
 public class BlockEntityPiston : BlockEntity
 {
+    public override BlockEntityType Type => BlockEntity.Piston;
     private int _pushedBlockId;
     private int _pushedBlockData;
     private int _facing;

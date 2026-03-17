@@ -77,6 +77,7 @@ public partial class BetaSharp
     public bool skipRenderWorld;
     public HitResult objectMouseOver = new HitResult(HitResultType.MISS);
     public GameOptions options;
+    public bool ShowChunkBorders = false;
     public SoundManager sndManager = new();
     public MouseHelper mouseHelper;
     public TexturePacks texturePackList;
@@ -165,6 +166,8 @@ public partial class BetaSharp
 
     public unsafe void startGame()
     {
+        Bootstrap.Initialize();
+
         InitializeTimer();
 
         int maximumWidth = Display.getDisplayMode().getWidth();
@@ -538,7 +541,7 @@ public partial class BetaSharp
 
             while (running)
             {
-                long frameStartNano = java.lang.System.nanoTime();
+                long frameStartNano = Stopwatch.GetTimestamp();
 
                 int startGcGen0 = GC.CollectionCount(0);
                 int startGcGen1 = GC.CollectionCount(1);
@@ -810,7 +813,7 @@ public partial class BetaSharp
                 }
                 finally
                 {
-                    long frameEndNano = java.lang.System.nanoTime();
+                    long frameEndNano = Stopwatch.GetTimestamp();
                     double thisFrameTimeMs = (frameEndNano - frameStartNano) / 1000000.0;
                     _debugTelemetry.RecordFrameTime(thisFrameTimeMs);
 
@@ -1005,7 +1008,7 @@ public partial class BetaSharp
     {
         if (internalServer != null)
         {
-            internalServer.stop();
+            internalServer.Stop();
             while (!internalServer.stopped)
             {
                 Thread.Sleep(1);
@@ -1285,7 +1288,7 @@ public partial class BetaSharp
         Profiler.Start("ingameGUI.updateTick");
         ingameGUI.updateTick();
         Profiler.Stop("ingameGUI.updateTick");
-        gameRenderer.updateTargetedEntity(1.0F);
+        gameRenderer.UpdateTargetedEntity(1.0F);
 
         gameRenderer.tick(partialTicks);
 
@@ -1554,6 +1557,11 @@ public partial class BetaSharp
                             options.SmoothCamera = !options.SmoothCamera;
                         }
 
+                        if (Keyboard.getEventKey() == Keyboard.KEY_F7)
+                        {
+                            ShowChunkBorders = !ShowChunkBorders;
+                        }
+
                         if (Keyboard.getEventKey() == options.KeyBindInventory.keyCode)
                         {
                             displayGuiScreen(new GuiInventory(player));
@@ -1642,7 +1650,7 @@ public partial class BetaSharp
         camera = null;
         loadingScreen.printText(loadingText);
         loadingScreen.progressStage("");
-        sndManager.PlayStreaming((string)null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+        sndManager.PlayStreaming(null!, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 
         world = newWorld;
         if (newWorld != null)
