@@ -7,6 +7,7 @@ namespace BetaSharp.Blocks.Entities;
 
 public class BlockEntityMobSpawner : BlockEntity
 {
+    public override BlockEntityType Type => BlockEntity.MobSpawner;
     public int SpawnDelay { get; set; } = -1;
     private string _spawnedEntityId = "Pig";
     public double Rotation { get; set; }

@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using BetaSharp.NBT;
-using BetaSharp.Util;
+using BetaSharp.Registries;
 using BetaSharp.Worlds;
 using Microsoft.Extensions.Logging;
 
@@ -43,7 +43,7 @@ public static class EntityRegistry
     private static EntityType Register<T>(Func<World, T> factory, string id, int rawId) where T : Entity
     {
         var type = new EntityType(w => factory(w), typeof(T));
-        s_registry.Register(rawId, new ResourceLocation("betasharp", id.ToLower()), type);
+        s_registry.Register(rawId, ResourceLocation.Parse(id.ToLower()), type);
         return type;
     }
 
@@ -52,9 +52,16 @@ public static class EntityRegistry
         return TryCreate(id, world, out Entity? entity) ? entity : null;
     }
 
-    public static bool TryCreate(string id, World world, [MaybeNullWhen(false)] out Entity entity)
+    public static bool TryCreate(string id, World world, [MaybeNullWhen(false)] out Entity entity, EntityType? skip = null)
     {
-        EntityType? type = s_registry.Get(new ResourceLocation("betasharp", id.ToLower()));
+        EntityType? type = s_registry.Get(ResourceLocation.Parse(id.ToLower()));
+
+        if (type == skip)
+        {
+            entity = null;
+            return false;
+        }
+
         if (type != null)
         {
             entity = type.Create(world);
@@ -91,7 +98,7 @@ public static class EntityRegistry
 
     public static bool TryGetTypeFromName(string name, [MaybeNullWhen(false)] out Type type)
     {
-        EntityType? entityType = s_registry.Get(new ResourceLocation("betasharp", name.ToLower()));
+        EntityType? entityType = s_registry.Get(ResourceLocation.Parse(name.ToLower()));
         if (entityType != null)
         {
             type = entityType.BaseType;
@@ -105,7 +112,7 @@ public static class EntityRegistry
     public static Entity? GetEntityFromNbt(NBTTagCompound nbt, World world)
     {
         string id = nbt.GetString("id");
-        if (TryCreate(id, world, out Entity? entity))
+        if (TryCreate(id, world, out Entity? entity, skip: Player))
         {
             entity!.read(nbt);
         }
@@ -134,6 +141,5 @@ public static class EntityRegistry
 
     static EntityRegistry()
     {
-        BuiltInRegistries.FreezeAll();
     }
 }

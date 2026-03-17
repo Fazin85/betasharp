@@ -1,6 +1,7 @@
 using System.Net;
 using BetaSharp.Server.Network;
 using BetaSharp.Server.Threading;
+using BetaSharp.Util;
 using Microsoft.Extensions.Logging;
 using Exception = System.Exception;
 
@@ -74,6 +75,7 @@ internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(co
     public static void Main()
     {
         Log.Instance.Initialize(Directory.GetCurrentDirectory());
+        Bootstrap.Initialize();
         AssetManager.Initialize(AssetManager.AssetProfile.Headless);
 
         try

@@ -1,5 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Entities;
+using BetaSharp.Registries;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Gen.Features;
 using java.awt;
@@ -8,21 +9,23 @@ namespace BetaSharp.Worlds.Biomes;
 
 public class Biome
 {
-    public static readonly Biome Rainforest = new BiomeGenRainforest().SetColor(0x8FA360).SetName("Rainforest").SetFoliageColor(0x1FF458);
-    public static readonly Biome Swampland = new BiomeGenSwamp().SetColor(0x7F9B20).SetName("Swampland").SetFoliageColor(0x8BAF48);
-    public static readonly Biome SeasonalForest = new Biome().SetColor(0x9BE023).SetName("Seasonal Forest");
-    public static readonly Biome Forest = new BiomeGenForest().SetColor(0x566210).SetName("Forest").SetFoliageColor(0x4EBA31);
-    public static readonly Biome Savanna = new BiomeGenDesert().SetColor(0xD9E023).SetName("Savanna");
-    public static readonly Biome Shrubland = new Biome().SetColor(0xA1AD20).SetName("Shrubland");
-    public static readonly Biome Taiga = new BiomeGenTaiga().SetColor(0x2EB153).SetName("Taiga").EnableSnow().SetFoliageColor(0x7BB731);
-    public static readonly Biome Desert = new BiomeGenDesert().SetColor(0xFA9418).SetName("Desert").DisableRain();
-    public static readonly Biome Plains = new BiomeGenDesert().SetColor(0xFFD910).SetName("Plains");
-    public static readonly Biome IceDesert = new BiomeGenDesert().SetColor(0xFFED93).SetName("Ice Desert").EnableSnow().DisableRain().SetFoliageColor(0xC4D339);
-    public static readonly Biome Tundra = new Biome().SetColor(0x57EBF9).SetName("Tundra").EnableSnow().SetFoliageColor(0xC4D339);
-    public static readonly Biome Hell = new BiomeGenHell().SetColor(0xFF0000).SetName("Hell").DisableRain();
-    public static readonly Biome Sky = new BiomeGenSky().SetColor(0x8080FF).SetName("Sky").DisableRain();
+    private static readonly IRegistry<Biome> s_registry = BuiltInRegistries.Biomes;
 
-    private static Biome[] Biomes = new Biome[4096];
+    public static readonly Biome Rainforest = Register(0, "rainforest", new BiomeGenRainforest().SetColor(0x8FA360).SetName("Rainforest").SetFoliageColor(0x1FF458));
+    public static readonly Biome Swampland = Register(1, "swampland", new BiomeGenSwamp().SetColor(0x7F9B20).SetName("Swampland").SetFoliageColor(0x8BAF48));
+    public static readonly Biome SeasonalForest = Register(2, "seasonal_forest", new Biome().SetColor(0x9BE023).SetName("Seasonal Forest"));
+    public static readonly Biome Forest = Register(3, "forest", new BiomeGenForest().SetColor(0x566210).SetName("Forest").SetFoliageColor(0x4EBA31));
+    public static readonly Biome Savanna = Register(4, "savanna", new BiomeGenDesert().SetColor(0xD9E023).SetName("Savanna"));
+    public static readonly Biome Shrubland = Register(5, "shrubland", new Biome().SetColor(0xA1AD20).SetName("Shrubland"));
+    public static readonly Biome Taiga = Register(6, "taiga", new BiomeGenTaiga().SetColor(0x2EB153).SetName("Taiga").EnableSnow().SetFoliageColor(0x7BB731));
+    public static readonly Biome Desert = Register(7, "desert", new BiomeGenDesert().SetColor(0xFA9418).SetName("Desert").DisableRain());
+    public static readonly Biome Plains = Register(8, "plains", new BiomeGenDesert().SetColor(0xFFD910).SetName("Plains"));
+    public static readonly Biome IceDesert = Register(9, "ice_desert", new BiomeGenDesert().SetColor(0xFFED93).SetName("Ice Desert").EnableSnow().DisableRain().SetFoliageColor(0xC4D339));
+    public static readonly Biome Tundra = Register(10, "tundra", new Biome().SetColor(0x57EBF9).SetName("Tundra").EnableSnow().SetFoliageColor(0xC4D339));
+    public static readonly Biome Hell = Register(11, "hell", new BiomeGenHell().SetColor(0xFF0000).SetName("Hell").DisableRain());
+    public static readonly Biome Sky = Register(12, "sky", new BiomeGenSky().SetColor(0x8080FF).SetName("Sky").DisableRain());
+
+    private static readonly Biome[] s_biomes = new Biome[4096];
 
     public string Name { get; private set; } = "";
     public int GrassColor { get; private set; }
@@ -52,6 +55,12 @@ public class Biome
         WaterCreatureList.Add(new SpawnListEntry(w => new EntitySquid(w)), 10);
     }
 
+    private static Biome Register(int id, string name, Biome biome)
+    {
+        s_registry.Register(id, ResourceLocation.Parse(name), biome);
+        return biome;
+    }
+
     protected Biome DisableRain() { HasRain = false; return this; }
     protected Biome EnableSnow() { HasSnow = true; return this; }
     protected Biome SetName(string name) { Name = name; return this; }
@@ -64,7 +73,7 @@ public class Biome
         {
             for (int j = 0; j < 64; ++j)
             {
-                Biomes[i + j * 64] = LocateBiome(i / 63.0F, j / 63.0F);
+                s_biomes[i + j * 64] = LocateBiome(i / 63.0F, j / 63.0F);
             }
         }
 
@@ -82,7 +91,7 @@ public class Biome
     {
         int x = (int)(temp * 63.0D);
         int y = (int)(downfall * 63.0D);
-        return Biomes[x + y * 64];
+        return s_biomes[x + y * 64];
     }
 
     public static Biome LocateBiome(float temperature, float downfall)

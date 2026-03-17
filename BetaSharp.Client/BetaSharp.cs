@@ -166,6 +166,8 @@ public partial class BetaSharp
 
     public unsafe void startGame()
     {
+        Bootstrap.Initialize();
+
         InitializeTimer();
 
         int maximumWidth = Display.getDisplayMode().getWidth();
@@ -1648,7 +1650,7 @@ public partial class BetaSharp
         camera = null;
         loadingScreen.printText(loadingText);
         loadingScreen.progressStage("");
-        sndManager.PlayStreaming((string)null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+        sndManager.PlayStreaming(null!, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 
         world = newWorld;
         if (newWorld != null)

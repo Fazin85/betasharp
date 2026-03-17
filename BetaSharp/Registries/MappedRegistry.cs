@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace BetaSharp.Util;
+namespace BetaSharp.Registries;
 
 public class MappedRegistry<T>(ResourceLocation registryKey) : IRegistry<T> where T : class
 {
@@ -11,6 +11,11 @@ public class MappedRegistry<T>(ResourceLocation registryKey) : IRegistry<T> wher
 
     public ResourceLocation Key { get; } = registryKey;
     public bool IsFrozen { get; private set; }
+
+    public void Register(ResourceLocation key, T value)
+    {
+        Register(-1, key, value);
+    }
 
     public void Register(int id, ResourceLocation key, T value)
     {
@@ -27,6 +32,11 @@ public class MappedRegistry<T>(ResourceLocation registryKey) : IRegistry<T> wher
         if (_toId.ContainsKey(value))
         {
             throw new ArgumentException("Duplicate value.", nameof(value));
+        }
+
+        if (id < 0)
+        {
+            id = _byId.Count;
         }
 
         while (_byId.Count <= id)

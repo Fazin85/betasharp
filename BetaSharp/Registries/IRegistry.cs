@@ -1,9 +1,9 @@
-namespace BetaSharp.Util;
+namespace BetaSharp.Registries;
 
 public interface IRegistry<T> : IEnumerable<T>
 {
     ResourceLocation Key { get; }
-
+    void Register(ResourceLocation key, T value);
     void Register(int id, ResourceLocation key, T value);
     
     T? Get(int id);

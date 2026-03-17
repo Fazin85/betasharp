@@ -4,7 +4,7 @@ using BetaSharp.Items;
 
 namespace BetaSharp.Inventorys;
 
-internal class InventoryLargeChest : BlockEntity, IInventory
+internal class InventoryLargeChest : IInventory
 {
     private string name;
     private IInventory upperChest;

@@ -1,30 +1,38 @@
 using BetaSharp.NBT;
 using BetaSharp.Network.Packets;
+using BetaSharp.Registries;
 using BetaSharp.Worlds;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Blocks.Entities;
 
-public class BlockEntity
+public abstract class BlockEntity
 {
-    private static readonly Dictionary<string, Type> s_idToClass = new();
-    private static readonly Dictionary<Type, string> s_classToId = new();
+    private static readonly IRegistry<BlockEntityType> s_registry = BuiltInRegistries.BlockEntityTypes;
     private static readonly ILogger<BlockEntity> s_logger = Log.Instance.For<BlockEntity>();
+
+    public abstract BlockEntityType Type { get; }
+
     public World World;
     public int X;
     public int Y;
     public int Z;
     protected bool Removed;
 
-    private static void Create(Type blockEntityClass, string id)
-    {
-        if (s_idToClass.ContainsKey(id))
-        {
-            throw new ArgumentException("Duplicate id: " + id, nameof(id));
-        }
+    public static readonly BlockEntityType Furnace = Register(() => new BlockEntityFurnace(), "Furnace");
+    public static readonly BlockEntityType Chest = Register(() => new BlockEntityChest(), "Chest");
+    public static readonly BlockEntityType RecordPlayer = Register(() => new BlockEntityRecordPlayer(), "RecordPlayer");
+    public static readonly BlockEntityType Dispenser = Register(() => new BlockEntityDispenser(), "Trap");
+    public static readonly BlockEntityType Sign = Register(() => new BlockEntitySign(), "Sign");
+    public static readonly BlockEntityType MobSpawner = Register(() => new BlockEntityMobSpawner(), "MobSpawner");
+    public static readonly BlockEntityType Note = Register(() => new BlockEntityNote(), "Music");
+    public static readonly BlockEntityType Piston = Register(() => new BlockEntityPiston(), "Piston");
 
-        s_idToClass.Add(id, blockEntityClass);
-        s_classToId.Add(blockEntityClass, id);
+    private static BlockEntityType Register<T>(Func<T> factory, string id) where T : BlockEntity
+    {
+        var type = new BlockEntityType(() => factory());
+        s_registry.Register(ResourceLocation.Parse(id.ToLower()), type);
+        return type;
     }
 
     public virtual void readNbt(NBTTagCompound nbt)
@@ -36,12 +44,8 @@ public class BlockEntity
 
     public virtual void writeNbt(NBTTagCompound nbt)
     {
-        if (!s_classToId.TryGetValue(GetType(), out string? entityId))
-        {
-            throw new Exception(GetType() + " is missing a mapping! This is a bug!");
-        }
-
-        nbt.SetString("id", entityId);
+        ResourceLocation? key = s_registry.GetKey(Type) ?? throw new Exception(GetType() + " is missing a mapping! This is a bug!");
+        nbt.SetString("id", key.Path);
         nbt.SetInteger("x", X);
         nbt.SetInteger("y", Y);
         nbt.SetInteger("z", Z);
@@ -51,35 +55,27 @@ public class BlockEntity
 
     public static BlockEntity? CreateFromNbt(NBTTagCompound nbt)
     {
-        BlockEntity blockEntity = null;
+        string id = nbt.GetString("id");
+        if (string.IsNullOrEmpty(id)) return null;
+
+        BlockEntityType? type = s_registry.Get(ResourceLocation.Parse(id.ToLower()));
+        if (type == null)
+        {
+            s_logger.LogInformation($"{id} is missing a mapping!");
+            return null;
+        }
 
         try
         {
-            if (s_idToClass.TryGetValue(nbt.GetString("id"), out Type? blockEntityClass))
-            {
-                blockEntity = ((BlockEntity)Activator.CreateInstance(blockEntityClass));
-            }
-            else
-            {
-                s_logger.LogInformation(nbt.GetString("id") + " is missing a mapping!");
-                return null;
-            }
+            BlockEntity blockEntity = type.Create();
+            blockEntity.readNbt(nbt);
+            return blockEntity;
         }
         catch (Exception exception)
         {
-            s_logger.LogError(exception.ToString());
+            s_logger.LogError(exception, $"Failed to create block entity for id {id}");
+            return null;
         }
-
-        if (blockEntity != null)
-        {
-            blockEntity.readNbt(nbt);
-        }
-        else
-        {
-            s_logger.LogInformation("Skipping TileEntity with id " + nbt.GetString("id"));
-        }
-
-        return blockEntity;
     }
 
     public virtual int getPushedBlockData()
@@ -89,17 +85,14 @@ public class BlockEntity
 
     public void markDirty()
     {
-        if (World != null)
-        {
-            World.updateBlockEntity(X, Y, Z, this);
-        }
+        World?.updateBlockEntity(X, Y, Z, this);
     }
 
     public double distanceFrom(double x, double y, double z)
     {
-        double dx = this.X + 0.5D - x;
-        double dy = this.Y + 0.5D - y;
-        double dz = this.Z + 0.5D - z;
+        double dx = X + 0.5D - x;
+        double dy = Y + 0.5D - y;
+        double dz = Z + 0.5D - z;
         return dx * dx + dy * dy + dz * dz;
     }
 
@@ -138,13 +131,5 @@ public class BlockEntity
 
     static BlockEntity()
     {
-        Create(typeof(BlockEntityFurnace), "Furnace");
-        Create(typeof(BlockEntityChest), "Chest");
-        Create(typeof(BlockEntityRecordPlayer), "RecordPlayer");
-        Create(typeof(BlockEntityDispenser), "Trap");
-        Create(typeof(BlockEntitySign), "Sign");
-        Create(typeof(BlockEntityMobSpawner), "MobSpawner");
-        Create(typeof(BlockEntityNote), "Music");
-        Create(typeof(BlockEntityPiston), "Piston");
     }
 }

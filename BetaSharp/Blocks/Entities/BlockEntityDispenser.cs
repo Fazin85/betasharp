@@ -8,6 +8,7 @@ namespace BetaSharp.Blocks.Entities;
 
 public class BlockEntityDispenser : BlockEntity, IInventory
 {
+    public override BlockEntityType Type => BlockEntity.Dispenser;
     private ItemStack[] inventory = new ItemStack[9];
     private readonly JavaRandom random = new();
 
