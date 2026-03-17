@@ -27,7 +27,7 @@ public abstract class BetaSharpServer : CommandOutput
     private ServerCommandHandler _commandHandler;
     public bool running = true;
     public bool stopped;
-    private int ticks;
+    private int _ticks;
     public string? progressMessage;
     public int progress;
     private readonly Queue<Command> _pendingCommands = new();
