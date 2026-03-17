@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using BetaSharp.Launcher.Features;
 using BetaSharp.Launcher.Features.Alert;
 using BetaSharp.Launcher.Features.Authentication;
 using BetaSharp.Launcher.Features.Home;
@@ -44,22 +45,27 @@ internal static partial class Bootstrapper
         return services.BuildServiceProvider();
     }
 
-    [Singleton(typeof(ViewLocator))]
+    // Services
     [Singleton(typeof(AuthenticationService))]
     [Singleton(typeof(NavigationService))]
     [Singleton(typeof(AlertService))]
-    [Singleton(typeof(ShellViewModel))]
     [Transient(typeof(SessionService))]
     [Transient(typeof(StorageService))]
     [Transient(typeof(ClientService))]
-    [Transient(typeof(MojangClient))]
-    [Transient(typeof(XboxClient))]
+
+    // V & VMs
+    [Singleton(typeof(ShellViewModel))]
+    [Transient(typeof(ShellView))]
     [Transient(typeof(AuthenticationView))]
     [Transient(typeof(AuthenticationViewModel))]
-    [Transient(typeof(HomeView))]
     [Transient(typeof(HomeViewModel))]
-    [Transient(typeof(ShellView))]
+    [Transient(typeof(HomeView))]
     [Transient(typeof(SplashView))]
     [Transient(typeof(SplashViewModel))]
+
+    // ...
+    [Singleton(typeof(ViewLocator))]
+    [Transient(typeof(MojangClient))]
+    [Transient(typeof(XboxClient))]
     private static partial void ConfigureServices(IServiceCollection services);
 }

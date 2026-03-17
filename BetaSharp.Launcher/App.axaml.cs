@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using BetaSharp.Launcher.Features;
 using BetaSharp.Launcher.Features.Shell;
 using BetaSharp.Launcher.Features.Splash;
 using Microsoft.Extensions.DependencyInjection;

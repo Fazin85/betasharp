@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 
-namespace BetaSharp.Launcher;
+namespace BetaSharp.Launcher.Features;
 
 internal static class HttpClientExtensions
 {
