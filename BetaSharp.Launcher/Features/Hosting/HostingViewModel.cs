@@ -73,7 +73,7 @@ internal sealed partial class HostingViewModel(ProcessService processService, Na
     [RelayCommand]
     private async Task WriteAsync()
     {
-        if (!string.IsNullOrWhiteSpace(Input))
+        if (string.IsNullOrWhiteSpace(Input))
         {
             return;
         }
