@@ -98,6 +98,11 @@ internal sealed partial class PropertiesViewModel(NavigationService navigationSe
                     index = trimmed.IndexOf(':');
                 }
 
+                if (index < 0)
+                {
+                    continue;
+                }
+
                 string value = trimmed[(index + 1)..].Trim();
 
                 switch (trimmed[..index].Trim())
@@ -114,7 +119,7 @@ internal sealed partial class PropertiesViewModel(NavigationService navigationSe
                             break;
                         }
 
-                    case "server-port" when int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int result):
+                    case "server-port" when int.TryParse(value, out int result):
                         {
                             ServerPort = result;
                             break;
@@ -144,13 +149,13 @@ internal sealed partial class PropertiesViewModel(NavigationService navigationSe
                             break;
                         }
 
-                    case "view-distance" when int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int result):
+                    case "view-distance" when int.TryParse(value, out int result):
                         {
                             ViewDistance = result;
                             break;
                         }
 
-                    case "max-players" when int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int result):
+                    case "max-players" when int.TryParse(value, out int result):
                         {
                             MaxPlayers = result;
                             break;
@@ -197,7 +202,7 @@ internal sealed partial class PropertiesViewModel(NavigationService navigationSe
                             break;
                         }
 
-                    case "spawn-region-size" when int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int result):
+                    case "spawn-region-size" when int.TryParse(value, out int result):
                         {
                             SpawnRegionSize = result;
                             break;

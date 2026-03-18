@@ -30,14 +30,16 @@ internal sealed class AlertService
         var view = new AlertView
         {
             Title = title,
-            AlertBlock =
-            {
-                Text = message
-            }
+            AlertBlock = { Text = message }
         };
 
-        await view.ShowDialog(window);
-
-        _isOpen = false;
+        try
+        {
+            await view.ShowDialog(window);
+        }
+        catch
+        {
+            _isOpen = false;
+        }
     }
 }

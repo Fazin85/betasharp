@@ -12,6 +12,8 @@ internal sealed class ProcessService(MinecraftService minecraftService)
         string suffix = kind.ToString();
         string directory = Path.Combine(AppContext.BaseDirectory, suffix);
 
+        bool redirect = kind is Kind.Server;
+
         await minecraftService.DownloadAsync(directory);
 
         var info = new ProcessStartInfo
@@ -19,9 +21,8 @@ internal sealed class ProcessService(MinecraftService minecraftService)
             Arguments = string.Join(" ", args),
             CreateNoWindow = true,
             FileName = Path.Combine(directory, $"{nameof(BetaSharp)}.{suffix}"),
-            RedirectStandardError = true,
-            RedirectStandardInput = true,
-            RedirectStandardOutput = true,
+            RedirectStandardInput = redirect,
+            RedirectStandardOutput = redirect,
             WorkingDirectory = directory
         };
 

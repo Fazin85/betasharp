@@ -89,14 +89,25 @@ internal sealed partial class HostingViewModel(ProcessService processService, Na
 
         Message = "Stopping";
 
-        _process.Exited -= OnExited;
-        _process.OutputDataReceived -= OnOutputDataReceived;
+        try
+        {
+            _process.Exited -= OnExited;
+            _process.OutputDataReceived -= OnOutputDataReceived;
 
-        _process.CancelOutputRead();
-        _process.Kill();
-        _process.Dispose();
+            _process.CancelOutputRead();
 
-        _process = null;
+            _process.Kill();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        finally
+        {
+            _process.Dispose();
+            _process = null;
+        }
 
         Message = "Run";
 
