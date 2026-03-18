@@ -59,13 +59,13 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         player.onDisconnect();
         sendPacket(DisconnectPacket.Get(reason));
         connection.disconnect();
-        server.playerManager.disconnect(player);
-        server.playerManager.sendToAll(PlayerConnectionUpdateS2CPacket.Get(
+        server.playerManager.Disconnect(player);
+        server.playerManager.SendToAll(PlayerConnectionUpdateS2CPacket.Get(
             player.id,
             PlayerConnectionUpdateS2CPacket.ConnectionUpdateType.Leave,
             player.name
         ));
-        server.playerManager.sendToAll(ChatMessagePacket.Get("§e" + player.name + " left the game."));
+        server.playerManager.SendToAll(ChatMessagePacket.Get("§e" + player.name + " left the game."));
         disconnected = true;
     }
 
@@ -74,7 +74,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
 
     public override void onPlayerMove(PlayerMovePacket packet)
     {
-        ServerWorld var2 = server.getWorld(player.dimensionId);
+        ServerWorld sWorld = server.getWorld(player.dimensionId);
         moved = true;
         if (!teleported)
         {
@@ -110,14 +110,14 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
                 }
 
                 player.onGround = packet.onGround;
-                player.playerTick(true);
+                player.playerTick(false);
                 player.move(var31, 0.0, var34);
                 player.setPositionAndAngles(var28, var29, var30, var27, var4);
                 player.velocityX = var31;
                 player.velocityZ = var34;
                 if (player.vehicle != null)
                 {
-                    var2.tickVehicle(player.vehicle, true);
+                    sWorld.tickVehicle(player.vehicle, true);
                 }
 
                 if (player.vehicle != null)
@@ -125,19 +125,19 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
                     player.vehicle.updatePassengerPosition();
                 }
 
-                server.playerManager.updatePlayerChunks(player);
+                server.playerManager.UpdatePlayerChunks(player);
                 teleportTargetX = player.x;
                 teleportTargetY = player.y;
                 teleportTargetZ = player.z;
-                var2.updateEntity(player);
+                sWorld.updateEntity(player);
                 return;
             }
 
             if (player.isSleeping())
             {
-                player.playerTick(true);
+                player.playerTick(false);
                 player.setPositionAndAngles(teleportTargetX, teleportTargetY, teleportTargetZ, player.yaw, player.pitch);
-                var2.updateEntity(player);
+                sWorld.updateEntity(player);
                 return;
             }
 
@@ -181,7 +181,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
                 var12 = packet.pitch;
             }
 
-            player.playerTick(true);
+            player.playerTick(false);
             player.cameraOffset = 0.0F;
             player.setPositionAndAngles(teleportTargetX, teleportTargetY, teleportTargetZ, var11, var12);
             if (!teleported)
@@ -201,7 +201,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             }
 
             float var21 = (1 / 16f);
-            bool var22 = var2.GetEntityCollisions(player, player.boundingBox.Contract(var21, var21, var21)).Count == 0;
+            bool var22 = sWorld.GetEntityCollisions(player, player.boundingBox.Contract(var21, var21, var21)).Count == 0;
             player.move(var32, var15, var17);
             var32 = var5 - player.x;
             var15 = var7 - player.y;
@@ -222,7 +222,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             }
 
             player.setPositionAndAngles(var5, var7, var9, var11, var12);
-            bool var24 = var2.GetEntityCollisions(player, player.boundingBox.Contract(var21, var21, var21)).Count == 0;
+            bool var24 = sWorld.GetEntityCollisions(player, player.boundingBox.Contract(var21, var21, var21)).Count == 0;
             if (var22 && (var23 || !var24) && !player.isSleeping())
             {
                 teleport(teleportTargetX, teleportTargetY, teleportTargetZ, var11, var12);
@@ -230,7 +230,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             }
 
             Box var25 = player.boundingBox.Expand(var21, var21, var21).Stretch(0.0, -0.55, 0.0);
-            if (server.flightEnabled || var2.isAnyBlockInBox(var25))
+            if (server.flightEnabled || sWorld.isAnyBlockInBox(var25))
             {
                 floatingTime = 0;
             }
@@ -246,7 +246,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             }
 
             player.onGround = packet.onGround;
-            server.playerManager.updatePlayerChunks(player);
+            server.playerManager.UpdatePlayerChunks(player);
             player.handleFall(player.y - var26, packet.onGround);
         }
     }
@@ -271,7 +271,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         }
         else
         {
-            bool var3 = var2.bypassSpawnProtection = var2.dimension.Id != 0 || server.playerManager.isOperator(player.name) || server is InternalServer;
+            bool var3 = var2.bypassSpawnProtection = var2.dimension.Id != 0 || server.playerManager.IsOperator(player.name) || server is InternalServer;
             bool var4 = false;
             if (packet.action == 0)
             {
@@ -345,7 +345,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
     {
         ServerWorld var2 = server.getWorld(player.dimensionId);
         ItemStack var3 = player.inventory.getSelectedItem();
-        bool var4 = var2.bypassSpawnProtection = var2.dimension.Id != 0 || server.playerManager.isOperator(player.name) || server is InternalServer;
+        bool var4 = var2.bypassSpawnProtection = var2.dimension.Id != 0 || server.playerManager.IsOperator(player.name) || server is InternalServer;
         if (packet.side == 255)
         {
             if (var3 == null)
@@ -430,13 +430,13 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
     public override void onDisconnected(string reason, object[]? objects)
     {
         _logger.LogInformation($"{player.name} lost connection: {reason}");
-        server.playerManager.disconnect(player);
-        server.playerManager.sendToAll(PlayerConnectionUpdateS2CPacket.Get(
+        server.playerManager.Disconnect(player);
+        server.playerManager.SendToAll(PlayerConnectionUpdateS2CPacket.Get(
             player.id,
             PlayerConnectionUpdateS2CPacket.ConnectionUpdateType.Leave,
             player.name
         ));
-        server.playerManager.sendToAll(ChatMessagePacket.Get("§e" + player.name + " left the game."));
+        server.playerManager.SendToAll(ChatMessagePacket.Get("§e" + player.name + " left the game."));
         disconnected = true;
     }
 
@@ -499,7 +499,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             {
                 var2 = "<" + player.name + "> " + var2;
                 _logger.LogInformation(var2);
-                server.playerManager.sendToAll(ChatMessagePacket.Get(var2));
+                server.playerManager.SendToAll(ChatMessagePacket.Get(var2));
             }
         }
     }
@@ -510,9 +510,9 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         {
             string emote = "* " + player.name + " " + message[message.IndexOf(" ")..].Trim();
             _logger.LogInformation(emote);
-            server.playerManager.sendToAll(ChatMessagePacket.Get(emote));
+            server.playerManager.SendToAll(ChatMessagePacket.Get(emote));
         }
-        else if (server is InternalServer || server.playerManager.isOperator(player.name))
+        else if (server is InternalServer || server.playerManager.IsOperator(player.name))
         {
             string commandText = message[1..];
             _logger.LogInformation($"{player.name} issued server command: {commandText}");
@@ -558,7 +558,12 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
 
     public int getBlockDataSendQueueSize()
     {
-        return connection.getDelayedSendQueueSize();
+        return getWorldPacketBacklog();
+    }
+
+    public int getWorldPacketBacklog()
+    {
+        return connection.getWorldPacketBacklog();
     }
 
     public void SendMessage(string message)
@@ -592,7 +597,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
     {
         if (player.health <= 0)
         {
-            player = server.playerManager.respawnPlayer(player, 0);
+            player = server.playerManager.RespawnPlayer(player, 0);
         }
     }
 

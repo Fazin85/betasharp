@@ -10,7 +10,7 @@ internal class AdminCommands
 
     public static void List(BetaSharpServer server, string senderName, string[] args, CommandOutput output)
     {
-        output.SendMessage("Connected players: " + server.playerManager.getPlayerList());
+        output.SendMessage("Connected players: " + server.playerManager.GetPlayerList());
     }
 
     public static void Stop(BetaSharpServer server, string senderName, string[] args, CommandOutput output)
@@ -24,7 +24,7 @@ internal class AdminCommands
     public static void SaveAll(BetaSharpServer server, string senderName, string[] args, CommandOutput output)
     {
         LogCommand(server, senderName, "Forcing save..");
-        server.playerManager?.savePlayers();
+        server.playerManager?.SavePlayers();
 
         for (int i = 0; i < server.worlds.Length; i++)
         {
@@ -51,9 +51,9 @@ internal class AdminCommands
         if (args.Length < 1) { output.SendMessage("Usage: op <player>"); return; }
 
         string target = args[0];
-        server.playerManager.addToOperators(target);
+        server.playerManager.AddToOperators(target);
         LogCommand(server, senderName, "Opping " + target);
-        server.playerManager.messagePlayer(target, "§eYou are now op!");
+        server.playerManager.MessagePlayer(target, "§eYou are now op!");
     }
 
     public static void Deop(BetaSharpServer server, string senderName, string[] args, CommandOutput output)
@@ -62,8 +62,8 @@ internal class AdminCommands
         if (args.Length < 1) { output.SendMessage("Usage: deop <player>"); return; }
 
         string target = args[0];
-        server.playerManager.removeFromOperators(target);
-        server.playerManager.messagePlayer(target, "§eYou are no longer op!");
+        server.playerManager.RemoveFromOperators(target);
+        server.playerManager.MessagePlayer(target, "§eYou are no longer op!");
         LogCommand(server, senderName, "De-opping " + target);
     }
 
@@ -73,9 +73,9 @@ internal class AdminCommands
         if (args.Length < 1) { output.SendMessage("Usage: ban <player>"); return; }
 
         string target = args[0];
-        server.playerManager.banPlayer(target);
+        server.playerManager.BanPlayer(target);
         LogCommand(server, senderName, "Banning " + target);
-        server.playerManager.getPlayer(target)?.networkHandler.disconnect("Banned by admin");
+        server.playerManager.GetPlayer(target)?.networkHandler.disconnect("Banned by admin");
     }
 
     public static void Pardon(BetaSharpServer server, string senderName, string[] args, CommandOutput output)
@@ -84,7 +84,7 @@ internal class AdminCommands
         if (args.Length < 1) { output.SendMessage("Usage: pardon <player>"); return; }
 
         string target = args[0];
-        server.playerManager.unbanPlayer(target);
+        server.playerManager.UnbanPlayer(target);
         LogCommand(server, senderName, "Pardoning " + target);
     }
 
@@ -94,7 +94,7 @@ internal class AdminCommands
         if (args.Length < 1) { output.SendMessage("Usage: ban-ip <ip>"); return; }
 
         string ip = args[0];
-        server.playerManager.banIp(ip);
+        server.playerManager.BanIp(ip);
         LogCommand(server, senderName, "Banning ip " + ip);
     }
 
@@ -104,7 +104,7 @@ internal class AdminCommands
         if (args.Length < 1) { output.SendMessage("Usage: pardon-ip <ip>"); return; }
 
         string ip = args[0];
-        server.playerManager.unbanIp(ip);
+        server.playerManager.UnbanIp(ip);
         LogCommand(server, senderName, "Pardoning ip " + ip);
     }
 
@@ -114,7 +114,7 @@ internal class AdminCommands
         if (args.Length < 1) { output.SendMessage("Usage: kick <player>"); return; }
 
         string target = args[0];
-        ServerPlayerEntity targetPlayer = server.playerManager.getPlayer(target);
+        ServerPlayerEntity targetPlayer = server.playerManager.GetPlayer(target);
 
         if (targetPlayer != null)
         {
@@ -148,7 +148,7 @@ internal class AdminCommands
                 server.config.SetProperty("white-list", false);
                 break;
             case "list":
-                var whitelist = server.playerManager.getWhitelist();
+                var whitelist = server.playerManager.GetWhitelist();
                 string names = "";
                 foreach (string name in whitelist)
                 {
@@ -158,16 +158,16 @@ internal class AdminCommands
                 break;
             case "add" when args.Length >= 2:
                 string addTarget = args[1].ToLower();
-                server.playerManager.addToWhitelist(addTarget);
+                server.playerManager.AddToWhitelist(addTarget);
                 LogCommand(server, senderName, "Added " + addTarget + " to white-list");
                 break;
             case "remove" when args.Length >= 2:
                 string removeTarget = args[1].ToLower();
-                server.playerManager.removeFromWhitelist(removeTarget);
+                server.playerManager.RemoveFromWhitelist(removeTarget);
                 LogCommand(server, senderName, "Removed " + removeTarget + " from white-list");
                 break;
             case "reload":
-                server.playerManager.reloadWhitelist();
+                server.playerManager.ReloadWhitelist();
                 LogCommand(server, senderName, "Reloaded white-list from file");
                 break;
         }
@@ -186,7 +186,7 @@ internal class AdminCommands
     internal static void LogCommand(BetaSharpServer server, string senderName, string message)
     {
         string logMessage = senderName + ": " + message;
-        server.playerManager.broadcast("§7(" + logMessage + ")");
+        server.playerManager.Broadcast("§7(" + logMessage + ")");
         s_logger.LogInformation(logMessage);
     }
 }

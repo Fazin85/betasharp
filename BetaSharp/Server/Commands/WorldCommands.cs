@@ -99,7 +99,7 @@ internal static class WorldCommands
             return;
         }
 
-        ServerPlayerEntity player = server.playerManager.getPlayer(senderName);
+        ServerPlayerEntity player = server.playerManager.GetPlayer(senderName);
         if (player == null)
         {
             output.SendMessage("Could not find your player.");
@@ -202,7 +202,7 @@ internal static class WorldCommands
 
     public static void GameRule(BetaSharpServer server, string senderName, string[] args, CommandOutput output)
     {
-        ServerPlayerEntity player = server.playerManager.getPlayer(senderName);
+        ServerPlayerEntity player = server.playerManager.GetPlayer(senderName);
         ServerWorld world = player != null ? server.getWorld(player.dimensionId) : server.worlds[0];
         RuleSet rules = world.Rules;
         RuleRegistry registry = RuleRegistry.Instance;
