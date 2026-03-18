@@ -3,6 +3,7 @@ using BetaSharp.Client.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Worlds;
+using sun.reflect.generics.tree;
 
 namespace BetaSharp.Client.Input;
 
@@ -114,6 +115,11 @@ public class PlayerController
     public virtual void attackEntity(EntityPlayer var1, Entity var2)
     {
         var1.attack(var2);
+    }
+
+    public virtual void sprint(EntityPlayer player)
+    {
+        player.setSprinting(true);  
     }
 
     public virtual ItemStack func_27174_a(int var1, int var2, int var3, bool var4, EntityPlayer var5)

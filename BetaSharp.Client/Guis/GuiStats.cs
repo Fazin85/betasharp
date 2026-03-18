@@ -1,6 +1,7 @@
 using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Items;
+using BetaSharp.Client.Textures;
 using BetaSharp.Items;
 using BetaSharp.Stats;
 using Silk.NET.OpenGL.Legacy;
@@ -102,7 +103,7 @@ public class GuiStats : GuiScreen
         GLManager.GL.Rotate(180.0F, 1.0F, 0.0F, 0.0F);
         Lighting.turnOn();
         GLManager.GL.PopMatrix();
-        itemRenderer.drawItemIntoGui(FontRenderer, mc.textureManager, itemId, 0, Item.ITEMS[itemId].getTextureId(0), x + 2, y + 2);
+        itemRenderer.drawItemIntoGui(FontRenderer, TextureAtlasManager.Instance, itemId, 0, Item.ITEMS[itemId].getTextureId(0), x + 2, y + 2);
         Lighting.turnOff();
         GLManager.GL.Disable(GLEnum.RescaleNormal);
     }

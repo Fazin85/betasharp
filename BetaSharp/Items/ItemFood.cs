@@ -8,17 +8,21 @@ public class ItemFood : Item
 
     private int healAmount;
     private bool isWolfsFavoriteMeat;
+    private string eatSound;
 
-    public ItemFood(int id, int healAmount, bool isWolfsFavoriteMeat) : base(id)
+    public ItemFood(int id, int healAmount, bool isWolfsFavoriteMeat, string eatSound = "random.crunch") : base(id)
     {
         this.healAmount = healAmount;
         this.isWolfsFavoriteMeat = isWolfsFavoriteMeat;
-        maxCount = 1;
+        this.eatSound = eatSound;
+        //maxCount = 1;
     }
 
-    public override ItemStack use(ItemStack itemStack, World world, EntityPlayer entityPlayer)
+    public override ItemStack AltFire(ItemStack itemStack, World world, EntityPlayer entityPlayer)
     {
+        if (entityPlayer.isHealthy()) return itemStack;
         --itemStack.count;
+        world.playSound(entityPlayer, eatSound, 0.4f, 1f); // le son est juste pas reconnu
         entityPlayer.heal(healAmount);
         return itemStack;
     }

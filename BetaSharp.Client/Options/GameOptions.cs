@@ -113,6 +113,7 @@ public class GameOptions
     public KeyBinding KeyBindCommand = new("key.command", Keyboard.KEY_SLASH);
     public KeyBinding KeyBindToggleFog = new("key.fog", 33);
     public KeyBinding KeyBindSneak = new("key.sneak", 42);
+    public KeyBinding KeyBindSprint = new("key.sprint", Keyboard.KEY_LCONTROL);
     public KeyBinding[] KeyBindings;
 
     protected Minecraft _mc;
@@ -151,6 +152,7 @@ public class GameOptions
             KeyBindInventory,
             KeyBindChat,
             KeyBindToggleFog,
+            KeyBindSprint
         ];
 
         LoadOptions();

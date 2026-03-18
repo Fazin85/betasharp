@@ -1,21 +1,26 @@
-﻿using BetaSharp.Blocks;
+using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
+using com.sun.org.apache.bcel.@internal.generic;
 
 namespace BetaSharp.Entities;
 
 public class EntityLiving : Entity
 {
     public int maxHealth = 20;
+    public int maxStamina = 20;
+    public int staminaSteps;
+    public int staminaRoof = 1000;
     public float limbSwingPhase;
     public float limbSwingScale;
     public float bodyYaw;
     public float lastBodyYaw;
     protected float lastWalkProgress;
+    protected bool saturation;
     protected float walkProgress;
     protected float totalWalkDistance;
     protected float lastTotalWalkDistance;
@@ -31,6 +36,9 @@ public class EntityLiving : Entity
     public float lastSwingAnimationProgress;
     public float swingAnimationProgress;
     public int health = 10;
+    public int stamina = 20;
+    public float staminaDepleteRate = 0.9f;
+    public float staminaRestoreRate = 1f;
     public int lastHealth;
     private int livingSoundTime;
     public int hurtTime;
@@ -56,8 +64,10 @@ public class EntityLiving : Entity
     protected int entityAge;
     protected float sidewaysSpeed;
     protected float forwardSpeed;
+    protected float sprintSpeed = 1.9f;
     protected float rotationSpeed;
     protected bool jumping;
+    protected bool  running = false;
     protected float defaultPitch = 0.0F;
     protected float movementSpeed = 0.7F;
     private Entity lookTarget;
@@ -71,6 +81,8 @@ public class EntityLiving : Entity
         limbSwingPhase = Random.Shared.NextSingle() * 12398.0f;
         yaw = (Random.Shared.NextSingle() * (float)Math.PI) * 2.0f;
         stepHeight = 0.5F;
+        staminaSteps = staminaRoof;
+        running = false;
     }
 
     public virtual void PostSpawn()
@@ -191,14 +203,6 @@ public class EntityLiving : Entity
             {
                 onEntityDeath();
                 markDead();
-
-                for (i = 0; i < 20; ++i)
-                {
-                    double velX = random.NextGaussian() * 0.02D;
-                    double velY = random.NextGaussian() * 0.02D;
-                    double velZ = random.NextGaussian() * 0.02D;
-                    world.addParticle("explode", x + (double)(random.NextFloat() * width * 2.0F) - (double)width, y + (double)(random.NextFloat() * height), z + (double)(random.NextFloat() * width * 2.0F) - (double)width, velX, velY, velZ);
-                }
             }
         }
 
@@ -213,6 +217,10 @@ public class EntityLiving : Entity
         if (!interpolateOnly/* || this is ClientPlayerEntity*/) base.move(x, y, z);
     }
 
+    public void Run()
+    {
+        running = true;
+    }
     public void animateSpawn()
     {
         for (int i = 0; i < 20; ++i)
@@ -251,14 +259,17 @@ public class EntityLiving : Entity
         double dx = x - prevX;
         double dz = z - prevZ;
         float horizontalDistance = MathHelper.Sqrt(dx * dx + dz * dz);
+        float speedmult = running ? sprintSpeed : 1f;
         float computedYaw = bodyYaw;
         float walkSpeed = 0.0F;
         lastWalkProgress = walkProgress;
         float walkAmount = 0.0F;
+        //if (!running && stamina < 20) stamina++;
+        // gère l'animation des jambes
         if (horizontalDistance > 0.05F)
         {
-            walkAmount = 1.0F;
-            walkSpeed = horizontalDistance * 3.0F;
+            walkAmount = 1.0f * speedmult;
+            walkSpeed = horizontalDistance * 3.0F* speedmult;
             computedYaw = (float)System.Math.Atan2(dz, dx) * 180.0F / (float)System.Math.PI - 90.0F;
         }
 
@@ -358,16 +369,26 @@ public class EntityLiving : Entity
 
     public virtual void heal(int amount)
     {
+        if (isHealthy()) return;
+
         if (health > 0)
         {
-            health += amount;
-            if (health > 20)
-            {
-                health = 20;
-            }
-
+            health = Math.Min(maxHealth, health + amount);
             hearts = maxHealth / 2;
         }
+
+        running = false;
+        // Restaure la stamina proportionnellement à la quantité soignée
+        // seulement si elle n'est pas déjà pleine
+        
+        int staminaToRestore = amount * staminaRoof * 2;
+        for (int c = 0; c > amount; c++) stamina++;
+        staminaSteps += staminaToRestore;
+    }
+
+    public bool isHealthy()
+    {
+        return health == maxHealth;
     }
 
     public override bool damage(Entity entity, int amount)
@@ -478,7 +499,7 @@ public class EntityLiving : Entity
 
     protected virtual string getDeathSound()
     {
-        return "random.hurt";
+        return "random.death";
     }
 
     public void knockBack(Entity entity, int amount, double dx, double dy)
@@ -559,10 +580,11 @@ public class EntityLiving : Entity
     public virtual void travel(float strafe, float forward)
     {
         double previousY;
-        if (isInWater())
+        float speedmult = running ? sprintSpeed : 1f;
+        if (isInWater()) // normal?
         {
             previousY = y;
-            moveNonSolid(strafe, forward, 0.02F);
+            moveNonSolid(strafe, forward, 0.02F * speedmult);
             move(velocityX, velocityY, velocityZ);
             velocityX *= (double)0.8F;
             velocityY *= (double)0.8F;
@@ -576,7 +598,7 @@ public class EntityLiving : Entity
         else if (isTouchingLava())
         {
             previousY = y;
-            moveNonSolid(strafe, forward, 0.02F);
+            moveNonSolid(strafe, forward, 0.02F * speedmult);
             move(velocityX, velocityY, velocityZ);
             velocityX *= 0.5D;
             velocityY *= 0.5D;
@@ -587,7 +609,7 @@ public class EntityLiving : Entity
                 velocityY = (double)0.3F;
             }
         }
-        else
+        else // fonctionne bien pour ce que c'est
         {
             float friction = 0.91F;
             if (onGround)
@@ -600,8 +622,8 @@ public class EntityLiving : Entity
                 }
             }
 
-            float movementFactor = 0.16277136F / (friction * friction * friction);
-            moveNonSolid(strafe, forward, onGround ? 0.1F * movementFactor : 0.02F);
+            float movementFactor = 0.16277136F / (friction * friction * friction) ;
+            moveNonSolid(strafe, forward,( onGround ? 0.1F * movementFactor : 0.02F) * speedmult);
             friction = 0.91F;
             if (onGround)
             {
@@ -684,18 +706,26 @@ public class EntityLiving : Entity
     public override void writeNbt(NBTTagCompound nbt)
     {
         nbt.SetShort("Health", (short)health);
+        nbt.SetInteger("Stamina", stamina);
         nbt.SetShort("HurtTime", (short)hurtTime);
         nbt.SetShort("DeathTime", (short)deathTime);
         nbt.SetShort("AttackTime", (short)attackTime);
     }
 
+    public virtual Vec3D getRotationWhenDead()
+    {
+        return new Vec3D(1f, 0f, 0f); // default one
+    }
     public override void readNbt(NBTTagCompound nbt)
     {
         health = nbt.GetShort("Health");
+        stamina = nbt.GetInteger("Stamina");
         if (!nbt.HasKey("Health"))
         {
             health = 10;
         }
+
+        if (!nbt.HasKey("Stamina")) stamina = 20;
 
         hurtTime = nbt.GetShort("HurtTime");
         deathTime = nbt.GetShort("DeathTime");
@@ -714,6 +744,7 @@ public class EntityLiving : Entity
 
     public virtual void tickMovement()
     {
+        bool isMoving = Math.Abs(forwardSpeed) > 0.01f || Math.Abs(sidewaysSpeed) > 0.01f || jumping;
         if (newPosRotationIncrements > 0)
         {
             double newX = x + (newPosX - x) / (double)newPosRotationIncrements;
@@ -768,6 +799,10 @@ public class EntityLiving : Entity
 
         bool isInWater = base.isInWater();
         bool isTouchingLava = base.isTouchingLava();
+        if (running && isMoving) run();
+        if ( !running && !isMoving && stamina < maxStamina)
+            restoreStamina(300, staminaRestoreRate);
+            // restoreStamina
         if (jumping)
         {
             if (isInWater)
@@ -783,7 +818,7 @@ public class EntityLiving : Entity
                 jump();
             }
         }
-
+        
         sidewaysSpeed *= 0.98F;
         forwardSpeed *= 0.98F;
         rotationSpeed *= 0.9F;
@@ -811,6 +846,59 @@ public class EntityLiving : Entity
     protected virtual void jump()
     {
         velocityY = (double)0.42F;
+    }
+    protected virtual void run()
+    {
+        if (isMovementBlocked() || stamina <= 0)
+        {
+            running = false;
+            return;
+        }
+
+        if (running)
+        {
+            depleteStamina(110, staminaDepleteRate );
+        }
+    }
+
+
+    protected void depleteStamina(int amount, float rate)
+    {
+        staminaSteps -= (int)(amount * rate);
+        if (staminaSteps <= 0)
+        {
+            int finalAmount = (int)Math.Round(staminaSteps / (double)staminaRoof) + 1;
+            stamina = Math.Max(0, stamina - finalAmount);
+            staminaSteps = staminaRoof;
+        }
+        bolts = stamina / 2;
+    }
+
+    protected void restoreStamina(int amount, float rate, bool direct = false)
+    {
+        if (direct)
+        {
+            stamina = Math.Min(maxStamina, stamina + amount);
+
+        } else {
+            staminaSteps += (int)(amount * rate);
+        if (staminaSteps >= staminaRoof)
+        {
+            
+            int finalAmount = (int)Math.Floor((double)staminaSteps / staminaRoof);
+            Console.WriteLine($" plus {finalAmount} healf-bolts / with input amount {amount * rate}");
+            stamina = Math.Min(maxStamina, stamina + finalAmount);
+            staminaSteps = 0;
+        }
+
+        }
+            
+        bolts = stamina / 2;
+    }
+
+    protected void AddDirectStamina(int amount)
+    {
+        restoreStamina(amount,1f, true);
     }
 
     protected virtual bool canDespawn()
@@ -975,10 +1063,11 @@ public class EntityLiving : Entity
 
     public float getSwingProgress(float partialTick)
     {
+        float speedmult = running ? sprintSpeed : 1f;
         float var2 = swingAnimationProgress - lastSwingAnimationProgress;
         if (var2 < 0.0F)
         {
-            ++var2;
+            var2 = var2 * speedmult + 1 ;
         }
 
         return lastSwingAnimationProgress + var2 * partialTick;
@@ -1052,7 +1141,7 @@ public class EntityLiving : Entity
     {
         if (statusId == 2)
         {
-            walkAnimationSpeed = 1.5F;
+            walkAnimationSpeed = running ? sprintSpeed : 1.5F;
             hearts = maxHealth;
             hurtTime = maxHurtTime = 10;
             attackedAtYaw = 0.0F;
@@ -1077,7 +1166,7 @@ public class EntityLiving : Entity
         return false;
     }
 
-    public virtual int getItemStackTextureId(ItemStack item)
+    public virtual string getItemStackTextureId(ItemStack item)
     {
         return item.getTextureId();
     }

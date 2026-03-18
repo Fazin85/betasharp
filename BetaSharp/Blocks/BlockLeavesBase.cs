@@ -7,7 +7,7 @@ public class BlockLeavesBase : Block
 {
     protected bool graphicsLevel;
 
-    protected BlockLeavesBase(int id, int textureId, Material material, bool graphicsLevel) : base(id, textureId, material)
+    protected BlockLeavesBase(int id, string textureId, Material material, bool graphicsLevel) : base(id, textureId, material)
     {
         this.graphicsLevel = graphicsLevel;
     }

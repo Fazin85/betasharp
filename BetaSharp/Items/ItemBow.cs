@@ -11,7 +11,7 @@ public class ItemBow : Item
         maxCount = 1;
     }
 
-    public override ItemStack use(ItemStack itemStack, World world, EntityPlayer entityPlayer)
+    public override ItemStack AltFire(ItemStack itemStack, World world, EntityPlayer entityPlayer)
     {
         if (entityPlayer.inventory.consumeInventoryItem(Item.ARROW.id))
         {

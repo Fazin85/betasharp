@@ -12,7 +12,7 @@ public class LavaSideSprite : DynamicTexture
     protected float[] heatDelta = new float[256];
     int ticks;
 
-    public LavaSideSprite() : base(Block.FlowingLava.textureId + 1)
+    public LavaSideSprite() : base(Block.FlowingLava.textureId)
     {
         replicate = 2;
     }

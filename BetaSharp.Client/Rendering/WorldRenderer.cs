@@ -1,22 +1,23 @@
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Entities.FX;
+using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Blocks.Entities;
 using BetaSharp.Client.Rendering.Chunks;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Entities;
-using BetaSharp.Client.Options;
+using BetaSharp.Client.Textures;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Profiling;
+using BetaSharp.Util;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL.Legacy;
-using BetaSharp.Util;
-using BetaSharp.Client.Rendering.Core.Textures;
 
 namespace BetaSharp.Client.Rendering;
 
@@ -620,7 +621,7 @@ public class WorldRenderer : IWorldAccess
             if (damagePartialTime > 0.0F)
             {
                 GLManager.GL.BlendFunc(GLEnum.DstColor, GLEnum.SrcColor);
-                renderEngine.BindTexture(renderEngine.GetTextureId("/terrain.png"));
+                TextureAtlasManager.Instance.Terrain.Bind();
                 GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 0.5F);
                 GLManager.GL.PushMatrix();
                 var8 = world.getBlockId(var2.BlockX, var2.BlockY, var2.BlockZ);
@@ -653,7 +654,7 @@ public class WorldRenderer : IWorldAccess
             GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
             float var16 = MathHelper.Sin(java.lang.System.currentTimeMillis() / 100.0F) * 0.2F + 0.8F;
             GLManager.GL.Color4(var16, var16, var16, MathHelper.Sin(java.lang.System.currentTimeMillis() / 200.0F) * 0.2F + 0.5F);
-            renderEngine.BindTexture(renderEngine.GetTextureId("/terrain.png"));
+            TextureAtlasManager.Instance.Terrain.Bind();
             int var17 = var2.BlockX;
             int var18 = var2.BlockY;
             int var11 = var2.BlockZ;

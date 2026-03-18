@@ -11,23 +11,60 @@ public class BlockPistonBase : Block
     private bool sticky;
     private bool deaf;
 
-    public BlockPistonBase(int id, int textureId, bool sticky) : base(id, textureId, Material.Piston)
+    private const string TexSide = "piston_side";
+    private const string TexInner = "piston_inner";
+    private const string TexBack = "piston_bottom";  // face opposée à la tête
+
+    public BlockPistonBase(int id, string textureId, bool sticky) : base(id, textureId, Material.Stone)
     {
         this.sticky = sticky;
-        setSoundGroup(SoundStoneFootstep);
-        setHardness(0.5F);
     }
 
-    public int getTopTexture()
+    public override string getTexture(string side, int meta)
     {
-        return sticky ? 106 : 107;
+        string facing = GetFacingString(meta);          // "up","down","north"...
+        string opposite = PistonConstants.field_31057_a[meta-2].ToString();
+
+        if (side == facing)
+        {
+            // Face avant = la tête
+            bool isFullCube = BoundingBox.MinX <= 0.0D && BoundingBox.MinY <= 0.0D
+                                                       && BoundingBox.MinZ <= 0.0D && BoundingBox.MaxX >= 1.0D
+                                                       && BoundingBox.MaxY >= 1.0D && BoundingBox.MaxZ >= 1.0D;
+            return !isExtended(meta) && isFullCube ? TexBack : TexSide;
+        }
+
+        if (side == opposite)
+            return TexInner;   // intérieur du cylindre
+
+        return TexSide;        // les 4 faces latérales
     }
 
-    public override int getTexture(int side, int meta)
+    public override string getTexture(string side)
     {
-        int var3 = getFacing(meta);
-        return var3 > 5 ? textureId : (side == var3 ? (!isExtended(meta) && BoundingBox.MinX <= 0.0D && BoundingBox.MinY <= 0.0D && BoundingBox.MinZ <= 0.0D && BoundingBox.MaxX >= 1.0D && BoundingBox.MaxY >= 1.0D && BoundingBox.MaxZ >= 1.0D ? textureId : 110) : (side == PistonConstants.field_31057_a[var3] ? 109 : 108));
+        // Sans meta (inventaire) : face avant = top
+        return side == "up" ? textureId    // tête sticky ou normale
+            : side == "down" ? TexInner
+            : TexSide;
     }
+
+    // Convertit getFacing(int meta) en string de face
+    private static string GetFacingString(int meta)
+    {
+        return (meta & 7) switch
+        {
+            0 => "down",
+            1 => "up",
+            2 => "north",
+            3 => "south",
+            4 => "west",
+            5 => "east",
+            _ => "up"
+        };
+    }
+
+    public static bool isExtended(int meta) => (meta & 8) != 0;
+
 
     public override int getRenderType()
     {
@@ -236,10 +273,7 @@ public class BlockPistonBase : Block
         return meta & 7;
     }
 
-    public static bool isExtended(int meta)
-    {
-        return (meta & 8) != 0;
-    }
+    
 
     private static int getFacingForPlacement(World world, int x, int y, int z, EntityPlayer player)
     {

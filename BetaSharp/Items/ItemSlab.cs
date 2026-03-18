@@ -11,9 +11,9 @@ public class ItemSlab : ItemBlock
         setHasSubtypes(true);
     }
 
-    public override int getTextureId(int meta)
+    public override string getTextureId(int meta)
     {
-        return Block.Slab.getTexture(2, meta);
+        return Block.Slab.getTexture("front", meta);
     }
 
     public override int getPlacementMetadata(int meta)

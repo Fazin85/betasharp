@@ -8,7 +8,7 @@ namespace BetaSharp.Blocks;
 public class BlockReed : Block
 {
 
-    public BlockReed(int id, int textureId) : base(id, Material.Plant)
+    public BlockReed(int id, string textureId) : base(id, Material.Plant)
     {
         base.textureId = textureId;
         float halfWidth = 6.0F / 16.0F;

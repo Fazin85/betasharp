@@ -41,7 +41,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
     private readonly Lock _tpsLock = new();
     private long _lastTpsTime;
     private int _ticksThisSecond;
-    private float _currentTps;
+    public float _currentTps;
 
     private volatile bool _isPaused;
 
@@ -244,7 +244,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                     long tickLength = currentTime - lastTime;
                     if (tickLength > 2000L)
                     {
-                        _logger.LogWarning("Can't keep up! Did the system time change, or is the server overloaded?");
+                        _logger.LogWarning($"Can't keep up! Did the system time change, or is the server overloaded? running {tickLength} ms, or {1 / tickLength} ticks behind ! ");
                         tickLength = 2000L;
                     }
 
@@ -275,12 +275,18 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                     }
                     else
                     {
-                        while (accumulatedTime > 50L)
+                        double tickThreshold = worlds[0].timescale > 0f
+                            ? 50.0 / worlds[0].timescale
+                            : 50.0;
+
+                        double accumulatedTimeD = accumulatedTime; // convertit pour la comparaison
+                        while (accumulatedTimeD > tickThreshold)
                         {
-                            accumulatedTime -= 50L;
+                            accumulatedTimeD -= tickThreshold;
                             tick();
                             _ticksThisSecond++;
                         }
+                        accumulatedTime = (long)accumulatedTimeD; // remet à jour
                     }
 
                     long tpsNow = java.lang.System.currentTimeMillis();
@@ -398,7 +404,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                 {
                 }
 
-                world.tickEntities();
+               // world.tickEntities();
             }
         }
 

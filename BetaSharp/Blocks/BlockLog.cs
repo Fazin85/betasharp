@@ -9,7 +9,7 @@ public class BlockLog : Block
 {
     public BlockLog(int id) : base(id, Material.Wood)
     {
-        textureId = 20;
+        textureId = "oak";
     }
 
     public override int getDroppedItemCount(JavaRandom random)
@@ -55,9 +55,9 @@ public class BlockLog : Block
 
     }
 
-    public override int getTexture(int side, int meta)
+    public override string getTexture(string side, int meta)
     {
-        return side == 1 ? 21 : (side == 0 ? 21 : (meta == 1 ? 116 : (meta == 2 ? 117 : 20)));
+        return side == "top" ? $"{textureId}_top" : (side == "bottom" ? $"{textureId}_top" : (meta == 2 ? textureId : (meta == 2 ? textureId : textureId)));
     }
 
     protected override int getDroppedItemMeta(int blockMeta)

@@ -13,7 +13,7 @@ public class BlockDispenser : BlockWithEntity
 
     public BlockDispenser(int id) : base(id, Material.Stone)
     {
-        textureId = 45;
+        textureId = "dispenser";
     }
 
     public override int getTickRate()
@@ -65,26 +65,20 @@ public class BlockDispenser : BlockWithEntity
         }
     }
 
-    public override int getTextureId(BlockView blockView, int x, int y, int z, int side)
+    public override string getTextureId(BlockView blockView, int x, int y, int z, string side)
     {
-        if (side == 1)
-        {
-            return textureId + 17;
-        }
-        else if (side == 0)
-        {
-            return textureId + 17;
-        }
-        else
-        {
-            int meta = blockView.getBlockMeta(x, y, z);
-            return side != meta ? textureId : textureId + 1;
-        }
+    
+        return side == "up" ? textureId
+            : side == "down" ? "{textureId}_top"
+            : $"{textureId}_side";
+    
     }
 
-    public override int getTexture(int side)
+    public override string getTexture(string side)
     {
-        return side == 1 ? textureId + 17 : (side == 0 ? textureId + 17 : (side == 3 ? textureId + 1 : textureId));
+        return side == "up" ? textureId
+            : side == "down" ? "{textureId}_top"
+            : $"{textureId}_side";
     }
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)

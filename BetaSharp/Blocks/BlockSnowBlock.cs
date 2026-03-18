@@ -8,7 +8,7 @@ namespace BetaSharp.Blocks;
 public class BlockSnowBlock : Block
 {
 
-    public BlockSnowBlock(int id, int textureId) : base(id, textureId, Material.SnowBlock)
+    public BlockSnowBlock(int id, string textureId) : base(id, textureId, Material.SnowBlock)
     {
         setTickRandomly(true);
     }

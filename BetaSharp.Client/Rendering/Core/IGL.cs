@@ -4,6 +4,7 @@ namespace BetaSharp.Client.Rendering.Core;
 
 public unsafe interface IGL
 {
+    GL GetGl();
     void AlphaFunc(GLEnum func, float refValue);
     void AttachShader(uint program, uint shader);
     void BindBuffer(GLEnum target, uint buffer);

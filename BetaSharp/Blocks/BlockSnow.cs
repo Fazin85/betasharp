@@ -9,7 +9,7 @@ namespace BetaSharp.Blocks;
 public class BlockSnow : Block
 {
 
-    public BlockSnow(int id, int textureId) : base(id, textureId, Material.SnowLayer)
+    public BlockSnow(int id, string textureId) : base(id, textureId, Material.SnowLayer)
     {
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 2.0F / 16.0F, 1.0F);
         setTickRandomly(true);

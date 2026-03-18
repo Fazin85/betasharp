@@ -35,7 +35,7 @@ public class EntitySpider : EntityMonster
         return false;
     }
 
-    protected override Entity findPlayerToAttack()
+    protected override Entity searchForPreys()
     {
         float brightness = getBrightnessAtEyes(1.0F);
         if (brightness < 0.5F)
@@ -69,7 +69,7 @@ public class EntitySpider : EntityMonster
         float brightness = getBrightnessAtEyes(1.0F);
         if (brightness > 0.5F && random.NextInt(100) == 0)
         {
-            playerToAttack = null;
+            preyToAttack = null;
         }
         else
         {

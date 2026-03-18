@@ -1,4 +1,5 @@
 using BetaSharp.Blocks;
+//using BetaSharp.Client.Rendering.Entities;
 using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Hit;
@@ -24,6 +25,8 @@ public class EntityArrow : Entity
     public EntityArrow(World world) : base(world)
     {
         setBoundingBoxSpacing(0.5F, 0.5F);
+        
+        //customRenderer = new ArrowEntityRenderer();
     }
 
     public EntityArrow(World world, double x, double y, double z) : base(world)

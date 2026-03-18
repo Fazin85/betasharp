@@ -9,9 +9,9 @@ public class BlockRedstoneTorch : BlockTorch
     private readonly bool _lit = false;
     private static readonly ThreadLocal<List<RedstoneUpdateInfo>> s_torchUpdates = new(() => []);
 
-    public override int getTexture(int side, int meta)
+    public override string getTexture(string side, int meta)
     {
-        return side == 1 ? Block.RedstoneWire.getTexture(side, meta) : base.getTexture(side, meta);
+        return side == "top" ? Block.RedstoneWire.getTexture(side, meta) : base.getTexture(side, meta);
     }
 
     private bool isBurnedOut(World world, int x, int y, int z, bool recordUpdate)
@@ -40,7 +40,7 @@ public class BlockRedstoneTorch : BlockTorch
         return false;
     }
 
-    public BlockRedstoneTorch(int id, int textureId, bool lit) : base(id, textureId)
+    public BlockRedstoneTorch(int id, string textureId, bool lit) : base(id, textureId)
     {
         _lit = lit;
         setTickRandomly(true);

@@ -426,21 +426,24 @@ public class Chunk
         if (!BlockEntities.TryGetValue(pos, out BlockEntity? entity))
         {
             int id = GetBlockId(localX, y, localZ);
-            if (id == 0 || !Block.BlocksWithEntity[id]) return null;
+            if (id == 0 || !Block.BlocksWithEntity[id])
+                return null;
 
             BlockWithEntity blockWithEntity = (BlockWithEntity)Block.Blocks[id];
             blockWithEntity.onPlaced(World, X * 16 + localX, y, Z * 16 + localZ);
             BlockEntities.TryGetValue(pos, out entity);
         }
 
-        if (entity != null && entity.isRemoved())
-        {
-            BlockEntities.Remove(pos);
-            return null;
-        }
-
+        // Ne supprime plus ici — retourne la BE même si marquée removed
+        // La suppression est gérée par removeBlockEntity appelé après le drop
         return entity;
     }
+    /*public void cleanRemovedBlockEntities()
+    {
+        var toRemove = BlockEntities.Where(kv => kv.Value.isRemoved()).Select(kv => kv.Key).ToList();
+        foreach (var pos in toRemove)
+            BlockEntities.Remove(pos);
+    }*/
 
     public virtual void AddBlockEntity(BlockEntity blockEntity)
     {

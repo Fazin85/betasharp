@@ -10,6 +10,7 @@ public class EntityPig : EntityAnimal
     {
         texture = "/mob/pig.png";
         setBoundingBoxSpacing(0.9F, 0.9F);
+        //preys.Add(typeof(EntityChicken));
     }
 
     protected override void initDataTracker()
@@ -55,6 +56,15 @@ public class EntityPig : EntityAnimal
             player.setVehicle(this);
             return true;
         }
+    }
+
+    public override void onKilledBy(Entity var1)
+    {
+        if (var1 is EntityPigZombie)
+        {
+            world.SpawnEntity(EntityRegistry.createEntityAt("pigzombie", world, (float)x, (float)y, (float)z));
+        }
+        base.onKilledBy(var1);
     }
 
     protected override int getDropItemId()

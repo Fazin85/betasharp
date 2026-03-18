@@ -1,4 +1,5 @@
 using BetaSharp.Blocks;
+//using BetaSharp.Client.Rendering.Entities;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
@@ -13,6 +14,7 @@ public class EntityLightningBolt : EntityWeatherEffect
 
     public EntityLightningBolt(World world, double x, double y, double z) : base(world)
     {
+        //customRenderer = new LightningEntityRenderer();
         setPositionAndAnglesKeepPrevAngles(x, y, z, 0.0F, 0.0F);
         flashTimer = 2;
         renderSeed = random.NextLong();

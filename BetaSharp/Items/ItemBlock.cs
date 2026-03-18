@@ -12,7 +12,7 @@ public class ItemBlock : Item
     public ItemBlock(int id) : base(id)
     {
         blockID = id + 256;
-        setTextureId(Block.Blocks[id + 256].getTexture(2));
+        setTextureId(Block.Blocks[id + 256].getTexture("top"));
     }
 
     public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int meta)

@@ -10,7 +10,7 @@ public unsafe class EmulatedGL : LegacyGL
     private readonly MatrixStack _textureStack = new();
 
     private GLEnum _currentMatrixMode = GLEnum.Modelview;
-
+    public GL GetGl() => SilkGL;
     private readonly FixedFunctionShader _shader;
     private bool _useTexture = false;
     private uint _currentProgram = 0;

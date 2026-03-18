@@ -5,7 +5,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockGlass : BlockBreakable
 {
-    public BlockGlass(int id, int texture, Material material, bool bl) : base(id, texture, material, bl)
+    public BlockGlass(int id, string texture, Material material, bool bl) : base(id, texture, material, bl)
     {
     }
 

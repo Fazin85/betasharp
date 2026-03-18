@@ -1,18 +1,24 @@
 using BetaSharp.Blocks;
+//using BetaSharp.Client.Rendering.Entities;
+//using BetaSharp.Client.Rendering.Entities.Models;
 using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
+using com.sun.org.apache.xpath.@internal.operations;
 
 namespace BetaSharp.Entities;
 
 public class EntitySheep : EntityAnimal
 {
     public static readonly float[][] fleeceColorTable = [[1.0F, 1.0F, 1.0F], [0.95F, 0.7F, 0.2F], [0.9F, 0.5F, 0.85F], [0.6F, 0.7F, 0.95F], [0.9F, 0.9F, 0.2F], [0.5F, 0.8F, 0.1F], [0.95F, 0.7F, 0.8F], [0.3F, 0.3F, 0.3F], [0.6F, 0.6F, 0.6F], [0.3F, 0.6F, 0.7F], [0.7F, 0.4F, 0.9F], [0.2F, 0.4F, 0.8F], [0.5F, 0.4F, 0.3F], [0.4F, 0.5F, 0.2F], [0.8F, 0.3F, 0.3F], [0.1F, 0.1F, 0.1F]];
-
+    //public ModelBase Model2;
     public EntitySheep(World world) : base(world)
     {
         texture = "/mob/sheep.png";
+        ///Model = new ModelSheep1();
+        //Model2 = new ModelSheep2();
+        ///customRenderer = new SheepEntityRenderer(Model, Model2, 0.9F);
         setBoundingBoxSpacing(0.9F, 1.3F);
     }
 

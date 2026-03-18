@@ -9,13 +9,16 @@ public class BlockWorkbench : Block
 
     public BlockWorkbench(int id) : base(id, Material.Wood)
     {
-        textureId = 59;
+        textureId = "workbench";
     }
 
-    public override int getTexture(int side)
+    public override string getTexture(string side)
     {
-        return side == 1 ? textureId - 16 : (side == 0 ? Block.Planks.getTexture(0) : (side != 2 && side != 4 ? textureId : textureId + 1));
+        return side == "up" ? $"{textureId}_top"
+            : side == "down" ? $"{textureId}_bottom"
+            : $"{textureId}_side";
     }
+
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
     {

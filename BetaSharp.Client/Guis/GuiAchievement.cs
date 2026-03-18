@@ -1,6 +1,7 @@
 using System;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Items;
+using BetaSharp.Client.Textures;
 using BetaSharp.Stats;
 using Silk.NET.OpenGL.Legacy;
 
@@ -142,7 +143,7 @@ public class GuiAchievement : Gui
         GLManager.GL.Enable(GLEnum.ColorMaterial);
         GLManager.GL.Enable(GLEnum.Lighting);
 
-        _itemRender.renderItemIntoGUI(_theGame.fontRenderer, _theGame.textureManager, _theAchievement.icon, achievementX + 8, achievementY + 8);
+        _itemRender.renderItemIntoGUI(_theGame.fontRenderer, TextureAtlasManager.Instance, _theAchievement.icon, achievementX + 8, achievementY + 8);
 
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.DepthMask(true);

@@ -58,7 +58,7 @@ public class MapItemRenderer
             }
         }
 
-        if (_textureId.Texture != null) textureManager.Bind(colors, 128, 128, _textureId.Texture);
+        //if (_textureId.Texture != null) textureManager.BindTexture(colors, 128, 128, _textureId.Texture);
         Tessellator tess = Tessellator.instance;
         _textureId.Bind();
         GLManager.GL.Enable(GLEnum.Blend);

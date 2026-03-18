@@ -10,12 +10,12 @@ public class BlockRedstoneWire : Block
 
     private static readonly ThreadLocal<bool> s_wiresProvidePower = new(() => true);
 
-    public BlockRedstoneWire(int id, int textureId) : base(id, textureId, Material.PistonBreakable)
+    public BlockRedstoneWire(int id, string textureId) : base(id, textureId, Material.PistonBreakable)
     {
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F / 16.0F, 1.0F);
     }
 
-    public override int getTexture(int var1, int var2)
+    public override string getTexture(string var1, int var2)
     {
         return textureId;
     }

@@ -8,7 +8,7 @@ namespace BetaSharp.Blocks;
 public class BlockSoulSand : Block
 {
 
-    public BlockSoulSand(int id, int textureId) : base(id, textureId, Material.Sand)
+    public BlockSoulSand(int id, string textureId) : base(id, textureId, Material.Sand)
     {
     }
 

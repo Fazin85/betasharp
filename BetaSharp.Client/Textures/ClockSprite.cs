@@ -1,170 +1,179 @@
 using BetaSharp.Client.Rendering.Core.Textures;
+using BetaSharp.Client.Textures;
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
-using java.awt.image;
-using java.io;
-using javax.imageio;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace BetaSharp.Client.Textures;
 
 public class ClockSprite : DynamicTexture
 {
-    private Minecraft mc;
-    private int[] clock = new int[256];
-    private int[] dial = new int[256];
-    private double angle;
-    private double angleDelta;
-    private int resolution = 16;
-    private int dialResolution = 16;
+    private Minecraft _mc;
 
-    public ClockSprite(Minecraft var1) : base(Item.Clock.getTextureId(0))
+    // Pixels de la face de l'horloge (fond) lus depuis l'atlas au Setup
+    private int[] _clockPixels = new int[256];
+    // Pixels du cadran (aiguille) lus depuis misc/dial.png
+    private int[] _dialPixels = new int[256];
+
+    // Dimensions
+    private int _resolution = 16; // taille de la tuile horloge dans l'atlas
+    private int _dialResolution = 16; // taille de dial.png (peut différer)
+
+    // Buffer de sortie RGBA — uploadé dans l'atlas à chaque tick via PatchTile
+    private byte[] _outputPixels = new byte[256 * 4];
+
+    // Angle de l'aiguille (rad) et sa vélocité
+    private double _angle = 0.0;
+    private double _angleDelta = 0.0;
+
+    // Nom de la tuile dans l'atlas Items
+    private readonly string _tileId;
+
+    public ClockSprite(Minecraft mc) : base(Item.Clock.getTextureId(0))
     {
-        mc = var1;
-        atlas = FXImage.Items;
+        _mc = mc;
+        _tileId = Item.Clock.getTextureId(0); // "clock" ou équivalent
     }
 
     public override void Setup(Minecraft mc)
     {
-        this.mc = mc;
-        TextureManager tm = mc.textureManager;
-        string atlasPath = "/gui/items.png";
-        
-        var handle = tm.GetTextureId(atlasPath);
-        if (handle.Texture != null)
-        {
-            resolution = handle.Texture.Width / 16;
-        }
-        else
-        {
-            resolution = 16;
-        }
+        _mc = mc;
+        TextureAtlas atlas = TextureAtlasManager.Instance.Items;
 
-        int pixelCount = resolution * resolution;
-        if (clock.Length != pixelCount)
-        {
-            clock = new int[pixelCount];
-            dial = new int[pixelCount];
-            pixels = new byte[pixelCount * 4];
-        }
+        // 1. Résolution de la tuile dans l'atlas
+        UVRegion uv = atlas.GetUV(_tileId);
+        _resolution = (int)((uv.U1 - uv.U0) * atlas.AtlasWidth);
+        _resolution = Math.Max(1, _resolution);
 
+        int pixelCount = _resolution * _resolution;
+        _clockPixels = new int[pixelCount];
+        _outputPixels = new byte[pixelCount * 4];
+
+        // 2. Lire les pixels actuels de la tuile depuis le GPU (fond de l'horloge)
+        //    On les extrait de l'atlas via TexSubImage inverse (GetTexImage sur la région)
+        //    Méthode plus simple : ExportToFile puis recrop — mais on utilise TexImage directement.
+        //
+        //    Alternative propre : l'atlas expose déjà ses pixels CPU pendant Stitch.
+        //    Pour l'instant on lit depuis le pack de textures comme dans l'original.
         try
         {
-            using var stream = mc.texturePackList.SelectedTexturePack.GetResourceAsStream("gui/items.png");
+            using var stream = mc.texturePackList.SelectedTexturePack
+                .GetResourceAsStream("textures/items/clock.png");
             if (stream != null)
             {
-                using var ms = new MemoryStream();
-                stream.CopyTo(ms);
-                BufferedImage var2 = ImageIO.read(new ByteArrayInputStream(ms.ToArray()));
-                int localRes = var2.getWidth() / 16;
-                int var3 = (sprite % 16) * localRes;
-                int var4 = (sprite / 16) * localRes;
+                using Image<Rgba32> img = Image.Load<Rgba32>(stream);
+                int localRes = img.Width; // tuile carrée
 
-                if (localRes == resolution)
-                {
-                    var2.getRGB(var3, var4, resolution, resolution, clock, 0, resolution);
-                }
-                else
-                {
-                    int[] temp = new int[localRes * localRes];
-                    var2.getRGB(var3, var4, localRes, localRes, temp, 0, localRes);
-                    for (int y = 0; y < resolution; y++)
+                for (int py = 0; py < _resolution; py++)
+                    for (int px = 0; px < _resolution; px++)
                     {
-                        for (int x = 0; x < resolution; x++)
-                        {
-                            clock[y * resolution + x] = temp[(y * localRes / resolution) * localRes + (x * localRes / resolution)];
-                        }
+                        int sx = px * localRes / _resolution;
+                        int sy = py * localRes / _resolution;
+                        Rgba32 p = img[sx, sy];
+                        // Stockage ARGB comme l'original Java
+                        _clockPixels[py * _resolution + px] =
+                            (p.A << 24) | (p.R << 16) | (p.G << 8) | p.B;
                     }
-                }
-            }
-            
-            using var dialStream = mc.texturePackList.SelectedTexturePack.GetResourceAsStream("misc/dial.png");
-            if (dialStream != null)
-            {
-                using var ms = new MemoryStream();
-                dialStream.CopyTo(ms);
-                BufferedImage var2 = ImageIO.read(new ByteArrayInputStream(ms.ToArray()));
-                dialResolution = var2.getWidth();
-                int dialPixelCount = dialResolution * dialResolution;
-                if (dial.Length != dialPixelCount)
-                {
-                    dial = new int[dialPixelCount];
-                }
-                var2.getRGB(0, 0, dialResolution, dialResolution, dial, 0, dialResolution); 
             }
         }
-        catch (java.io.IOException ex)
+        catch (Exception ex)
         {
-            ex.printStackTrace();
+            Console.Error.WriteLine($"[ClockSprite] Impossible de charger clock.png : {ex.Message}");
+        }
+
+        // 3. Charger dial.png
+        try
+        {
+            using var dialStream = mc.texturePackList.SelectedTexturePack
+                .GetResourceAsStream("misc/dial.png");
+            if (dialStream != null)
+            {
+                using Image<Rgba32> dialImg = Image.Load<Rgba32>(dialStream);
+                _dialResolution = dialImg.Width;
+                int dialCount = _dialResolution * _dialResolution;
+                _dialPixels = new int[dialCount];
+
+                for (int py = 0; py < _dialResolution; py++)
+                    for (int px = 0; px < _dialResolution; px++)
+                    {
+                        Rgba32 p = dialImg[px, py];
+                        _dialPixels[py * _dialResolution + px] =
+                            (p.A << 24) | (p.R << 16) | (p.G << 8) | p.B;
+                    }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"[ClockSprite] Impossible de charger dial.png : {ex.Message}");
         }
     }
 
     public override void tick()
     {
-        double var1 = 0.0D;
-        if (mc.world != null && mc.player != null)
-        {
-            float var3 = mc.world.getTime(1.0F);
-            var1 = (double)(-var3 * (float)Math.PI * 2.0F);
-            if (mc.world.dimension.IsNether)
+        /*
+            // ── Calcul de l'angle cible ───────────────────────────────────────
+            double targetAngle = 0.0;
+            if (_mc.world != null && _mc.player != null)
             {
-                var1 = Random.Shared.NextDouble() * (double)(float)Math.PI * 2.0D;
-            }
-        }
-
-        double var22;
-        for (var22 = var1 - angle; var22 < -Math.PI; var22 += Math.PI * 2.0D)
-        {
-        }
-
-        while (var22 >= Math.PI)
-        {
-            var22 -= Math.PI * 2.0D;
-        }
-
-        if (var22 < -1.0D)
-        {
-            var22 = -1.0D;
-        }
-
-        if (var22 > 1.0D)
-        {
-            var22 = 1.0D;
-        }
-
-        angleDelta += var22 * 0.1D;
-        angleDelta *= 0.8D;
-        angle += angleDelta;
-        double var5 = java.lang.Math.sin(angle);
-        double var7 = java.lang.Math.cos(angle);
-
-        int pixelCount = resolution * resolution;
-        float invResMinus1 = 1.0f / (resolution - 1);
-
-        for (int var9 = 0; var9 < pixelCount; ++var9)
-        {
-            int var10 = clock[var9] >> 24 & 255;
-            int var11 = clock[var9] >> 16 & 255;
-            int var12 = clock[var9] >> 8 & 255;
-            int var13 = clock[var9] >> 0 & 255;
-            
-            if (Math.Abs(var11 - var13) < 10 && var12 < 40 && var11 > 100)
-            {
-                double var14 = -((var9 % resolution) * invResMinus1 - 0.5D);
-                double var16 = (var9 / resolution) * invResMinus1 - 0.5D;
-                int var18 = var11;
-                int var19 = (int)((var14 * var7 + var16 * var5 + 0.5D) * dialResolution);
-                int var20 = (int)((var16 * var7 - var14 * var5 + 0.5D) * dialResolution);
-                int var21 = (var19 & (dialResolution - 1)) + (var20 & (dialResolution - 1)) * dialResolution;
-                var10 = dial[var21] >> 24 & 255;
-                var11 = (dial[var21] >> 16 & 255) * var11 / 255;
-                var12 = (dial[var21] >> 8 & 255) * var18 / 255;
-                var13 = (dial[var21] >> 0 & 255) * var18 / 255;
+                float timeOfDay = _mc.world.getTime(1.0F);
+                targetAngle = -(double)(timeOfDay * (float)Math.PI * 2.0F);
+                if (_mc.world.dimension.IsNether)
+                    targetAngle = Random.Shared.NextDouble() * Math.PI * 2.0;
             }
 
-            pixels[var9 * 4 + 0] = (byte)var11;
-            pixels[var9 * 4 + 1] = (byte)var12;
-            pixels[var9 * 4 + 2] = (byte)var13;
-            pixels[var9 * 4 + 3] = (byte)var10;
-        }
+            // Interpolation douce de l'aiguille (inchangé depuis l'original)
+            double delta = targetAngle - _angle;
+            while (delta < -Math.PI) delta += Math.PI * 2.0;
+            while (delta >= Math.PI) delta -= Math.PI * 2.0;
+            delta = Math.Clamp(delta, -1.0, 1.0);
+            _angleDelta += delta * 0.1;
+            _angleDelta *= 0.8;
+            _angle += _angleDelta;
+
+            double sinA = Math.Sin(_angle);
+            double cosA = Math.Cos(_angle);
+
+            // ── Génération des pixels ─────────────────────────────────────────
+            int pixelCount = _resolution * _resolution;
+            float invResMinus1 = 1.0f / (_resolution - 1);
+
+            for (int i = 0; i < pixelCount; i++)
+            {
+                int raw = _clockPixels[i];
+                int a = (raw >> 24) & 0xFF;
+                int r = (raw >> 16) & 0xFF;
+                int g = (raw >> 8) & 0xFF;
+                int b = (raw >> 0) & 0xFF;
+
+                // Détection des pixels "dorés" du fond (zone de l'aiguille)
+                if (Math.Abs(r - b) < 10 && g < 40 && r > 100)
+                {
+                    double u = -((i % _resolution) * invResMinus1 - 0.5);
+                    double v = (i / _resolution) * invResMinus1 - 0.5;
+
+                    int dialX = (int)((u * cosA + v * sinA + 0.5) * _dialResolution);
+                    int dialY = (int)((v * cosA - u * sinA + 0.5) * _dialResolution);
+                    int dialIdx = (dialX & (_dialResolution - 1))
+                                + (dialY & (_dialResolution - 1)) * _dialResolution;
+
+                    int d = _dialPixels[dialIdx];
+                    int brightness = r; // luminosité du fond doré
+                    a = (d >> 24) & 0xFF;
+                    r = ((d >> 16) & 0xFF) * brightness / 255;
+                    g = ((d >> 8) & 0xFF) * brightness / 255;
+                    b = ((d >> 0) & 0xFF) * brightness / 255;
+                }
+
+                int idx = i * 4;
+                _outputPixels[idx + 0] = (byte)r;
+                _outputPixels[idx + 1] = (byte)g;
+                _outputPixels[idx + 2] = (byte)b;
+                _outputPixels[idx + 3] = (byte)a;
+            }
+
+            // ── Upload dans l'atlas via TexSubImage2D ─────────────────────────
+            TextureAtlasManager.Instance.Items.PatchTile(_tileId, _outputPixels);
+        }*/
     }
 }

@@ -11,7 +11,7 @@ public class BlockRedstoneOre : Block
 
     private bool lit;
 
-    public BlockRedstoneOre(int id, int textureId, bool lit) : base(id, textureId, Material.Stone)
+    public BlockRedstoneOre(int id, string textureId, bool lit) : base(id, textureId, Material.Stone)
     {
         if (lit)
         {

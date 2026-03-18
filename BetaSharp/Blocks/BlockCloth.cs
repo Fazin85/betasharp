@@ -4,35 +4,31 @@ namespace BetaSharp.Blocks;
 
 public class BlockCloth : Block
 {
-    public BlockCloth() : base(35, 64, Material.Wool)
+    // Ordre officiel Beta 1.7.3 — meta 0 à 15
+    private static readonly string[] ColorNames =
+    [
+        "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink",
+        "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black"
+    ];
+
+    public BlockCloth() : base(35, "wool", Material.Wool) { }
+
+    public override string getTexture(string side, int meta)
     {
+        string color = ColorNames[meta & 15];
+        return  $"{color}_{textureId}";
+        // → "wool" pour blanc, "wool_orange", "wool_red", etc.
     }
 
-    public override int getTexture(int side, int meta)
-    {
-        if (meta == 0)
-        {
-            return textureId;
-        }
-        else
-        {
-            meta = ~(meta & 15);
-            return 113 + ((meta & 8) >> 3) + (meta & 7) * 16;
-        }
-    }
+    public override string getTexture(string side) => textureId; // blanc par défaut
 
-    protected override int getDroppedItemMeta(int blockMeta)
-    {
-        return blockMeta;
-    }
+    protected override int getDroppedItemMeta(int blockMeta) => blockMeta;
 
-    public static int getBlockMeta(int itemMeta)
-    {
-        return ~itemMeta & 15;
-    }
+    // Conversions meta bloc ↔ meta item
+    // Notch inversait les bits pour stocker la couleur — on garde la compatibilité
+    public static int getBlockMeta(int itemMeta) => ~itemMeta & 15;
+    public static int getItemMeta(int blockMeta) => ~blockMeta & 15;
 
-    public static int getItemMeta(int blockMeta)
-    {
-        return ~blockMeta & 15;
-    }
+    // Utilitaire si besoin ailleurs
+    public static string GetColorName(int meta) => ColorNames[meta & 15];
 }

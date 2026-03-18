@@ -1,5 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
+//using BetaSharp.Client.Rendering.Items;
 using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
@@ -25,6 +26,7 @@ public class EntityItem : Entity
         velocityX = Random.Shared.NextDouble() * 0.2f - 0.1f;
         velocityY = 0.2F;
         velocityZ = Random.Shared.NextDouble() * 0.2f - 0.1f;
+        //customRenderer = new ItemRenderer();
     }
 
     protected override bool bypassesSteppingEffects()

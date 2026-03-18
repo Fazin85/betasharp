@@ -82,7 +82,7 @@ public class EntityTNTPrimed : Entity
 
     private void explode()
     {
-        if (!world.Rules.GetBool(DefaultRules.TntExplodes))
+        if (!world.Rules.GetBool(Cvars.sv_enabletnt))
         {
             return;
         }

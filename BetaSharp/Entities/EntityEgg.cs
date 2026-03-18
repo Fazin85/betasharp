@@ -1,3 +1,5 @@
+//using BetaSharp.Client.Rendering.Entities;
+//using BetaSharp.Client.Rendering.Entities.Models;
 using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Hit;
@@ -21,6 +23,8 @@ public class EntityEgg : Entity
     public EntityEgg(World world) : base(world)
     {
         setBoundingBoxSpacing(0.25F, 0.25F);
+        
+        //customRenderer = new ProjectileEntityRenderer(Item.Egg.getTextureId(0));
     }
 
     protected override void initDataTracker()

@@ -1,3 +1,4 @@
+using BetaSharp.Blocks;
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
@@ -11,6 +12,8 @@ public class EntityZombie : EntityMonster
         texture = "/mob/zombie.png";
         movementSpeed = 0.5F;
         attackStrength = 5;
+        //preys.Add(typeof(EntityPlayer));
+        preys.Add(typeof(EntityPig));
     }
 
     public override void tickMovement()
@@ -29,7 +32,7 @@ public class EntityZombie : EntityMonster
 
     protected override String getLivingSound()
     {
-        return "mob.zombie";
+        return "mob.zombie"; 
     }
 
     protected override String getHurtSound()
@@ -44,6 +47,6 @@ public class EntityZombie : EntityMonster
 
     protected override int getDropItemId()
     {
-        return Item.Feather.id;
+        return Item.CookedPorkchop.id;
     }
 }

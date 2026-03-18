@@ -120,7 +120,7 @@ public class EntityWolf : EntityAnimal
                 setWolfSitting(true);
             }
         }
-        else if (playerToAttack == null && !hasPath() && !isWolfTamed() && world.random.NextInt(100) == 0)
+        else if (preyToAttack == null && !hasPath() && !isWolfTamed() && world.random.NextInt(100) == 0)
         {
             var nearbySheep = world.CollectEntitiesOfType<EntitySheep>(new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).Expand(16.0D, 4.0D, 16.0D));
             if (nearbySheep.Count > 0)
@@ -326,7 +326,7 @@ public class EntityWolf : EntityAnimal
                 if (entity is EntityPlayer)
                 {
                     setWolfAngry(true);
-                    playerToAttack = entity;
+                    preyToAttack = entity;
                 }
 
                 if (entity is EntityArrow && ((EntityArrow)entity).owner != null)
@@ -340,9 +340,9 @@ public class EntityWolf : EntityAnimal
 
                     foreach (var wolf in nearbyWolves)
                     {
-                        if (!wolf.isWolfTamed() && wolf.playerToAttack == null)
+                        if (!wolf.isWolfTamed() && wolf.preyToAttack == null)
                         {
-                            wolf.playerToAttack = entity;
+                            wolf.preyToAttack = entity;
                             if (entity is EntityPlayer)
                             {
                                 wolf.setWolfAngry(true);
@@ -358,14 +358,14 @@ public class EntityWolf : EntityAnimal
                     return true;
                 }
 
-                playerToAttack = (Entity)entity;
+                preyToAttack = (Entity)entity;
             }
 
             return true;
         }
     }
 
-    protected override Entity findPlayerToAttack()
+    protected override Entity searchForPreys()
     {
         return isWolfAngry() ? world.getClosestPlayer(this, 16.0D) : null;
     }

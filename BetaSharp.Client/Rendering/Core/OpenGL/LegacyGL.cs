@@ -11,6 +11,8 @@ public unsafe class LegacyGL : IGL
         SilkGL = gl;
     }
 
+    public GL GetGl() => SilkGL;
+
     public virtual void AlphaFunc(GLEnum func, float refValue)
     {
         SilkGL.AlphaFunc(func, refValue);

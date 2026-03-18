@@ -77,7 +77,7 @@ public class InventoryBasic : IInventory
 
     public int getMaxCountPerStack()
     {
-        return 64;
+        return 99;
     }
 
     public void markDirty()

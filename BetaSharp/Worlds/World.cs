@@ -6,6 +6,7 @@ using BetaSharp.Entities;
 using BetaSharp.NBT;
 using BetaSharp.Profiling;
 using BetaSharp.Rules;
+using BetaSharp.Server;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Biomes;
@@ -26,10 +27,12 @@ namespace BetaSharp.Worlds;
 public abstract class World : BlockView
 {
     private const int AUTOSAVE_PERIOD = 40;
+    public MinecraftServer server;
     public bool instantBlockUpdateEnabled = false;
     private readonly List<LightUpdate> lightingQueue = [];
     private readonly ILogger<World> _logger = Log.Instance.For<World>();
     public List<Entity> entities = [];
+    protected World world;
     private readonly List<Entity> entitiesToUnload = [];
     private readonly PriorityQueue<BlockUpdate, (long, long)> _scheduledUpdates = new();
     private long _eventDeltaTime = 0; // difference between world time and the scheduled time of the block events so things don't break when using the time command
@@ -39,6 +42,7 @@ public abstract class World : BlockView
     public List globalEntities = new ArrayList();
     private readonly long worldTimeMask = 0xFFFFFFL;
     public int ambientDarkness = 0;
+    public float timescale = 1.0f;
     protected int lcgBlockSeed = Random.Shared.Next();
     protected float prevRainingStrength;
     protected float rainingStrength;
@@ -51,6 +55,7 @@ public abstract class World : BlockView
     public int difficulty;
     public JavaRandom random = new();
     public bool isNewWorld;
+    public const int TARGET_TPS = 20;
     public readonly Dimension dimension;
     protected List<IWorldAccess> eventListeners = [];
     protected ChunkSource chunkSource;
@@ -69,8 +74,9 @@ public abstract class World : BlockView
     private int soundCounter = Random.Shared.Next(12000);
     private readonly List<Entity> tempEntityList = [];
     public bool isRemote = false;
-    public RuleSet Rules { get; protected set; }
+    public CvarSet Rules { get; protected set; }
 
+    
     public World(IWorldStorage var1, string var2, Dimension var3, long var4)
     {
         storage = var1;
@@ -80,10 +86,11 @@ public abstract class World : BlockView
         var3.SetWorld(this);
         chunkSource = CreateChunkCache();
         Rules = properties.RulesTag != null
-            ? RuleSet.FromNBT(RuleRegistry.Instance, properties.RulesTag)
-            : new RuleSet(RuleRegistry.Instance);
+            ? CvarSet.FromNBT(CvarRegistry.Instance, properties.RulesTag)
+            : new CvarSet(CvarRegistry.Instance);
         updateSkyBrightness();
         prepareWeather();
+        
     }
 
     public World(IWorldStorage var1, string var2, long var3, Dimension var5)
@@ -119,8 +126,8 @@ public abstract class World : BlockView
         dimension.SetWorld(this);
         chunkSource = CreateChunkCache();
         Rules = properties.RulesTag != null
-            ? RuleSet.FromNBT(RuleRegistry.Instance, properties.RulesTag)
-            : new RuleSet(RuleRegistry.Instance);
+            ? CvarSet.FromNBT(CvarRegistry.Instance, properties.RulesTag)
+            : new CvarSet(CvarRegistry.Instance);
 
         if (var6)
         {
@@ -414,7 +421,16 @@ public abstract class World : BlockView
             return 0;
         }
     }
-
+    public bool setBlockWithMeta(int x, int y, int z, int blockId, int meta)
+    {
+        if (SetBlockWithoutNotifyingNeighbors(x, y, z, blockId))
+        {
+            SetBlockMetaWithoutNotifyingNeighbors(x, y, z, meta);
+            blockUpdate(x, y, z, blockId);
+            return true;
+        }
+        return false;
+    }
     public void setBlockMeta(int x, int y, int z, int meta)
     {
         if (SetBlockMetaWithoutNotifyingNeighbors(x, y, z, meta))
@@ -1993,7 +2009,8 @@ public abstract class World : BlockView
     public BlockEntity getBlockEntity(int x, int y, int z)
     {
         Chunk var4 = GetChunk(x >> 4, z >> 4);
-        return var4 != null ? var4.GetBlockEntity(x & 15, y, z & 15) : null;
+        //return var4 != null ? var4.GetBlockEntity(x & 15, y, z & 15) : null;
+        return  var4.GetBlockEntity(x & 15, y, z & 15);
     }
 
     public void setBlockEntity(int x, int y, int z, BlockEntity blockEntity)
@@ -2016,6 +2033,10 @@ public abstract class World : BlockView
                     var5.SetBlockEntity(x & 15, y, z & 15, blockEntity);
                 }
             }
+        } else
+        {
+            Chunk var4 = GetChunk(x >> 4, z >> 4);
+            //var4.cleanRemovedBlockEntities();
         }
 
     }
@@ -2186,60 +2207,78 @@ public abstract class World : BlockView
         spawnPeacefulMobs = allowMobSpawning;
     }
 
+    private float tickAccumulator;
     public virtual void Tick()
     {
-        UpdateWeatherCycles();
-        long var2;
-        if (canSkipNight())
-        {
-            bool var1 = false;
-            if (spawnHostileMobs && difficulty >= 1)
+        int TPS = (int)server.Tps;
+        ReadTimescaleCvar();
+        /*
+        tickAccumulator += timescale;
+        // Plafonne à timescale + 1 pour éviter le rattrapage explosif
+        tickAccumulator = System.Math.Min(tickAccumulator, timescale + 1f);
+        int ticksToRun = System.Math.Min((int)tickAccumulator, 4);
+        tickAccumulator -= ticksToRun;
+        Console.WriteLine($"[DEBUG] timescale={timescale} accumulator={tickAccumulator:F3} ticksToRun={ticksToRun}");
+        */
+
+        
+            UpdateWeatherCycles();
+
+            if (canSkipNight())
             {
-                var1 = NaturalSpawner.SpawnMonstersAndWakePlayers(this, players);
+                bool var1 = false;
+                if (spawnHostileMobs && difficulty >= 1)
+                    var1 = NaturalSpawner.SpawnMonstersAndWakePlayers(this, players);
+
+                if (!var1)
+                {
+                    long skipTime = properties.WorldTime + 24000L;
+                    properties.WorldTime = skipTime - skipTime % 24000L; // skip au prochain matin
+                    afterSkipNight();
+                }
             }
 
-            if (!var1)
+            Profiler.Start("performSpawning");
+            NaturalSpawner.DoSpawning(this, spawnHostileMobs, spawnPeacefulMobs);
+            Profiler.Stop("performSpawning");
+
+            Profiler.Start("unload100OldestChunks");
+            chunkSource.Tick();
+            Profiler.Stop("unload100OldestChunks");
+
+            Profiler.Start("updateSkylightSubtracted");
+            int ambientDark = getAmbientDarkness(1.0F);
+            if (ambientDark != ambientDarkness)
             {
-                var2 = properties.WorldTime + 24000L;
-                properties.WorldTime = var2 - var2 % 24000L;
-                afterSkipNight();
+                ambientDarkness = ambientDark;
+                for (int i = 0; i < eventListeners.Count; ++i)
+                    eventListeners[i].notifyAmbientDarknessChanged();
             }
-        }
-        Profiler.Start("performSpawning");
-        NaturalSpawner.DoSpawning(this, spawnHostileMobs, spawnPeacefulMobs);
-        Profiler.Stop("performSpawning");
-        Profiler.Start("unload100OldestChunks");
-        chunkSource.Tick();
-        Profiler.Stop("unload100OldestChunks");
+            Profiler.Stop("updateSkylightSubtracted");
 
-        Profiler.Start("updateSkylightSubtracted");
-        int var4 = getAmbientDarkness(1.0F);
-        if (var4 != ambientDarkness)
-        {
-            ambientDarkness = var4;
+            // Avance le temps — ici timescale est déjà géré par la boucle
+            long newTime = properties.WorldTime + 1L;
+            if (newTime % (long)autosavePeriod == 0L)
+                saveWithLoadingDisplay(false, null);
+            properties.WorldTime = newTime;
 
-            for (int var5 = 0; var5 < eventListeners.Count; ++var5)
-            {
-                eventListeners[var5].notifyAmbientDarknessChanged();
-            }
-        }
-        Profiler.Stop("updateSkylightSubtracted");
-
-        var2 = properties.WorldTime + 1L;
-        if (var2 % (long)autosavePeriod == 0L)
-        {
-            Profiler.PushGroup("autosave");
-            saveWithLoadingDisplay(false, (LoadingDisplay)null);
-            Profiler.PopGroup();
-        }
-
-        properties.WorldTime = var2;
-        Profiler.Start("tickUpdates");
-        ProcessScheduledTicks(false);
-        Profiler.Stop("tickUpdates");
-        ManageChunkUpdatesAndEvents();
+            tickEntities();
+            ProcessScheduledTicks(false);
+            ManageChunkUpdatesAndEvents();
+            updateSkyBrightness();
+        
     }
-
+    // Dans World.cs :
+    protected void ReadTimescaleCvar()
+    {
+        ResourceLocation key = ResourceLocation.Parse("i_timescale");
+        if (CvarRegistry.Instance.TryGet(key, out Cvar? rule))
+        {
+            string raw = rule.Serialize(Rules.Get(key));
+            if (float.TryParse(raw, System.Globalization.CultureInfo.CurrentCulture, out float parsed))
+                timescale = System.Math.Clamp(parsed, 0.01f, 10.0f);
+        }
+    }
     private void prepareWeather()
     {
         if (properties.IsRaining)
@@ -2698,6 +2737,10 @@ public abstract class World : BlockView
     {
         return getClosestPlayer(entity.x, entity.y, entity.z, range);
     }
+    public Entity getClosestEntity(Entity entity, double range)
+    {
+        return getClosestEntity(entity.x, entity.y, entity.z, range); //
+    }
 
     public EntityPlayer getClosestPlayer(double x, double y, double z, double range)
     {
@@ -2714,10 +2757,53 @@ public abstract class World : BlockView
                 var11 = var13;
             }
         }
-
+        
         return var11;
     }
+    public Entity getClosestEntity(double x, double y, double z, double range)
+    {
+        double closestDist = -1.0D;
+        Entity closest = null;
 
+        for (int i = 0; i < entities.Count; ++i)
+        {
+            Entity entity = entities[i];
+            double dist = entity.getSquaredDistance(x, y, z);
+            if ((range < 0.0D || dist < range * range) && (closestDist == -1.0D || dist < closestDist))
+            {
+                closestDist = dist;
+                closest = entity;
+            }
+        }
+        //Console.WriteLine($" i found {closest} at {closest.x}, {closest.y} ,{closest.z} , ");
+        return closest;
+    }
+    public List<Entity> getClosestEntities(Entity caller, double range)
+    {
+        List<Entity> result = new List<Entity>();
+        double rangeSq = range * range;
+
+        foreach (Entity entity in entities)
+        {
+            if (entity == caller) continue;
+            if (entity.getSquaredDistance(caller.x, caller.y, caller.z) <= rangeSq)
+                result.Add(entity);
+        }
+
+        foreach (Entity entity in players)
+        {
+            if (entity == caller) continue;
+            if (entity.getSquaredDistance(caller.x, caller.y, caller.z) <= rangeSq)
+                result.Add(entity);
+        }
+
+        // Trie par distance croissante
+        result.Sort((a, b) =>
+            a.getSquaredDistance(caller.x, caller.y, caller.z)
+            .CompareTo(b.getSquaredDistance(caller.x, caller.y, caller.z)));
+
+        return result;
+    }
     public EntityPlayer getPlayer(string name)
     {
         for (int var2 = 0; var2 < players.Count; ++var2)

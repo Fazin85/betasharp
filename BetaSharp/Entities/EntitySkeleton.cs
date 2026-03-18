@@ -1,3 +1,5 @@
+//using BetaSharp.Client.Rendering.Entities;
+//using BetaSharp.Client.Rendering.Entities.Models;
 using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
@@ -12,6 +14,8 @@ public class EntitySkeleton : EntityMonster
     public EntitySkeleton(World world) : base(world)
     {
         texture = "/mob/skeleton.png";
+        //Model = new ModelSkeleton();
+        //customRenderer = new UndeadEntityRenderer((ModelBiped)Model, 1f);
     }
 
     protected override String getLivingSound()

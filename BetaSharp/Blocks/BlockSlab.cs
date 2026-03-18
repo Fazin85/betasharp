@@ -9,7 +9,7 @@ public class BlockSlab : Block
     public static readonly string[] names = ["stone", "sand", "wood", "cobble"];
     private bool doubleSlab;
 
-    public BlockSlab(int id, bool doubleSlab) : base(id, 6, Material.Stone)
+    public BlockSlab(int id, bool doubleSlab) : base(id, "stone_slab", Material.Stone)
     {
         this.doubleSlab = doubleSlab;
         if (!doubleSlab)
@@ -20,12 +20,12 @@ public class BlockSlab : Block
         setOpacity(255);
     }
 
-    public override int getTexture(int side, int meta)
+    public override string getTexture(string side, int meta)
     {
-        return meta == 0 ? (side <= 1 ? 6 : 5) : (meta == 1 ? (side == 0 ? 208 : (side == 1 ? 176 : 192)) : (meta == 2 ? 4 : (meta == 3 ? 16 : 6)));
+        return meta == 0 ? (side == "bottom" || side == "top" ? $"{textureId}_top" : $"{textureId}_side") : (meta == 1 ? (side == "bottom" || side == "top" ? $"{textureId}_side" : textureId) : (meta == 2 ? "oak_planks" : (meta == 3 ? "oak_planks" : "oak_planks")));
     }
 
-    public override int getTexture(int side)
+    public override string getTexture(string side)
     {
         return getTexture(side, 0);
     }

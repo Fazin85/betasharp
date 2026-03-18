@@ -1,3 +1,5 @@
+//using BetaSharp.Client.Rendering.Entities;
+//using BetaSharp.Client.Rendering.Entities.Models;
 using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Worlds;
@@ -13,6 +15,9 @@ public class EntityCreeper : EntityMonster
     public EntityCreeper(World world) : base(world)
     {
         texture = "/mob/creeper.png";
+
+        //Model = new ModelCreeper();
+        //customRenderer = new CreeperEntityRenderer();
     }
 
     protected override void initDataTracker()
@@ -79,7 +84,7 @@ public class EntityCreeper : EntityMonster
         }
 
         base.tick();
-        if (playerToAttack == null && timeSinceIgnited > 0)
+        if (preyToAttack == null && timeSinceIgnited > 0)
         {
             setCreeperState(-1);
             --timeSinceIgnited;

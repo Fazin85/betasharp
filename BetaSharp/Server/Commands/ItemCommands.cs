@@ -27,10 +27,10 @@ public static class ItemCommands
             int count = 1;
             if (args.Length > 1 && int.TryParse(args[1], out int parsedCount))
             {
-                count = Math.Clamp(parsedCount, 1, 64);
+                count = Math.Clamp(parsedCount, 1, 99);
             }
 
-            sender.dropItem(new ItemStack(selfItemId, count, 0));
+            sender.inventory.addItemStackToInventory(new ItemStack(selfItemId, count, 0));
             output.SendMessage($"Gave {count} of {args[0]} (id: {selfItemId})");
             return;
         }

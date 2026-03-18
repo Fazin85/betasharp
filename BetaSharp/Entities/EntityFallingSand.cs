@@ -1,4 +1,6 @@
 using BetaSharp.Blocks;
+//using BetaSharp.Client.Rendering.Entities;
+//using BetaSharp.Client.Rendering.Entities.Models;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
@@ -12,6 +14,8 @@ public class EntityFallingSand : Entity
 
     public EntityFallingSand(World world) : base(world)
     {
+        //Model = new ModelCreeper();
+        //customRenderer = new FallingBlockEntityRenderer();
     }
 
     public EntityFallingSand(World world, double x, double y, double z, int blockId) : base(world)

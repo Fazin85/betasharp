@@ -9,13 +9,16 @@ namespace BetaSharp.Blocks;
 public class BlockJukeBox : BlockWithEntity
 {
 
-    public BlockJukeBox(int id, int textureId) : base(id, textureId, Material.Wood)
+    public BlockJukeBox(int id, string textureId = "jukebox") : base(id, textureId, Material.Wood)
     {
+        this.textureId = textureId;
     }
 
-    public override int getTexture(int side)
+    public override string getTexture(string side)
     {
-        return textureId + (side == 1 ? 1 : 0);
+        return side == "up" ? textureId
+            : side == "down" ? $"{textureId}_side"
+            : $"{textureId}_side";
     }
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)

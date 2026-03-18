@@ -67,7 +67,7 @@ public class ItemStack
         return Item.ITEMS[itemId];
     }
 
-    public int getTextureId()
+    public string getTextureId()
     {
         return getItem().getTextureId(this);
     }
@@ -90,7 +90,7 @@ public class ItemStack
 
     public ItemStack use(World world, EntityPlayer entityPlayer)
     {
-        return getItem().use(this, world, entityPlayer);
+        return getItem().AltFire(this, world, entityPlayer);
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)

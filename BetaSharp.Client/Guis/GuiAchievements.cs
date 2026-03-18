@@ -3,6 +3,7 @@ using BetaSharp.Client.Input;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Items;
+using BetaSharp.Client.Textures;
 using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
 using Silk.NET.OpenGL.Legacy;
@@ -11,11 +12,11 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiAchievements : GuiScreen
 {
-
     private static readonly int field_27126_s = BetaSharp.Achievements.minColumn * 24 - 112;
     private static readonly int field_27125_t = BetaSharp.Achievements.minRow * 24 - 112;
     private static readonly int field_27124_u = BetaSharp.Achievements.maxColumn * 24 - 77;
     private static readonly int field_27123_v = BetaSharp.Achievements.maxRow * 24 - 77;
+
     protected int field_27121_a = 256;
     protected int field_27119_i = 202;
     protected int field_27118_j;
@@ -41,7 +42,8 @@ public class GuiAchievements : GuiScreen
     public override void InitGui()
     {
         _controlList.Clear();
-        _controlList.Add(new GuiSmallButton(1, Width / 2 + 24, Height / 2 + 74, 80, 20, StatCollector.TranslateToLocal("gui.done")));
+        _controlList.Add(new GuiSmallButton(1, Width / 2 + 24, Height / 2 + 74, 80, 20,
+            StatCollector.TranslateToLocal("gui.done")));
     }
 
     protected override void ActionPerformed(GuiButton var1)
@@ -51,7 +53,6 @@ public class GuiAchievements : GuiScreen
             mc.displayGuiScreen(null);
             mc.setIngameFocus();
         }
-
         base.ActionPerformed(var1);
     }
 
@@ -66,7 +67,6 @@ public class GuiAchievements : GuiScreen
         {
             base.KeyTyped(eventChar, eventKey);
         }
-
     }
 
     public override void Render(int var1, int var2, float var3)
@@ -77,12 +77,13 @@ public class GuiAchievements : GuiScreen
             int var5 = (Height - field_27119_i) / 2;
             int var6 = var4 + 8;
             int var7 = var5 + 17;
-            if ((field_27122_w == 0 || field_27122_w == 1) && var1 >= var6 && var1 < var6 + 224 && var2 >= var7 && var2 < var7 + 155)
+
+            if ((field_27122_w == 0 || field_27122_w == 1)
+                && var1 >= var6 && var1 < var6 + 224
+                && var2 >= var7 && var2 < var7 + 155)
             {
                 if (field_27122_w == 0)
-                {
                     field_27122_w = 1;
-                }
                 else
                 {
                     field_27114_o -= var1 - field_27118_j;
@@ -90,30 +91,12 @@ public class GuiAchievements : GuiScreen
                     field_27112_q = field_27116_m = field_27114_o;
                     field_27111_r = field_27115_n = field_27113_p;
                 }
-
                 field_27118_j = var1;
                 field_27117_l = var2;
             }
 
-            if (field_27112_q < field_27126_s)
-            {
-                field_27112_q = field_27126_s;
-            }
-
-            if (field_27111_r < field_27125_t)
-            {
-                field_27111_r = field_27125_t;
-            }
-
-            if (field_27112_q >= field_27124_u)
-            {
-                field_27112_q = field_27124_u - 1;
-            }
-
-            if (field_27111_r >= field_27123_v)
-            {
-                field_27111_r = field_27123_v - 1;
-            }
+            field_27112_q = Math.Clamp(field_27112_q, field_27126_s, field_27124_u - 1);
+            field_27111_r = Math.Clamp(field_27111_r, field_27125_t, field_27123_v - 1);
         }
         else
         {
@@ -145,7 +128,6 @@ public class GuiAchievements : GuiScreen
             field_27114_o += var1 * 0.85D;
             field_27113_p += var3 * 0.85D;
         }
-
     }
 
     protected void func_27110_k()
@@ -159,32 +141,21 @@ public class GuiAchievements : GuiScreen
     {
         int var4 = MathHelper.Floor(field_27116_m + (field_27114_o - field_27116_m) * (double)var3);
         int var5 = MathHelper.Floor(field_27115_n + (field_27113_p - field_27115_n) * (double)var3);
-        if (var4 < field_27126_s)
-        {
-            var4 = field_27126_s;
-        }
 
-        if (var5 < field_27125_t)
-        {
-            var5 = field_27125_t;
-        }
+        var4 = Math.Clamp(var4, field_27126_s, field_27124_u - 1);
+        var5 = Math.Clamp(var5, field_27125_t, field_27123_v - 1);
 
-        if (var4 >= field_27124_u)
-        {
-            var4 = field_27124_u - 1;
-        }
+        // ── Fond procédural ─────────────────────────────────────────────────
+        // On bind l'atlas Terrain directement (pas /terrain.png legacy)
+        TextureAtlas terrainAtlas = TextureAtlasManager.Instance.Terrain;
+        terrainAtlas.Bind();
 
-        if (var5 >= field_27123_v)
-        {
-            var5 = field_27123_v - 1;
-        }
-
-        TextureHandle var6 = mc.textureManager.GetTextureId("/terrain.png");
         TextureHandle var7 = mc.textureManager.GetTextureId("/achievement/bg.png");
         int var8 = (Width - field_27121_a) / 2;
         int var9 = (Height - field_27119_i) / 2;
         int var10 = var8 + 16;
         int var11 = var9 + 17;
+
         _zLevel = 0.0F;
         GLManager.GL.DepthFunc(GLEnum.Gequal);
         GLManager.GL.PushMatrix();
@@ -193,7 +164,7 @@ public class GuiAchievements : GuiScreen
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Enable(GLEnum.RescaleNormal);
         GLManager.GL.Enable(GLEnum.ColorMaterial);
-        mc.textureManager.BindTexture(var6);
+
         int var12 = var4 + 288 >> 4;
         int var13 = var5 + 288 >> 4;
         int var14 = (var4 + 288) % 16;
@@ -210,86 +181,65 @@ public class GuiAchievements : GuiScreen
                 var21.SetSeed(1234 + var12 + var24);
                 var21.NextInt();
                 int var25 = var21.NextInt(1 + var13 + var22) + (var13 + var22) / 2;
-                int var26 = Block.Sand.textureId;
+
+                // var26 est maintenant string (textureId migré)
+                string var26 = Block.Sand.textureId;
                 if (var25 <= 37 && var13 + var22 != 35)
                 {
                     if (var25 == 22)
-                    {
-                        if (var21.NextInt(2) == 0)
-                        {
-                            var26 = Block.DiamondOre.textureId;
-                        }
-                        else
-                        {
-                            var26 = Block.RedstoneOre.textureId;
-                        }
-                    }
-                    else if (var25 == 10)
-                    {
-                        var26 = Block.IronOre.textureId;
-                    }
-                    else if (var25 == 8)
-                    {
-                        var26 = Block.CoalOre.textureId;
-                    }
-                    else if (var25 > 4)
-                    {
-                        var26 = Block.Stone.textureId;
-                    }
-                    else if (var25 > 0)
-                    {
-                        var26 = Block.Dirt.textureId;
-                    }
+                        var26 = var21.NextInt(2) == 0 ? Block.DiamondOre.textureId : Block.RedstoneOre.textureId;
+                    else if (var25 == 10) var26 = Block.IronOre.textureId;
+                    else if (var25 == 8) var26 = Block.CoalOre.textureId;
+                    else if (var25 > 4) var26 = Block.Stone.textureId;
+                    else if (var25 > 0) var26 = Block.Dirt.textureId;
                 }
                 else
                 {
                     var26 = Block.Bedrock.textureId;
                 }
 
-                DrawTexturedModalRect(var10 + var24 * 16 - var14, var11 + var22 * 16 - var15, var26 % 16 << 4, var26 >> 4 << 4, 16, 16);
+                // Résolution depuis l'atlas : UVRegion → DrawTexturedModalRectUV
+                UVRegion uv = terrainAtlas.GetUV(var26);
+                DrawTexturedModalRectUV(
+                    var10 + var24 * 16 - var14,
+                    var11 + var22 * 16 - var15,
+                    16, 16,
+                    uv);
             }
         }
 
+        // ── Connexions entre achievements ────────────────────────────────────
         GLManager.GL.Enable(GLEnum.DepthTest);
         GLManager.GL.DepthFunc(GLEnum.Lequal);
         GLManager.GL.Disable(GLEnum.Texture2D);
 
-        int var16;
-        int var17;
-        int var33;
-        int var38;
+        int var16, var17, var33, var38;
         for (var12 = 0; var12 < BetaSharp.Achievements.AllAchievements.Count; ++var12)
         {
             Achievement var28 = BetaSharp.Achievements.AllAchievements[var12];
             if (var28.parent != null)
             {
-                var14 = var28.column * 24 - var4 + 11 + var10;
-                var15 = var28.row * 24 - var5 + 11 + var11;
-                var16 = var28.parent.column * 24 - var4 + 11 + var10;
-                var17 = var28.parent.row * 24 - var5 + 11 + var11;
+                var14 = var28.parent.column * 24 - var4 + 11 + var10;
+                var15 = var28.parent.row * 24 - var5 + 11 + var11;
+                var16 = var28.column * 24 - var4 + 11 + var10;
+                var17 = var28.row * 24 - var5 + 11 + var11;
+
                 bool var19 = statFileWriter.HasAchievementUnlocked(var28);
                 bool var20 = statFileWriter.CanUnlockAchievement(var28);
-                var38 = java.lang.Math.sin(java.lang.System.currentTimeMillis() % 600L / 600.0D * Math.PI * 2.0D) > 0.6D ? 255 : 130;
-                uint color;
-                if (var19)
-                {
-                    color = 0xFF707070U;
-                }
-                else if (var20)
-                {
-                    color = 0xFF + (uint)(var38 << 24);
-                }
-                else
-                {
-                    color = 0xFF000000U;
-                }
+                var38 = Math.Sin(Environment.TickCount64 % 600L / 600.0D * Math.PI * 2.0D) > 0.6D
+                    ? 255 : 130;
+
+                uint color = var19 ? 0xFF707070U
+                           : var20 ? (uint)(0xFF000000 | (var38 << 16) | (var38 << 8) | var38)
+                           : 0xFF000000U;
 
                 DrawHorizontalLine(var14, var16, var15, color);
                 DrawVerticalLine(var16, var15, var17, color);
             }
         }
 
-        Achievement var27 = null;
+        // ── Icônes des achievements ──────────────────────────────────────────
+        Achievement? var27 = null;
         ItemRenderer var29 = new();
         GLManager.GL.PushMatrix();
         GLManager.GL.Rotate(180.0F, 1.0F, 0.0F, 0.0F);
@@ -305,6 +255,7 @@ public class GuiAchievements : GuiScreen
             Achievement var30 = BetaSharp.Achievements.AllAchievements[var14];
             var16 = var30.column * 24 - var4;
             var17 = var30.row * 24 - var5;
+
             if (var16 >= -24 && var17 >= -24 && var16 <= 224 && var17 <= 155)
             {
                 float var35;
@@ -315,7 +266,8 @@ public class GuiAchievements : GuiScreen
                 }
                 else if (statFileWriter.CanUnlockAchievement(var30))
                 {
-                    var35 = java.lang.Math.sin(java.lang.System.currentTimeMillis() % 600L / 600.0D * Math.PI * 2.0D) < 0.6D ? 0.6F : 0.8F;
+                    var35 = Math.Sin(Environment.TickCount64 % 600L / 600.0D * Math.PI * 2.0D) < 0.6D
+                        ? 0.6F : 0.8F;
                     GLManager.GL.Color4(var35, var35, var35, 1.0F);
                 }
                 else
@@ -327,39 +279,36 @@ public class GuiAchievements : GuiScreen
                 mc.textureManager.BindTexture(var7);
                 var33 = var10 + var16;
                 var34 = var11 + var17;
-                if (var30.isChallenge())
-                {
-                    DrawTexturedModalRect(var33 - 2, var34 - 2, 26, 202, 26, 26);
-                }
-                else
-                {
-                    DrawTexturedModalRect(var33 - 2, var34 - 2, 0, 202, 26, 26);
-                }
+                DrawTexturedModalRect(var33 - 2, var34 - 2,
+                    var30.isChallenge() ? 26 : 0, 202, 26, 26);
 
                 if (!statFileWriter.CanUnlockAchievement(var30))
                 {
-                    float var36 = 0.1F;
-                    GLManager.GL.Color4(var36, var36, var36, 1.0F);
+                    GLManager.GL.Color4(0.1F, 0.1F, 0.1F, 1.0F);
                     var29.useCustomDisplayColor = false;
                 }
 
                 GLManager.GL.Enable(GLEnum.Lighting);
                 GLManager.GL.Enable(GLEnum.CullFace);
-                var29.renderItemIntoGUI(mc.fontRenderer, mc.textureManager, var30.icon, var33 + 3, var34 + 3);
+                // renderItemIntoGUI est déjà atlas-aware dans ItemRenderer migré
+                var29.renderItemIntoGUI(mc.fontRenderer, TextureAtlasManager.Instance, var30.icon, var33 + 3, var34 + 3);
                 GLManager.GL.Disable(GLEnum.Lighting);
+
                 if (!statFileWriter.CanUnlockAchievement(var30))
-                {
                     var29.useCustomDisplayColor = true;
-                }
 
                 GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-                if (var1 >= var10 && var2 >= var11 && var1 < var10 + 224 && var2 < var11 + 155 && var1 >= var33 && var1 <= var33 + 22 && var2 >= var34 && var2 <= var34 + 22)
+
+                if (var1 >= var10 && var2 >= var11 && var1 < var10 + 224 && var2 < var11 + 155
+                    && var1 >= var33 && var1 <= var33 + 22
+                    && var2 >= var34 && var2 <= var34 + 22)
                 {
                     var27 = var30;
                 }
             }
         }
 
+        // ── Tooltip ──────────────────────────────────────────────────────────
         GLManager.GL.Disable(GLEnum.DepthTest);
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
@@ -371,42 +320,64 @@ public class GuiAchievements : GuiScreen
         GLManager.GL.Disable(GLEnum.DepthTest);
         GLManager.GL.Enable(GLEnum.Texture2D);
         base.Render(var1, var2, var3);
+
         if (var27 != null)
         {
             string? var32 = var27.getTranslatedDescription();
             string var31 = var27.StatName;
             var17 = var1 + 12;
             var33 = var2 - 4;
+
             if (statFileWriter.CanUnlockAchievement(var27))
             {
-                var34 = java.lang.Math.max(FontRenderer.GetStringWidth(var31), 120);
+                var34 = Math.Max(FontRenderer.GetStringWidth(var31), 120);
                 int var37 = FontRenderer.GetStringHeight(var32 ?? "", var34);
                 if (statFileWriter.HasAchievementUnlocked(var27))
-                {
                     var37 += 12;
-                }
 
-                DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var37 + 3 + 12, 0xC0000000U, 0xC0000000U);
+                DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var37 + 3 + 12,
+                    0xC0000000U, 0xC0000000U);
                 FontRenderer.DrawStringWrapped(var32, var17, var33 + 12, var34, 0xFFA0A0A0);
+
                 if (statFileWriter.HasAchievementUnlocked(var27))
-                {
-                    FontRenderer.DrawStringWithShadow(StatCollector.TranslateToLocal("achievement.taken"), var17, var33 + var37 + 4, 0xFF9090FF);
-                }
+                    FontRenderer.DrawStringWithShadow(
+                        StatCollector.TranslateToLocal("achievement.taken"),
+                        var17, var33 + var37 + 4, 0xFF9090FF);
             }
             else
             {
-                var34 = java.lang.Math.max(FontRenderer.GetStringWidth(var31), 120);
-                string var39 = StatCollector.TranslateToLocalFormatted("achievement.requires", new object[] { var27.parent.StatName });
+                var34 = Math.Max(FontRenderer.GetStringWidth(var31), 120);
+                string var39 = StatCollector.TranslateToLocalFormatted(
+                    "achievement.requires", new object[] { var27.parent!.StatName });
                 var38 = FontRenderer.GetStringHeight(var39, var34);
-                DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, 0xC0000000, 0xC0000000);
+                DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3,
+                    0xC0000000U, 0xC0000000U);
                 FontRenderer.DrawStringWrapped(var39, var17, var33 + 12, var34, 0xFF705050);
             }
 
-            FontRenderer.DrawStringWithShadow(var31, var17, var33, statFileWriter.CanUnlockAchievement(var27) ? var27.isChallenge() ? 0xFFFFFF80 : 0xFFFFFFFF : var27.isChallenge() ? 0xFF808040 : 0xFF808080);
+            FontRenderer.DrawStringWithShadow(var31, var17, var33,
+                statFileWriter.CanUnlockAchievement(var27)
+                    ? var27.isChallenge() ? 0xFFFFFF80 : 0xFFFFFFFF
+                    : var27.isChallenge() ? 0xFF808040 : 0xFF808080);
         }
 
         GLManager.GL.Enable(GLEnum.DepthTest);
         GLManager.GL.Enable(GLEnum.Lighting);
         Lighting.turnOff();
+    }
+
+    // ── Helper : DrawTexturedModalRect avec UVRegion atlas ───────────────────
+    // Remplace la version legacy DrawTexturedModalRect(x, y, u, v, w, h) pour
+    // les textures venant de l'atlas Terrain (coordonnées déjà normalisées 0→1).
+    protected void DrawTexturedModalRectUV(int x, int y, int width, int height, UVRegion uv)
+    {
+        float z = _zLevel;
+        Tessellator t = Tessellator.instance;
+        t.startDrawingQuads();
+        t.addVertexWithUV(x, y + height, z, uv.U0, uv.V1);
+        t.addVertexWithUV(x + width, y + height, z, uv.U1, uv.V1);
+        t.addVertexWithUV(x + width, y, z, uv.U1, uv.V0);
+        t.addVertexWithUV(x, y, z, uv.U0, uv.V0);
+        t.draw();
     }
 }

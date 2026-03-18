@@ -1,6 +1,8 @@
 using BetaSharp.Entities;
 using BetaSharp.Items;
+using BetaSharp.Registry;
 using BetaSharp.Server.Internal;
+using com.sun.xml.@internal.ws.wsdl.writer.document;
 
 namespace BetaSharp.Server.Commands;
 
@@ -92,6 +94,37 @@ public static class PlayerCommands
         output.SendMessage("Usage: tp <x> <y> <z>  or  tp <player1> <player2>");
     }
 
+    public static void Kit(MinecraftServer server, string senderName, string[] args, CommandOutput output)
+    {
+        ServerPlayerEntity sender = server.playerManager.getPlayer(senderName);
+        if (sender == null) { output.SendMessage("Could not find your player."); return; }
+        // parse first argument as the kit number
+        if (args.Length < 1)
+        {
+            output.SendMessage("Usage: kit <kit_number>");
+            return;
+        }
+        int kitnum;
+        bool valid = int.TryParse(args[0], out kitnum);
+        if (valid)
+        {
+            switch (kitnum) {
+                case 1:
+                    sender.inventory.addItemStackToInventory(new ItemStack(Item.StonePickaxe, 1));
+                    sender.inventory.addItemStackToInventory(new ItemStack(Item.StoneSword, 1));
+                    sender.inventory.addItemStackToInventory(new ItemStack(Item.Apple, 99));
+                    sender.inventory.addItemStackToInventory(new ItemStack(Blocks.Block.Bricks, 99));
+                    break;
+                default:
+                    sender.inventory.addItemStackToInventory(new ItemStack(Item.IronPickaxe, 1));
+                    sender.inventory.addItemStackToInventory(new ItemStack(Item.IronSword, 1));
+                    sender.inventory.addItemStackToInventory(new ItemStack(Item.CookedPorkchop, 99));
+                    sender.inventory.addItemStackToInventory(new ItemStack(Blocks.Block.Bricks, 99));
+                    return;
+                    break;
+            }
+        }
+    }
     public static void MoveToDimension(MinecraftServer server, string senderName, string[] args, CommandOutput output)
     {
         if (args.Length < 1)

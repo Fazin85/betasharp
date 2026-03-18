@@ -10,9 +10,9 @@ public class ItemSoup : ItemFood
     {
     }
 
-    public override ItemStack use(ItemStack itemStack, World world, EntityPlayer entityPlayer)
+    public override ItemStack AltFire(ItemStack itemStack, World world, EntityPlayer entityPlayer)
     {
-        base.use(itemStack, world, entityPlayer);
+        base.AltFire(itemStack, world, entityPlayer);
         return new ItemStack(Item.Bowl);
     }
 }

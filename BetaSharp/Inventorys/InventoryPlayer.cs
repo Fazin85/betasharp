@@ -344,7 +344,7 @@ public class InventoryPlayer : java.lang.Object, IInventory
 
     public int getMaxCountPerStack()
     {
-        return 64;
+        return 99;
     }
 
     public int getDamageVsEntity(Entity entity)

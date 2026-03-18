@@ -123,17 +123,17 @@ public class BlockStairs : Block
         return baseBlock.getDroppedItemCount(random);
     }
 
-    public override int getTexture(int side, int meta)
+    public override string getTexture(string side, int meta)
     {
         return baseBlock.getTexture(side, meta);
     }
 
-    public override int getTexture(int side)
+    public override string getTexture(string side)
     {
         return baseBlock.getTexture(side);
     }
 
-    public override int getTextureId(BlockView blockView, int x, int y, int z, int side)
+    public override string getTextureId(BlockView blockView, int x, int y, int z, string side)
     {
         return baseBlock.getTextureId(blockView, x, y, z, side);
     }

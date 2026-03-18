@@ -11,9 +11,9 @@ public class ItemLog : ItemBlock
         setHasSubtypes(true);
     }
 
-    public override int getTextureId(int meta)
+    public override string getTextureId(int meta)
     {
-        return Block.Log.getTexture(2, meta);
+        return Block.Log.getTexture("front", meta);
     }
 
     public override int getPlacementMetadata(int meta)

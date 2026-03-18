@@ -10,7 +10,7 @@ namespace BetaSharp.Client.Textures;
 public class DynamicTexture : java.lang.Object
 {
     public byte[] pixels = new byte[1024];
-    public int sprite;
+    public string baseTexture;
     public int copyTo = 0;
     public int replicate = 1;
     public FXImage atlas = FXImage.Terrain;
@@ -25,9 +25,9 @@ public class DynamicTexture : java.lang.Object
         Items
     }
 
-    public DynamicTexture(int iconIdx)
+    public DynamicTexture(string iconIdx)
     {
-        sprite = iconIdx;
+        baseTexture = iconIdx;
     }
 
     public virtual void Setup(Minecraft mc)

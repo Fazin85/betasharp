@@ -1,9 +1,10 @@
-using BetaSharp.Client.Options;
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
+using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Items;
+using BetaSharp.Client.Textures;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;
 using BetaSharp.Util;
@@ -36,45 +37,8 @@ public class GuiIngame : Gui
         _gcMonitor = new GCMonitor();
     }
 
-    public void renderGameOverlay(float partialTicks, bool unusedFlag, int unusedA, int unusedB)
+    protected void DrawStatusBar(int scaledHeight, int scaledWidth, int i, int j)
     {
-        ScaledResolution scaled = new(_mc.options, _mc.displayWidth, _mc.displayHeight);
-        int scaledWidth = scaled.ScaledWidth;
-        int scaledHeight = scaled.ScaledHeight;
-        TextRenderer font = _mc.fontRenderer;
-        _mc.gameRenderer.setupHudRender();
-        GLManager.GL.Enable(GLEnum.Blend);
-        if (Minecraft.isFancyGraphicsEnabled())
-        {
-            renderVignette(_mc.player.getBrightnessAtEyes(partialTicks), scaledWidth, scaledHeight);
-        }
-
-        ItemStack helmet = _mc.player.inventory.armorItemInSlot(3);
-        if (_mc.options.CameraMode == EnumCameraMode.FirstPerson && helmet != null && helmet.itemId == Block.Pumpkin.id)
-        {
-            renderPumpkinBlur(scaledWidth, scaledHeight);
-        }
-
-        float screenDistortion = _mc.player.lastScreenDistortion + (_mc.player.changeDimensionCooldown - _mc.player.lastScreenDistortion) * partialTicks;
-        if (screenDistortion > 0.0F)
-        {
-            renderPortalOverlay(screenDistortion, scaledWidth, scaledHeight);
-        }
-
-        GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("/gui/gui.png"));
-        InventoryPlayer inventory = _mc.player.inventory;
-        _zLevel = -90.0F;
-        DrawTexturedModalRect(scaledWidth / 2 - 91, scaledHeight - 22, 0, 0, 182, 22);
-        DrawTexturedModalRect(scaledWidth / 2 - 91 - 1 + inventory.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
-        _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("/gui/icons.png"));
-        if (_mc.options.CameraMode == EnumCameraMode.FirstPerson)
-        {
-            GLManager.GL.Enable(GLEnum.Blend);
-            GLManager.GL.BlendFunc(GLEnum.OneMinusDstColor, GLEnum.OneMinusSrcColor);
-            DrawTexturedModalRect(scaledWidth / 2 - 7, scaledHeight / 2 - 7, 0, 0, 16, 16);
-            GLManager.GL.Disable(GLEnum.Blend);
-        }
         bool heartBlink = _mc.player.hearts / 3 % 2 == 1;
         if (_mc.player.hearts < 10)
         {
@@ -83,35 +47,53 @@ public class GuiIngame : Gui
 
         int health = _mc.player.health;
         int lastHealth = _mc.player.lastHealth;
+        int stamina = _mc.player.stamina;
         _rand.SetSeed(_updateCounter * 312871);
         int armorValue;
-        int i;
-        int j;
+    
         if (_mc.playerController.shouldDrawHUD())
         {
             armorValue = _mc.player.getPlayerArmorValue();
 
             int k;
-            for (i = 0; i < 10; ++i)
+            for (int c = 0; c < i; ++c)
             {
                 j = scaledHeight - 32;
+                k = scaledWidth / 2 + 91 - c * 8 - 9;
                 if (armorValue > 0)
                 {
-                    k = scaledWidth / 2 + 91 - i * 8 - 9;
-                    if (i * 2 + 1 < armorValue)
+                    k = scaledWidth / 2 + 91 - c * 8 - 9;
+                    if (c * 2 + 1 < armorValue)
                     {
-                        DrawTexturedModalRect(k, j, 34, 9, 9, 9);
+                        DrawTexturedModalRect(k, j - 10, 34, 9, 9, 9);
                     }
 
-                    if (i * 2 + 1 == armorValue)
+                    if (c * 2 + 1 == armorValue)
                     {
-                        DrawTexturedModalRect(k, j, 25, 9, 9, 9);
+                        DrawTexturedModalRect(k, j - 10, 25, 9, 9, 9);
                     }
 
-                    if (i * 2 + 1 > armorValue)
+                    if (c * 2 + 1 > armorValue)
                     {
-                        DrawTexturedModalRect(k, j, 16, 9, 9, 9);
+                        DrawTexturedModalRect(k, j - 10, 16, 9, 9, 9);
                     }
+                }
+
+                j = scaledHeight - 32;
+
+                if (c * 2 + 1 < stamina)
+                {
+                    DrawTexturedModalRect(k, j, 52, 18, 9, 9);
+                }
+
+                if (c * 2 + 1 == stamina)
+                {
+                    DrawTexturedModalRect(k, j, 43, 18, 9, 9);
+                }
+
+                if (c * 2 + 1 > stamina)
+                {
+                    DrawTexturedModalRect(k, j, 34, 18, 9, 9);
                 }
 
                 byte blinkIndex = 0;
@@ -120,7 +102,7 @@ public class GuiIngame : Gui
                     blinkIndex = 1;
                 }
 
-                int x = scaledWidth / 2 - 91 + i * 8;
+                int x = scaledWidth / 2 - 91 + c * 8;
                 if (health <= 4)
                 {
                     j += _rand.NextInt(2);
@@ -129,23 +111,23 @@ public class GuiIngame : Gui
                 DrawTexturedModalRect(x, j, 16 + blinkIndex * 9, 0, 9, 9);
                 if (heartBlink)
                 {
-                    if (i * 2 + 1 < lastHealth)
+                    if (c * 2 + 1 < lastHealth)
                     {
                         DrawTexturedModalRect(x, j, 70, 0, 9, 9);
                     }
 
-                    if (i * 2 + 1 == lastHealth)
+                    if (c * 2 + 1 == lastHealth)
                     {
                         DrawTexturedModalRect(x, j, 79, 0, 9, 9);
                     }
                 }
 
-                if (i * 2 + 1 < health)
+                if (c * 2 + 1 < health)
                 {
                     DrawTexturedModalRect(x, j, 52, 0, 9, 9);
                 }
 
-                if (i * 2 + 1 == health)
+                if (c * 2 + 1 == health)
                 {
                     DrawTexturedModalRect(x, j, 61, 0, 9, 9);
                 }
@@ -181,7 +163,7 @@ public class GuiIngame : Gui
         {
             i = scaledWidth / 2 - 90 + armorValue * 20 + 2;
             j = scaledHeight - 16 - 3;
-            renderInventorySlot(armorValue, i, j, partialTicks);
+            renderInventorySlot(armorValue, i, j, 1);
         }
 
         Lighting.turnOff();
@@ -202,6 +184,50 @@ public class GuiIngame : Gui
             GLManager.GL.Enable(GLEnum.AlphaTest);
             GLManager.GL.Enable(GLEnum.DepthTest);
         }
+    }
+    public void renderGameOverlay(float partialTicks, bool unusedFlag, int unusedA, int unusedB)
+    {
+        ScaledResolution scaled = new(_mc.options, _mc.displayWidth, _mc.displayHeight);
+        int scaledWidth = scaled.ScaledWidth;
+        int scaledHeight = scaled.ScaledHeight;
+        int i = 10;
+        int j = scaledHeight - 32;
+        TextRenderer font = _mc.fontRenderer;
+        _mc.gameRenderer.setupHudRender();
+        GLManager.GL.Enable(GLEnum.Blend);
+        if (Minecraft.isFancyGraphicsEnabled())
+        {
+            renderVignette(_mc.player.getBrightnessAtEyes(partialTicks), scaledWidth, scaledHeight);
+        }
+
+        ItemStack helmet = _mc.player.inventory.armorItemInSlot(3);
+        if (_mc.options.CameraMode == EnumCameraMode.FirstPerson && helmet != null && helmet.itemId == Block.Pumpkin.id)
+        {
+            renderPumpkinBlur(scaledWidth, scaledHeight);
+        }
+
+        float screenDistortion = _mc.player.lastScreenDistortion + (_mc.player.changeDimensionCooldown - _mc.player.lastScreenDistortion) * partialTicks;
+        if (screenDistortion > 0.0F)
+        {
+            renderPortalOverlay(screenDistortion, scaledWidth, scaledHeight);
+        }
+
+        GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
+        _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("/gui/gui.png"));
+        InventoryPlayer inventory = _mc.player.inventory;
+        _zLevel = -90.0F;
+        DrawTexturedModalRect(scaledWidth / 2 - 91, scaledHeight - 22, 0, 0, 182, 22);
+        DrawTexturedModalRect(scaledWidth / 2 - 91 - 1 + inventory.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
+        _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("/gui/icons.png"));
+        if (_mc.options.CameraMode == EnumCameraMode.FirstPerson)
+        {
+            GLManager.GL.Enable(GLEnum.Blend);
+            GLManager.GL.BlendFunc(GLEnum.OneMinusDstColor, GLEnum.OneMinusSrcColor);
+            DrawTexturedModalRect(scaledWidth / 2 - 7, scaledHeight / 2 - 7, 0, 0, 16, 16);
+            GLManager.GL.Disable(GLEnum.Blend);
+        }
+
+        DrawStatusBar(scaledHeight, scaledWidth, i, j); //  draw stat icons
 
         string debugStr;
         if (_mc.options.ShowDebugInfo)
@@ -215,6 +241,7 @@ public class GuiIngame : Gui
             font.DrawStringWithShadow(_mc.getEntityDebugInfo(), 2, 22, 0xFFFFFF);
             font.DrawStringWithShadow(_mc.getParticleAndEntityCountDebugInfo(), 2, 32, 0xFFFFFF);
             font.DrawStringWithShadow(_mc.getWorldDebugInfo(), 2, 42, 0xFFFFFF);
+            font.DrawStringWithShadow($"Game Time : {_mc.world.getTime()} / Time Scale : {_mc.internalServer.getWorld(_mc.world.dimension.Id).timescale} ", 2, 90, 0xFFFFFF);
             long maxMem = _gcMonitor.MaxMemoryBytes;
             long usedMem = _gcMonitor.UsedMemoryBytes;
             long heapMem = _gcMonitor.UsedHeapBytes;
@@ -323,7 +350,7 @@ public class GuiIngame : Gui
             }
         }
 
-        // Scrollbar rendering moved below (use absolute GUI coords)
+        // Scrollbar rendering moved below (AltFire absolute GUI coords)
 
         GLManager.GL.PopMatrix();
         GLManager.GL.Enable(GLEnum.AlphaTest);
@@ -433,24 +460,36 @@ public class GuiIngame : Gui
         GLManager.GL.DepthMask(false);
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, portalStrength);
-        _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("/terrain.png"));
-        float u1 = Block.NetherPortal.textureId % 16 / 16.0F;
-        float v1 = Block.NetherPortal.textureId / 16 / 16.0F;
-        float u2 = (Block.NetherPortal.textureId % 16 + 1) / 16.0F;
-        float v2 = (Block.NetherPortal.textureId / 16 + 1) / 16.0F;
+
+        // Bind l'atlas Terrain et récupère l'UV du portail
+        TextureAtlas terrainAtlas = TextureAtlasManager.Instance.Terrain;
+        terrainAtlas.Bind();
+        UVRegion uv = terrainAtlas.GetUV(Block.NetherPortal.textureId);
+
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
-        tess.addVertexWithUV(0.0D, screenHeight, -90.0D, (double)u1, (double)v2);
-        tess.addVertexWithUV(screenWidth, screenHeight, -90.0D, (double)u2, (double)v2);
-        tess.addVertexWithUV(screenWidth, 0.0D, -90.0D, (double)u2, (double)v1);
-        tess.addVertexWithUV(0.0D, 0.0D, -90.0D, (double)u1, (double)v1);
+        tess.addVertexWithUV(0.0D, screenHeight, -90.0D, uv.U0, uv.V1);
+        tess.addVertexWithUV(screenWidth, screenHeight, -90.0D, uv.U1, uv.V1);
+        tess.addVertexWithUV(screenWidth, 0.0D, -90.0D, uv.U1, uv.V0);
+        tess.addVertexWithUV(0.0D, 0.0D, -90.0D, uv.U0, uv.V0);
         tess.draw();
+
         GLManager.GL.DepthMask(true);
         GLManager.GL.Enable(GLEnum.DepthTest);
         GLManager.GL.Enable(GLEnum.AlphaTest);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
     }
-
+    protected void DrawTexturedModalRectUV(int x, int y, int width, int height, UVRegion uv)
+    {
+        float z = _zLevel;
+        Tessellator t = Tessellator.instance;
+        t.startDrawingQuads();
+        t.addVertexWithUV(x, y + height, z, uv.U0, uv.V1);
+        t.addVertexWithUV(x + width, y + height, z, uv.U1, uv.V1);
+        t.addVertexWithUV(x + width, y, z, uv.U1, uv.V0);
+        t.addVertexWithUV(x, y, z, uv.U0, uv.V0);
+        t.draw();
+    }
     private void renderInventorySlot(int slotIndex, int x, int y, float partialTicks)
     {
         ItemStack stack = _mc.player.inventory.main[slotIndex];
@@ -466,7 +505,7 @@ public class GuiIngame : Gui
                 GLManager.GL.Translate(-(x + 8), -(y + 12), 0.0F);
             }
 
-            _itemRenderer.renderItemIntoGUI(_mc.fontRenderer, _mc.textureManager, stack, x, y);
+            _itemRenderer.renderItemIntoGUI(_mc.fontRenderer, TextureAtlasManager.Instance, stack, x, y);
             if (bob > 0.0F)
             {
                 GLManager.GL.PopMatrix();

@@ -46,6 +46,10 @@ public class MovementInputFromOptions : MovementInput
         {
             var3 = 5;
         }
+        if (var1 == gameSettings.KeyBindSprint.keyCode)
+        {
+            var3 = 6;
+        }
 
         if (var3 >= 0)
         {
@@ -89,6 +93,7 @@ public class MovementInputFromOptions : MovementInput
 
         jump = movementKeyStates[4];
         sneak = movementKeyStates[5];
+        sprint = movementKeyStates[6];
         if (sneak)
         {
             moveStrafe = (float)((double)moveStrafe * 0.3D);

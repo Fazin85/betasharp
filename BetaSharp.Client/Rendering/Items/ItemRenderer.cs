@@ -3,6 +3,7 @@ using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Entities;
+using BetaSharp.Client.Textures;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
@@ -54,7 +55,7 @@ public class ItemRenderer : EntityRenderer
         if (var10.itemId < 256 && BlockRenderer.isSideLit(Block.Blocks[var10.itemId].getRenderType()))
         {
             GLManager.GL.Rotate(var12, 0.0F, 1.0F, 0.0F);
-            loadTexture("/terrain.png");
+            TextureAtlasManager.Instance.Terrain.Bind();
             float var28 = 0.25F;
             if (!Block.Blocks[var10.itemId].isFullCube() && var10.itemId != Block.Slab.id && Block.Blocks[var10.itemId].getRenderType() != 16)
             {
@@ -81,21 +82,18 @@ public class ItemRenderer : EntityRenderer
         else
         {
             GLManager.GL.Scale(0.5F, 0.5F, 0.5F);
-            int var14 = var10.getTextureId();
+            string var14 = var10.getTextureId();
             if (var10.itemId < 256)
             {
-                loadTexture("/terrain.png");
+                TextureAtlasManager.Instance.Terrain.Bind();
             }
             else
             {
-                loadTexture("/gui/items.png");
+                TextureAtlasManager.Instance.Items.Bind();
             }
 
             Tessellator var15 = Tessellator.instance;
-            var16 = (var14 % 16 * 16 + 0) / 256.0F;
-            var17 = (var14 % 16 * 16 + 16) / 256.0F;
-            var18 = (var14 / 16 * 16 + 0) / 256.0F;
-            float var19 = (var14 / 16 * 16 + 16) / 256.0F;
+            UVRegion uv = TextureAtlasManager.Instance.Items.GetUV(var14);
             float var20 = 1.0F;
             float var21 = 0.5F;
             float var22 = 0.25F;
@@ -127,10 +125,10 @@ public class ItemRenderer : EntityRenderer
                 GLManager.GL.Rotate(180.0F - Dispatcher.playerViewY, 0.0F, 1.0F, 0.0F);
                 var15.startDrawingQuads();
                 var15.setNormal(0.0F, 1.0F, 0.0F);
-                var15.addVertexWithUV((double)(0.0F - var21), (double)(0.0F - var22), 0.0D, (double)var16, (double)var19);
-                var15.addVertexWithUV((double)(var20 - var21), (double)(0.0F - var22), 0.0D, (double)var17, (double)var19);
-                var15.addVertexWithUV((double)(var20 - var21), (double)(1.0F - var22), 0.0D, (double)var17, (double)var18);
-                var15.addVertexWithUV((double)(0.0F - var21), (double)(1.0F - var22), 0.0D, (double)var16, (double)var18);
+                var15.addVertexWithUV((double)(0.0F - var21), (double)(0.0F - var22), 0.0D, uv.U1, uv.V1);
+                var15.addVertexWithUV((double)(var20 - var21), (double)(0.0F - var22), 0.0D, uv.U0, uv.V1);
+                var15.addVertexWithUV((double)(var20 - var21), (double)(1.0F - var22), 0.0D, uv.U0, uv.V0);
+                var15.addVertexWithUV((double)(0.0F - var21), (double)(1.0F - var22), 0.0D, uv.U1, uv.V0);
                 var15.draw();
                 GLManager.GL.PopMatrix();
             }
@@ -140,12 +138,15 @@ public class ItemRenderer : EntityRenderer
         GLManager.GL.PopMatrix();
     }
 
-    public void drawItemIntoGui(TextRenderer var1, TextureManager var2, int var3, int var4, int var5, int var6, int var7)
+    public void drawItemIntoGui(
+    TextRenderer var1, TextureAtlasManager var2,
+    int var3, int var4, string? var5,       // var5 = textureId string (nullable)
+    int var6, int var7)
     {
-        float var11;
         if (var3 < 256 && BlockRenderer.isSideLit(Block.Blocks[var3].getRenderType()))
         {
-            var2.BindTexture(var2.GetTextureId("/terrain.png"));
+            // Bloc 3D — rendu isométrique, inchangé
+            var2.Terrain.Bind();
             Block var14 = Block.Blocks[var3];
             GLManager.GL.PushMatrix();
             GLManager.GL.Translate(var6 - 2, var7 + 3, -3.0F);
@@ -155,56 +156,64 @@ public class ItemRenderer : EntityRenderer
             GLManager.GL.Rotate(210.0F, 1.0F, 0.0F, 0.0F);
             GLManager.GL.Rotate(45.0F, 0.0F, 1.0F, 0.0F);
             int var15 = Item.ITEMS[var3].getColorMultiplier(var4);
-            var11 = (var15 >> 16 & 255) / 255.0F;
+            float var11 = (var15 >> 16 & 255) / 255.0F;
             float var12 = (var15 >> 8 & 255) / 255.0F;
             float var13 = (var15 & 255) / 255.0F;
             if (useCustomDisplayColor)
-            {
                 GLManager.GL.Color4(var11, var12, var13, 1.0F);
-            }
-
             GLManager.GL.Rotate(-90.0F, 0.0F, 1.0F, 0.0F);
             renderBlocks.renderFromInside = useCustomDisplayColor;
             renderBlocks.renderBlockOnInventory(var14, var4, 1.0F);
             renderBlocks.renderFromInside = true;
             GLManager.GL.PopMatrix();
         }
-        else if (var5 >= 0)
+        else if (var5 != null)
         {
             GLManager.GL.Disable(GLEnum.Lighting);
-            if (var3 < 256)
-            {
-                var2.BindTexture(var2.GetTextureId("/terrain.png"));
-            }
-            else
-            {
-                var2.BindTexture(var2.GetTextureId("/gui/items.png"));
-            }
+
+            // Choix de l'atlas selon bloc ou item
+            TextureAtlas atlas = var3 < 256 ? var2.Terrain : var2.Items;
+            atlas.Bind();
 
             int var8 = Item.ITEMS[var3].getColorMultiplier(var4);
             float var9 = (var8 >> 16 & 255) / 255.0F;
             float var10 = (var8 >> 8 & 255) / 255.0F;
-            var11 = (var8 & 255) / 255.0F;
+            float var11 = (var8 & 255) / 255.0F;
             if (useCustomDisplayColor)
-            {
                 GLManager.GL.Color4(var9, var10, var11, 1.0F);
-            }
 
-            renderTexturedQuad(var6, var7, var5 % 16 * 16, var5 / 16 * 16, 16, 16);
+            // Résolution UV depuis l'atlas — remplace var5 % 16 * 16 / var5 / 16 * 16
+            UVRegion uv = atlas.GetUV(var5);
+            renderTexturedQuadUV(var6, var7, 16, 16, uv);
+
             GLManager.GL.Enable(GLEnum.Lighting);
         }
 
         GLManager.GL.Enable(GLEnum.CullFace);
     }
 
-    public void renderItemIntoGUI(TextRenderer var1, TextureManager var2, ItemStack var3, int var4, int var5)
+    public void renderItemIntoGUI(
+        TextRenderer var1, TextureAtlasManager var2, ItemStack var3, int var4, int var5)
     {
         if (var3 != null)
         {
-            drawItemIntoGui(var1, var2, var3.itemId, var3.getDamage(), var3.getTextureId(), var4, var5);
+            // getTextureId retourne maintenant string
+            drawItemIntoGui(var1, var2, var3.itemId, var3.getDamage(),
+                var3.getTextureId(), var4, var5);
         }
     }
 
+    // Helper UV — remplace renderTexturedQuad(x, y, u_px, v_px, w, h)
+    private void renderTexturedQuadUV(int x, int y, int w, int h, UVRegion uv)
+    {
+        Tessellator t = Tessellator.instance;
+        t.startDrawingQuads();
+        t.addVertexWithUV(x, y + h, 0.0, uv.U0, uv.V1);
+        t.addVertexWithUV(x + w, y + h, 0.0, uv.U1, uv.V1);
+        t.addVertexWithUV(x + w, y, 0.0, uv.U1, uv.V0);
+        t.addVertexWithUV(x, y, 0.0, uv.U0, uv.V0);
+        t.draw();
+    }
     public void renderItemOverlayIntoGUI(TextRenderer var1, TextureManager var2, ItemStack var3, int var4, int var5)
     {
         if (var3 != null)

@@ -1,4 +1,4 @@
-﻿using BetaSharp.Blocks;
+using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Entities;
 using BetaSharp.Client.Entities.FX;
@@ -574,8 +574,8 @@ public class ClientNetworkHandler : NetHandler
 
     private Entity getEntityByID(int entityId)
     {
-        return entityId == mc.player.id ? mc.player : worldClient.GetEntity(entityId);
-    }
+        return entityId == mc.player.id && mc.player != null ? mc.player : worldClient.GetEntity(entityId);
+    }// mc.player was null?
 
     public override void onHealthUpdate(HealthUpdateS2CPacket packet)
     {

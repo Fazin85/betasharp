@@ -8,7 +8,7 @@ namespace BetaSharp.Blocks;
 
 public abstract class BlockFluid : Block
 {
-    protected BlockFluid(int id, Material material) : base(id, (material == Material.Lava ? 14 : 12) * 16 + 13, material)
+    protected BlockFluid(int id, Material material) : base(id, (material == Material.Lava ? "lava" : "water"), material)
     {
         float var3 = 0.0F;
         float var4 = 0.0F;
@@ -32,9 +32,9 @@ public abstract class BlockFluid : Block
         return height;
     }
 
-    public override int getTexture(int side)
+    public override string getTexture(string side)
     {
-        return side != 0 && side != 1 ? textureId + 1 : textureId;
+        return side != "bottom" && side != "top" ? $"{textureId}_flow" : textureId;
     }
 
     protected int getLiquidState(World world, int x, int y, int z)

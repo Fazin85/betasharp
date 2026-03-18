@@ -4,12 +4,15 @@ namespace BetaSharp.Blocks;
 
 public class BlockSandStone : Block
 {
-    public BlockSandStone(int id) : base(id, 192, Material.Stone)
+    public BlockSandStone(int id) : base(id, "sandstone", Material.Stone)
     {
     }
 
-    public override int getTexture(int side)
+    public override string getTexture(string side)
     {
-        return side == 1 ? textureId - 16 : (side == 0 ? textureId + 16 : textureId);
+        return side == "up" ? textureId
+            : side == "down" ? $"{textureId}_top"
+            : $"{textureId}Side";
     }
+
 }

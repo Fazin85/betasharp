@@ -30,6 +30,7 @@ public class ClientWorld : World
 
     public override void Tick()
     {
+        ReadTimescaleCvar();
         setTime(getTime() + 1L);
         int ambient = getAmbientDarkness(1.0F);
 

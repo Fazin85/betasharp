@@ -8,7 +8,7 @@ namespace BetaSharp.Blocks;
 public class BlockLever : Block
 {
 
-    public BlockLever(int id, int level) : base(id, level, Material.PistonBreakable)
+    public BlockLever(int id, string level) : base(id, level, Material.PistonBreakable)
     {
     }
 

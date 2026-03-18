@@ -7,11 +7,11 @@ namespace BetaSharp.Blocks;
 
 public class BlockNote : BlockWithEntity
 {
-    public BlockNote(int id) : base(id, 74, Material.Wood)
+    public BlockNote(int id) : base(id, "note_block", Material.Wood)
     {
     }
 
-    public override int getTexture(int side)
+    public override string getTexture(string side)
     {
         return textureId;
     }

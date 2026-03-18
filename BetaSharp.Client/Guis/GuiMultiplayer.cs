@@ -3,7 +3,7 @@ using BetaSharp.NBT;
 
 namespace BetaSharp.Client.Guis;
 
-//TODO: Update multiplayer menu to use proper translations
+//TODO: Update multiplayer menu to AltFire proper translations
 
 public class GuiMultiplayer : GuiScreen
 {

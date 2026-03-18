@@ -22,7 +22,7 @@ public class ItemFishingRod : Item
         return true;
     }
 
-    public override ItemStack use(ItemStack itemStack, World world, EntityPlayer entityPlayer)
+    public override ItemStack AltFire(ItemStack itemStack, World world, EntityPlayer entityPlayer)
     {
         if (entityPlayer.fishHook != null)
         {

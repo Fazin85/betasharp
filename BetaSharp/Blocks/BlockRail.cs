@@ -21,7 +21,7 @@ public class BlockRail : Block
         return id == Block.Rail.id || id == Block.PoweredRail.id || id == Block.DetectorRail.id;
     }
 
-    public BlockRail(int id, int textureId, bool alwaysStraight) : base(id, textureId, Material.PistonBreakable)
+    public BlockRail(int id, string textureId, bool alwaysStraight) : base(id, textureId, Material.PistonBreakable)
     {
         this.alwaysStraight = alwaysStraight;
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 2.0F / 16.0F, 1.0F);
@@ -62,18 +62,18 @@ public class BlockRail : Block
 
     }
 
-    public override int getTexture(int side, int meta)
+    public override string getTexture(string side, int meta)
     {
         if (alwaysStraight)
         {
             if (id == Block.PoweredRail.id && (meta & 8) == 0)
             {
-                return textureId - 16;
+                return $"{textureId}_lit";
             }
         }
         else if (meta >= 6)
         {
-            return textureId - 16;
+            return $"{textureId}_lit";
         }
 
         return textureId;

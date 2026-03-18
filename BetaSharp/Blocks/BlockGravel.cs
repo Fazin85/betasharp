@@ -5,7 +5,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockGravel : BlockSand
 {
-    public BlockGravel(int i, int j) : base(i, j)
+    public BlockGravel(int i, string j) : base(i, j)
     {
     }
 

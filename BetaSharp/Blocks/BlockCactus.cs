@@ -8,7 +8,7 @@ namespace BetaSharp.Blocks;
 public class BlockCactus : Block
 {
 
-    public BlockCactus(int id, int textureId) : base(id, textureId, Material.Cactus)
+    public BlockCactus(int id, string textureId) : base(id, textureId, Material.Cactus)
     {
         setTickRandomly(true);
     }
@@ -24,6 +24,7 @@ public class BlockCactus : Block
 
             if (heightBelow < 3)
             {
+                /*
                 int growthStage = world.getBlockMeta(x, y, z);
                 if (growthStage == 15)
                 {
@@ -33,7 +34,7 @@ public class BlockCactus : Block
                 else
                 {
                     world.setBlockMeta(x, y, z, growthStage + 1);
-                }
+                }*/
             }
         }
 
@@ -51,9 +52,14 @@ public class BlockCactus : Block
         return new Box((double)((float)x + edgeInset), (double)y, (double)((float)z + edgeInset), (double)((float)(x + 1) - edgeInset), (double)(y + 1), (double)((float)(z + 1) - edgeInset));
     }
 
-    public override int getTexture(int side)
+    public override string getTexture(string side)
     {
-        return side == 1 ? textureId - 1 : (side == 0 ? textureId + 1 : textureId);
+        return side == "top" ? $"{textureId}_top" : (side == "bottom" ? $"{textureId}_bottom" : $"{textureId}_side");
+    }
+
+    public override string getTextureId(BlockView blockView, int x, int y, int z, string side)
+    {
+        return side == "top" ? $"{textureId}_top" : (side == "bottom" ? $"{textureId}_bottom" : $"{textureId}_side");
     }
 
     public override bool isFullCube()

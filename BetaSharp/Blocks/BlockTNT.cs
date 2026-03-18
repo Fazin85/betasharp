@@ -8,14 +8,18 @@ namespace BetaSharp.Blocks;
 
 public class BlockTNT : Block
 {
-    public BlockTNT(int id, int textureId) : base(id, textureId, Material.Tnt)
+    public BlockTNT(int id, string textureId) : base(id, textureId, Material.Tnt)
     {
     }
 
-    public override int getTexture(int side)
+    public override string getTexture(string side) => side switch
     {
-        return side == 0 ? textureId + 2 : (side == 1 ? textureId + 1 : textureId);
-    }
+        "up" => $"{textureId}_top",
+        "down" => $"{textureId}_bottom",
+        _ => $"{textureId}_side"
+    };
+
+
 
     public override void onPlaced(World world, int x, int y, int z)
     {

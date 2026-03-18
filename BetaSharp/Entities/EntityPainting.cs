@@ -1,4 +1,5 @@
 using BetaSharp.Blocks.Materials;
+//using BetaSharp.Client.Rendering.Entities;
 using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
@@ -21,6 +22,7 @@ public class EntityPainting : Entity
         direction = 0;
         standingEyeHeight = 0.0F;
         setBoundingBoxSpacing(0.5F, 0.5F);
+        //customRenderer = new PaintingEntityRenderer();
     }
 
     public EntityPainting(World world, int xPosition, int yPosition, int zPosition, int direction) : this(world)

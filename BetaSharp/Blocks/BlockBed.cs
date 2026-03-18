@@ -10,7 +10,7 @@ public class BlockBed : Block
 {
     public static readonly int[][] BED_OFFSETS = [[0, 1], [-1, 0], [0, -1], [1, 0]];
 
-    public BlockBed(int id) : base(id, 134, Material.Wool)
+    public BlockBed(int id) : base(id, "red_bed", Material.Wool)
     {
         setDefaultShape();
     }
@@ -101,19 +101,19 @@ public class BlockBed : Block
         }
     }
 
-    public override int getTexture(int side, int meta)
+    public override string getTexture(string side, int meta)
     {
-        if (side == 0)
+        if (side == "down")
         {
             return Block.Planks.textureId;
         }
         else
         {
             int direction = getDirection(meta);
-            int sideFacing = Facings.BED_FACINGS[direction][side];
+            int sideFacing = Facings.BED_FACINGS[direction][faceString2Int(side)];
             return isHeadOfBed(meta) ?
-                (sideFacing == 2 ? textureId + 2 + 16 : (sideFacing != 5 && sideFacing != 4 ? textureId + 1 : textureId + 1 + 16)) :
-                (sideFacing == 3 ? textureId - 1 + 16 : (sideFacing != 5 && sideFacing != 4 ? textureId : textureId + 16));
+             faceInt2String(sideFacing) : $"{textureId}_head_{faceInt2String(sideFacing)}" ;
+
         }
     }
 

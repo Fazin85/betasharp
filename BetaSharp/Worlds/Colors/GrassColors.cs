@@ -11,9 +11,9 @@ public class GrassColors : java.lang.Object
 
     public static int getColor(double temperature, double downfall)
     {
-        downfall *= temperature;
-        int var4 = (int)((1.0D - temperature) * 255.0D);
-        int var5 = (int)((1.0D - downfall) * 255.0D);
+        downfall *= temperature + 20;
+        int var4 = (int)((temperature) );
+        int var5 = (int)((downfall) );
         return grassBuffer[var5 << 8 | var4];
     }
 }

@@ -10,7 +10,7 @@ public class BlockFarmland : Block
 
     public BlockFarmland(int id) : base(id, Material.Soil)
     {
-        textureId = 87;
+        textureId = "farmland";
         setTickRandomly(true);
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 15.0F / 16.0F, 1.0F);
         setOpacity(255);
@@ -31,9 +31,9 @@ public class BlockFarmland : Block
         return false;
     }
 
-    public override int getTexture(int side, int meta)
+    public override string getTexture(string side, int meta)
     {
-        return side == 1 && meta > 0 ? textureId - 1 : (side == 1 ? textureId : 2);
+        return side == "top" && meta > 0 ? $"{textureId}_wet" : (side == "bottom" ? $"{textureId}_dry" : "dirt");
     }
 
     public override void onTick(World world, int x, int y, int z, JavaRandom random)

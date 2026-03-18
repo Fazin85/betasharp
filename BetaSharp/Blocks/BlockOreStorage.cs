@@ -5,13 +5,13 @@ namespace BetaSharp.Blocks;
 public class BlockOreStorage : Block
 {
 
-    public BlockOreStorage(int id, int textureId) : base(id, Material.Metal)
+    public BlockOreStorage(int id, string textureId) : base(id, Material.Metal)
     {
         base.textureId = textureId;
     }
 
-    public override int getTexture(int side)
+    public override string getTexture(string side)
     {
-        return textureId;
+        return side == "up" ? "top" : side == "down" ? "bottom" : "side";
     }
 }

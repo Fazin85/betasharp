@@ -515,7 +515,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         {
             string commandText = message[1..];
             _logger.LogInformation($"{player.name} tried command: {commandText}");
-            sendPacket(new ChatMessagePacket("§cYou do not have permission to use this command."));
+            sendPacket(new ChatMessagePacket("§cYou do not have permission to AltFire this command."));
         }
     }
 

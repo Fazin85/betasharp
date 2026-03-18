@@ -6,7 +6,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockSapling : BlockPlant
 {
-    public BlockSapling(int i, int j) : base(i, j)
+    public BlockSapling(int i, string j) : base(i, j)
     {
         float halfSize = 0.4F;
         setBoundingBox(0.5F - halfSize, 0.0F, 0.5F - halfSize, 0.5F + halfSize, halfSize * 2.0F, 0.5F + halfSize);
@@ -33,10 +33,10 @@ public class BlockSapling : BlockPlant
         }
     }
 
-    public override int getTexture(int side, int meta)
+    public override string getTexture(string side, int meta)
     {
         meta &= 3;
-        return meta == 1 ? 63 : (meta == 2 ? 79 : base.getTexture(side, meta));
+        return meta == 1 ? "birch_sapling" : (meta == 2 ? "dark_oak_sapling" : base.getTexture(side, meta));
     }
 
     public void generate(World world, int x, int y, int z, JavaRandom random)

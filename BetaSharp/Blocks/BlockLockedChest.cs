@@ -9,18 +9,18 @@ public class BlockLockedChest : Block
 
     public BlockLockedChest(int id) : base(id, Material.Wood)
     {
-        textureId = 26;
+        textureId = "locked_chest";
     }
 
-    public override int getTextureId(BlockView blockView, int x, int y, int z, int side)
+    public override string getTextureId(BlockView blockView, int x, int y, int z, string side)
     {
-        if (side == 1)
+        if (side == "top")
         {
-            return textureId - 1;
+            return $"{textureId}_top";
         }
-        else if (side == 0)
+        else if (side == "bottom")
         {
-            return textureId - 1;
+            return $"{textureId}_top";
         }
         else
         {
@@ -49,14 +49,17 @@ public class BlockLockedChest : Block
                 var10 = 4;
             }
 
-            return side == var10 ? textureId + 1 : textureId;
+            return faceString2Int(side) == var10 ? $"{textureId}_front" : textureId;
         }
     }
 
-    public override int getTexture(int side)
+    public override string getTexture(string side)
     {
-        return side == 1 ? textureId - 1 : (side == 0 ? textureId - 1 : (side == 3 ? textureId + 1 : textureId));
+        return side == "up" ? textureId
+            : side == "down" ? $"{textureId}_top"
+            : $"{textureId}_side";
     }
+
 
     public override bool canPlaceAt(World world, int x, int y, int z)
     {

@@ -7,10 +7,30 @@ namespace BetaSharp.Blocks;
 
 public class BlockCake : Block
 {
+    // Textures fixes — le cake a 4 faces distinctes dans terrain.png
+    private const string TexTop = "cake_top";
+    private const string TexSide = "cake_side";
+    private const string TexCut = "cake_side_cut";   // face entamée (côté ouest après 1+ tranche)
+    private const string TexBottom = "cake_bottom";
 
-    public BlockCake(int id, int textureId) : base(id, textureId, Material.Cake)
+    public BlockCake(int id, string textureId) : base(id, textureId, Material.Cake)
     {
         setTickRandomly(true);
+    }
+
+    public override string getTexture(string side, int meta)
+    {
+        return side == "top" ? TexTop
+             : side == "bottom" ? TexBottom
+             : meta > 0 && side == "west" ? TexCut
+             : TexSide;
+    }
+
+    public override string getTexture(string side)
+    {
+        return side == "top" ? TexTop
+             : side == "bottom" ? TexBottom
+             : TexSide;
     }
 
     public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
@@ -35,7 +55,9 @@ public class BlockCake : Block
         float edgeInset = 1.0F / 16.0F;
         float minX = (float)(1 + slicesEaten * 2) / 16.0F;
         float height = 0.5F;
-        return new Box((double)((float)x + minX), (double)y, (double)((float)z + edgeInset), (double)((float)(x + 1) - edgeInset), (double)((float)y + height - edgeInset), (double)((float)(z + 1) - edgeInset));
+        return new Box(
+            x + minX, y, z + edgeInset,
+            x + 1 - edgeInset, y + height - edgeInset, z + 1 - edgeInset);
     }
 
     public override Box getBoundingBox(World world, int x, int y, int z)
@@ -44,28 +66,13 @@ public class BlockCake : Block
         float edgeInset = 1.0F / 16.0F;
         float minX = (float)(1 + slicesEaten * 2) / 16.0F;
         float height = 0.5F;
-        return new Box((double)((float)x + minX), (double)y, (double)((float)z + edgeInset), (double)((float)(x + 1) - edgeInset), (double)((float)y + height), (double)((float)(z + 1) - edgeInset));
+        return new Box(
+            x + minX, y, z + edgeInset,
+            x + 1 - edgeInset, y + height, z + 1 - edgeInset);
     }
 
-    public override int getTexture(int side, int meta)
-    {
-        return side == 1 ? textureId : (side == 0 ? textureId + 3 : (meta > 0 && side == 4 ? textureId + 2 : textureId + 1));
-    }
-
-    public override int getTexture(int side)
-    {
-        return side == 1 ? textureId : (side == 0 ? textureId + 3 : textureId + 1);
-    }
-
-    public override bool isFullCube()
-    {
-        return false;
-    }
-
-    public override bool isOpaque()
-    {
-        return false;
-    }
+    public override bool isFullCube() => false;
+    public override bool isOpaque() => false;
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
     {
@@ -83,24 +90,19 @@ public class BlockCake : Block
         if (player.health < 20)
         {
             player.heal(3);
-            int var6 = world.getBlockMeta(x, y, z) + 1;
-            if (var6 >= 6)
-            {
+            int slices = world.getBlockMeta(x, y, z) + 1;
+            if (slices >= 6)
                 world.setBlock(x, y, z, 0);
-            }
             else
             {
-                world.setBlockMeta(x, y, z, var6);
+                world.setBlockMeta(x, y, z, slices);
                 world.setBlocksDirty(x, y, z);
             }
         }
-
     }
 
     public override bool canPlaceAt(World world, int x, int y, int z)
-    {
-        return !base.canPlaceAt(world, x, y, z) ? false : canGrow(world, x, y, z);
-    }
+        => base.canPlaceAt(world, x, y, z) && canGrow(world, x, y, z);
 
     public override void neighborUpdate(World world, int x, int y, int z, int id)
     {
@@ -109,21 +111,11 @@ public class BlockCake : Block
             dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
             world.setBlock(x, y, z, 0);
         }
-
     }
 
     public override bool canGrow(World world, int x, int y, int z)
-    {
-        return world.getMaterial(x, y - 1, z).IsSolid;
-    }
+        => world.getMaterial(x, y - 1, z).IsSolid;
 
-    public override int getDroppedItemCount(JavaRandom random)
-    {
-        return 0;
-    }
-
-    public override int getDroppedItemId(int blockMeta, JavaRandom random)
-    {
-        return 0;
-    }
+    public override int getDroppedItemCount(JavaRandom random) => 0;
+    public override int getDroppedItemId(int blockMeta, JavaRandom random) => 0;
 }

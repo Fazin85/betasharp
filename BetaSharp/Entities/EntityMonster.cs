@@ -1,4 +1,5 @@
 using BetaSharp.NBT;
+using BetaSharp.Rules;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
@@ -7,10 +8,14 @@ namespace BetaSharp.Entities;
 public class EntityMonster : EntityCreature, Monster
 {
     protected int attackStrength = 2;
-
+    protected CvarRegistry cvars = CvarRegistry.Instance;
+    protected bool isPassive = false;
     public EntityMonster(World world) : base(world)
     {
         health = 20;
+        if (!isPassive)
+            preys.Add(typeof(EntityPlayer));
+        //preys.Add(typeof(ServerPlayerEntity));
     }
 
     public override void tickMovement()
@@ -26,19 +31,18 @@ public class EntityMonster : EntityCreature, Monster
 
     public override void tick()
     {
+        
         base.tick();
         if (!world.isRemote && world.difficulty == 0)
         {
             markDead();
         }
-
+        if (preyToAttack == null )
+            preyToAttack = searchForPreys();
     }
 
-    protected override Entity findPlayerToAttack()
-    {
-        EntityPlayer player = world.getClosestPlayer(this, 16.0D);
-        return player != null && canSee(player) ? player : null;
-    }
+
+    
 
     public override bool damage(Entity entity, int amount)
     {
@@ -48,7 +52,7 @@ public class EntityMonster : EntityCreature, Monster
             {
                 if (entity != this)
                 {
-                    playerToAttack = entity;
+                    preyToAttack = entity;
                 }
 
                 return true;
@@ -73,6 +77,7 @@ public class EntityMonster : EntityCreature, Monster
         }
 
     }
+
 
     protected override float getBlockPathWeight(int x, int y, int z)
     {

@@ -1,4 +1,5 @@
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Sound;
 
 namespace BetaSharp.Client.Guis;
 
@@ -14,6 +15,7 @@ public class GuiGameOver : GuiScreen
         _controlList.Clear();
         _controlList.Add(new GuiButton(ButtonRespawn, Width / 2 - 100, Height / 4 + 72, "Respawn"));
         _controlList.Add(new GuiButton(ButtonTitle, Width / 2 - 100, Height / 4 + 96, "Title menu"));
+        
         if (mc.session == null)
         {
             for (int i = 0; i < _controlList.Count; ++i)

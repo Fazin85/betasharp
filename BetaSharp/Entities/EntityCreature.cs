@@ -6,11 +6,13 @@ namespace BetaSharp.Entities;
 public class EntityCreature : EntityLiving
 {
     private PathEntity pathToEntity;
-    protected Entity playerToAttack;
+    protected Entity preyToAttack;
     protected bool hasAttacked;
+    protected List<Type> preys = new List<Type>(); // entités à attacker 
 
     public EntityCreature(World world) : base(world)
     {
+        running = false;
     }
 
     protected virtual bool isMovementCeased()
@@ -22,32 +24,33 @@ public class EntityCreature : EntityLiving
     {
         hasAttacked = isMovementCeased();
         float range = 16.0F;
-        if (playerToAttack == null)
+        if (preyToAttack == null)
         {
-            playerToAttack = findPlayerToAttack();
-            if (playerToAttack != null)
+            preyToAttack = searchForPreys();
+            if (preyToAttack != null)
             {
-                pathToEntity = world.findPath(this, playerToAttack, range);
+                pathToEntity = world.findPath(this, preyToAttack, range);
             }
         }
-        else if (!playerToAttack.isAlive())
+        else if (!preyToAttack.isAlive())
         {
-            playerToAttack = null;
+            preyToAttack = null;
         }
         else
         {
-            float distance = playerToAttack.getDistance(this);
-            if (canSee(playerToAttack))
+            float distance = preyToAttack.getDistance(this);
+            if (canSee(preyToAttack))
             {
-                attackEntity(playerToAttack, distance);
+                //running = !running && distance > 20f;
+                attackEntity(preyToAttack, distance);
             }
             else
             {
-                attackBlockedEntity(playerToAttack, distance);
+                attackBlockedEntity(preyToAttack, distance);
             }
         }
 
-        if (hasAttacked || playerToAttack == null || pathToEntity != null && random.NextInt(20) != 0)
+        if (hasAttacked || preyToAttack == null || pathToEntity != null && random.NextInt(20) != 0)
         {
             if (!hasAttacked && (pathToEntity == null && random.NextInt(80) == 0 || random.NextInt(80) == 0))
             {
@@ -56,7 +59,7 @@ public class EntityCreature : EntityLiving
         }
         else
         {
-            pathToEntity = world.findPath(this, playerToAttack, range);
+            pathToEntity = world.findPath(this, preyToAttack, range);
         }
 
         int floorY = MathHelper.Floor(boundingBox.MinY + 0.5D);
@@ -111,10 +114,10 @@ public class EntityCreature : EntityLiving
                 }
 
                 yaw += yawDelta;
-                if (hasAttacked && playerToAttack != null)
+                if (hasAttacked && preyToAttack != null)
                 {
-                    double targetDeltaX = playerToAttack.x - x;
-                    double targetDeltaZ = playerToAttack.z - z;
+                    double targetDeltaX = preyToAttack.x - x;
+                    double targetDeltaZ = preyToAttack.z - z;
                     float previousYaw = yaw;
                     yaw = (float)(System.Math.Atan2(targetDeltaZ, targetDeltaX) * 180.0D / (double)((float)System.Math.PI)) - 90.0F;
                     yawDelta = (previousYaw - yaw + 90.0F) * (float)System.Math.PI / 180.0F;
@@ -128,9 +131,9 @@ public class EntityCreature : EntityLiving
                 }
             }
 
-            if (playerToAttack != null)
+            if (preyToAttack != null)
             {
-                faceEntity(playerToAttack, 30.0F, 30.0F);
+                faceEntity(preyToAttack, 30.0F, 30.0F);
             }
 
             if (horizontalCollison && !hasPath())
@@ -181,7 +184,19 @@ public class EntityCreature : EntityLiving
         }
 
     }
-
+    protected virtual Entity searchForPreys()
+    {
+        List<Entity> nearby = world.getClosestEntities(this, 16.0D);
+        foreach (Entity ent in nearby)
+        {
+            if (isPrey(ent) && canSee(ent)) return ent;
+        }
+        return null;
+    }
+    protected bool isPrey(Entity entity)
+    {
+        return preys.Any(t => t.IsAssignableFrom(entity.GetType()));
+    }
     protected virtual void attackEntity(Entity entity, float distance)
     {
     }
@@ -195,10 +210,7 @@ public class EntityCreature : EntityLiving
         return 0.0F;
     }
 
-    protected virtual Entity findPlayerToAttack()
-    {
-        return null;
-    }
+    
 
     public override bool canSpawn()
     {
@@ -220,11 +232,11 @@ public class EntityCreature : EntityLiving
 
     public Entity getTarget()
     {
-        return playerToAttack;
+        return preyToAttack;
     }
 
     public void setTarget(Entity playerToAttack)
     {
-        this.playerToAttack = playerToAttack;
+        this.preyToAttack = playerToAttack;
     }
 }

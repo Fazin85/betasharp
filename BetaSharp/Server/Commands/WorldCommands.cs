@@ -1,6 +1,8 @@
 using BetaSharp.Entities;
 using BetaSharp.Rules;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Gen.Structures;
 
 namespace BetaSharp.Server.Commands;
 
@@ -91,6 +93,23 @@ public static class WorldCommands
         output.SendMessage($"Weather set to {weather}.");
     }
 
+    public static void GenStructure(MinecraftServer server, string senderName, string[] args, CommandOutput output)
+    {
+        EntityPlayer player = server.playerManager.getPlayer(senderName);
+        NbtStructure structure;
+        if (args.Length < 1) { output.SendMessage("Usage: /gen <name>"); return; }
+        if (args[0] == "test") structure = TestStructures.createTestHut();
+            else
+            structure = StructureManager.get(args[0]);
+        
+        if (structure == null) { output.SendMessage($"Structure '{args[0]}' introuvable."); return; }
+
+        int x = MathHelper.Floor(player.x);
+        int y = MathHelper.Floor(player.y);
+        int z = MathHelper.Floor(player.z);
+        structure.place(player.world, x, y, z, new Random());
+        player.sendMessage($"Structure '{args[0]}' placée en {x} {y} {z}.");
+    }
     public static void Summon(MinecraftServer server, string senderName, string[] args, CommandOutput output)
     {
         if (args.Length < 1)
@@ -204,15 +223,15 @@ public static class WorldCommands
     {
         ServerPlayerEntity player = server.playerManager.getPlayer(senderName);
         ServerWorld world = player != null ? server.getWorld(player.dimensionId) : server.worlds[0];
-        RuleSet rules = world.Rules;
-        RuleRegistry registry = RuleRegistry.Instance;
+        CvarSet rules = world.Rules;
+        CvarRegistry registry = CvarRegistry.Instance;
 
         if (args.Length == 0)
         {
             output.SendMessage("Available Game Rules:");
-            foreach (IGameRule rule in registry.All)
+            foreach (Cvar rule in registry.All)
             {
-                IRuleValue val = rules.Get(rule.Key);
+                ICvarValue val = rules.Get(rule.Key);
                 output.SendMessage($"  {rule.Key} = {rule.Serialize(val)}");
             }
             return;
@@ -222,9 +241,9 @@ public static class WorldCommands
         {
             string ruleName = args[0];
             ResourceLocation key = ResourceLocation.Parse(ruleName);
-            if (registry.TryGet(key, out IGameRule? rule))
+            if (registry.TryGet(key, out Cvar? rule))
             {
-                IRuleValue val = rules.Get(key);
+                ICvarValue val = rules.Get(key);
                 output.SendMessage($"{ruleName} = {rule.Serialize(val)}");
             }
             else
@@ -240,7 +259,7 @@ public static class WorldCommands
             string valueStr = args[1];
             ResourceLocation key = ResourceLocation.Parse(ruleName);
 
-            if (!registry.TryGet(key, out IGameRule? _))
+            if (!registry.TryGet(key, out Cvar? _))
             {
                 output.SendMessage($"Unknown game rule: {ruleName}");
                 return;

@@ -7,7 +7,7 @@ namespace BetaSharp.Blocks;
 public class BlockFence : Block
 {
 
-    public BlockFence(int id, int texture) : base(id, texture, Material.Wood)
+    public BlockFence(int id, string texture) : base(id, texture, Material.Wood)
     {
     }
 

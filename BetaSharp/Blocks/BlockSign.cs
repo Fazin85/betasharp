@@ -14,7 +14,7 @@ public class BlockSign : BlockWithEntity
     public BlockSign(int id, Type blockEntityType, bool standing) : base(id, Material.Wood)
     {
         this._standing = standing;
-        textureId = 4;
+        textureId = "oak_planks";
         this._blockEntityType = blockEntityType;
         float width = 0.25F;
         float height = 1.0F;

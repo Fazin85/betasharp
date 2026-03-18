@@ -1,3 +1,4 @@
+
 using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Worlds;
@@ -20,6 +21,8 @@ public class EntityChicken : EntityAnimal
         setBoundingBoxSpacing(0.3F, 0.4F);
         health = 4;
         timeUntilNextEgg = random.NextInt(6000) + 6000;
+        //Model = new ModelChicken();
+        //customRenderer = new ChickenEntityRenderer(Model, 0.4F);
     }
 
     public override void tickMovement()

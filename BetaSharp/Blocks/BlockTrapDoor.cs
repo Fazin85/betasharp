@@ -11,10 +11,10 @@ public class BlockTrapDoor : Block
 
     public BlockTrapDoor(int id, Material material) : base(id, material)
     {
-        textureId = 84;
+        textureId = "trapdoor";
         if (material == Material.Metal)
         {
-            ++textureId;
+            textureId =  $"iron_{textureId}";
         }
 
         float halfWidth = 0.5F;

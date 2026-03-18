@@ -52,9 +52,9 @@ public class ItemDye : Item
         setMaxDamage(0);
     }
 
-    public override int getTextureId(int meta)
+    public override string getTextureId(int meta)
     {
-        return textureId + meta % 8 * 16 + meta / 8;
+        return $"{textureId}_{meta % 8 * 16 + meta / 8}";
     }
 
     public override String getItemNameIS(ItemStack itemStack)

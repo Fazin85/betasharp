@@ -9,7 +9,7 @@ namespace BetaSharp.Blocks;
 public class BlockCrops : BlockPlant
 {
 
-    public BlockCrops(int i, int j) : base(i, j)
+    public BlockCrops(int i, string j) : base(i, j)
     {
         textureId = j;
         setTickRandomly(true);
@@ -93,14 +93,14 @@ public class BlockCrops : BlockPlant
         return totalMoisture;
     }
 
-    public override int getTexture(int side, int meta)
+    public override string getTexture(string side, int meta)
     {
         if (meta < 0)
         {
             meta = 7;
         }
 
-        return textureId + meta;
+        return $"{textureId}_{meta}";
     }
 
     public override int getRenderType()
@@ -111,7 +111,7 @@ public class BlockCrops : BlockPlant
     public override void dropStacks(World world, int x, int y, int z, int meta, float luck)
     {
         base.dropStacks(world, x, y, z, meta, luck);
-        if (!world.isRemote && world.Rules.GetBool(DefaultRules.DoTileDrops))
+        if (!world.isRemote && world.Rules.GetBool(Cvars.sv_tiledrops))
         {
             for (int attempt = 0; attempt < 3; ++attempt)
             {

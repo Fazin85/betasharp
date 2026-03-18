@@ -52,7 +52,7 @@ public class EntityRenderDispatcher
         RegisterRenderer(typeof(EntityArrow), new ArrowEntityRenderer());
         RegisterRenderer(typeof(EntitySnowball), new ProjectileEntityRenderer(Item.Snowball.getTextureId(0)));
         RegisterRenderer(typeof(EntityEgg), new ProjectileEntityRenderer(Item.Egg.getTextureId(0)));
-        RegisterRenderer(typeof(EntityFireball), new FireballEntityRenderer());
+        RegisterRenderer(typeof(EntityFireball), new FireballEntityRenderer(Item.Diamond.getTextureId(0)));
         RegisterRenderer(typeof(EntityItem), new ItemRenderer());
         RegisterRenderer(typeof(EntityTNTPrimed), new TntEntityRenderer());
         RegisterRenderer(typeof(EntityFallingSand), new FallingBlockEntityRenderer());

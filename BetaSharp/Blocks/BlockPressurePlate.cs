@@ -10,7 +10,7 @@ public class BlockPressurePlate : Block
 
     private readonly PressurePlateActiviationRule activationRule;
 
-    public BlockPressurePlate(int id, int textureId, PressurePlateActiviationRule rule, Material material) : base(id, textureId, material)
+    public BlockPressurePlate(int id, string textureId, PressurePlateActiviationRule rule, Material material) : base(id, textureId, material)
     {
         activationRule = rule;
         setTickRandomly(true);

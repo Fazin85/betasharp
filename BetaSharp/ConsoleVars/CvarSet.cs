@@ -3,19 +3,19 @@ using BetaSharp.NBT;
 
 namespace BetaSharp.Rules;
 
-public sealed class RuleSet(RuleRegistry registry)
+public sealed class CvarSet(CvarRegistry registry)
 {
-    private readonly ConcurrentDictionary<ResourceLocation, IRuleValue> _values = new();
+    private readonly ConcurrentDictionary<ResourceLocation, ICvarValue> _values = new();
 
-    public event Action<ResourceLocation, IRuleValue, IRuleValue>? RuleChanged;
+    public event Action<ResourceLocation, ICvarValue, ICvarValue>? RuleChanged;
 
-    public T Get<T>(IGameRule<T> rule) where T : IRuleValue =>
-        _values.TryGetValue(rule.Key, out IRuleValue? v) ? (T)v : rule.DefaultValue;
+    public T Get<T>(IGameRule<T> rule) where T : ICvarValue =>
+        _values.TryGetValue(rule.Key, out ICvarValue? v) ? (T)v : rule.DefaultValue;
 
-    public IRuleValue Get(ResourceLocation key)
+    public ICvarValue Get(ResourceLocation key)
     {
-        IGameRule rule = registry.Get(key);
-        return _values.TryGetValue(key, out IRuleValue? v) ? v : rule.DefaultValue;
+        Cvar rule = registry.Get(key);
+        return _values.TryGetValue(key, out ICvarValue? v) ? v : rule.DefaultValue;
     }
 
     public bool GetBool(IGameRule<BoolValue> rule) => (bool)Get(rule);
@@ -24,7 +24,7 @@ public sealed class RuleSet(RuleRegistry registry)
     public string GetString(IGameRule<StringValue> rule) => (string)Get(rule);
     public TEnum GetEnum<TEnum>(IGameRule<EnumValue<TEnum>> rule) where TEnum : struct, Enum => (TEnum)Get(rule);
 
-    public void Set<T>(IGameRule<T> rule, T value) where T : IRuleValue
+    public void Set<T>(IGameRule<T> rule, T value) where T : ICvarValue
     {
         T old = Get(rule);
         _values[rule.Key] = value;
@@ -33,9 +33,9 @@ public sealed class RuleSet(RuleRegistry registry)
 
     public bool TrySet(ResourceLocation key, string rawValue)
     {
-        if (!registry.TryGet(key, out IGameRule? rule)) return false;
-        IRuleValue newValue = rule.Deserialize(rawValue);
-        IRuleValue old = _values.TryGetValue(key, out IRuleValue? existing) ? existing : rule.DefaultValue;
+        if (!registry.TryGet(key, out Cvar? rule)) return false;
+        ICvarValue newValue = rule.Deserialize(rawValue);
+        ICvarValue old = _values.TryGetValue(key, out ICvarValue? existing) ? existing : rule.DefaultValue;
         _values[key] = newValue;
         RuleChanged?.Invoke(key, old, newValue);
         return true;
@@ -48,9 +48,9 @@ public sealed class RuleSet(RuleRegistry registry)
     public Dictionary<string, string> Serialize()
     {
         var result = new Dictionary<string, string>();
-        foreach ((ResourceLocation? key, IRuleValue? value) in _values)
+        foreach ((ResourceLocation? key, ICvarValue? value) in _values)
         {
-            IGameRule rule = registry.Get(key);
+            Cvar rule = registry.Get(key);
             result[key.ToString()] = rule.Serialize(value);
         }
         return result;
@@ -70,9 +70,9 @@ public sealed class RuleSet(RuleRegistry registry)
         }
     }
 
-    public static RuleSet FromNBT(RuleRegistry registry, NBTTagCompound nbt)
+    public static CvarSet FromNBT(CvarRegistry registry, NBTTagCompound nbt)
     {
-        RuleSet ruleSet = new(registry);
+        CvarSet ruleSet = new(registry);
         foreach ((string key, NBTBase value) in nbt.Dictionary)
         {
             if (value is NBTTagString str)
@@ -81,11 +81,11 @@ public sealed class RuleSet(RuleRegistry registry)
         return ruleSet;
     }
 
-    public IEnumerable<(IGameRule Rule, IRuleValue Value)> NonDefaultValues()
+    public IEnumerable<(Cvar cvar, ICvarValue Value)> NonDefaultValues()
     {
-        foreach ((ResourceLocation? key, IRuleValue? value) in _values)
+        foreach ((ResourceLocation? key, ICvarValue? value) in _values)
         {
-            IGameRule rule = registry.Get(key);
+            Cvar rule = registry.Get(key);
             if (!value.Equals(rule.DefaultValue))
                 yield return (rule, value);
         }

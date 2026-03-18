@@ -4,6 +4,7 @@ using BetaSharp.Client.Entities;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Entities;
+using BetaSharp.Client.Textures;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
@@ -32,24 +33,36 @@ public class HeldItemRenderer
         GLManager.GL.PushMatrix();
         if (var2.itemId < 256 && BlockRenderer.isSideLit(Block.Blocks[var2.itemId].getRenderType()))
         {
-            mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/terrain.png"));
+            TextureAtlasManager.Instance.Terrain.Bind();
             renderBlocksInstance.renderBlockOnInventory(Block.Blocks[var2.itemId], var2.getDamage(), var1.getBrightnessAtEyes(1.0F));
         }
-        else
+        else 
         {
-            string texPath = var2.itemId < 256 ? "/terrain.png" : "/gui/items.png";
-            mc.textureManager.BindTexture(mc.textureManager.GetTextureId(texPath));
-            int tileSize = mc.textureManager.GetAtlasTileSize(texPath);
+            // Choix atlas selon bloc-item ou item pur
+            bool isBlock = var2.itemId < 256;
+            TextureAtlas atlas = isBlock
+                ? TextureAtlasManager.Instance.Terrain
+                : TextureAtlasManager.Instance.Items;
+            atlas.Bind();
 
-            Tessellator var3 = Tessellator.instance;
-            int var4 = var1.getItemStackTextureId(var2);
-            float var5 = (var4 % 16 * 16 + 0.0F) / 256.0F;
-            float var6 = (var4 % 16 * 16 + 15.99F) / 256.0F;
-            float var7 = (var4 / 16 * 16 + 0.0F) / 256.0F;
-            float var8 = (var4 / 16 * 16 + 15.99F) / 256.0F;
+            // Résolution UV depuis l'atlas — remplace var4 % 16 * 16 / 256.0F
+            string texId = var1.getItemStackTextureId(var2);
+            UVRegion uv = atlas.GetUV(texId);
+
+            // tileSize sert uniquement aux boucles de tranche (épaisseur de l'item 2D)
+            // On calcule un nombre de tranches proportionnel à la taille de tuile dans l'atlas
+            // 16 tranches pour une tuile standard — indépendant de la résolution
+            // les tranches latérales sont déformés et ne rendent pas correctement
+            int tileSlices = 16;
+
+            float var5 = uv.U0;
+            float var6 = uv.U1;
+            float var7 = uv.V0;
+            float var8 = uv.V1;
             float var9 = 1.0F;
             float var10 = 0.0F;
             float var11 = 0.3F;
+
             GLManager.GL.Enable(GLEnum.RescaleNormal);
             GLManager.GL.Translate(-var10, -var11, 0.0F);
             float var12 = 1.5F;
@@ -58,84 +71,88 @@ public class HeldItemRenderer
             GLManager.GL.Rotate(335.0F, 0.0F, 0.0F, 1.0F);
             GLManager.GL.Translate(-(15.0F / 16.0F), -(1.0F / 16.0F), 0.0F);
             float var13 = 1.0F / 16.0F;
+
+            Tessellator var3 = Tessellator.instance;
+
+            // Face avant
             var3.startDrawingQuads();
             var3.setNormal(0.0F, 0.0F, 1.0F);
-            var3.addVertexWithUV(0.0D, 0.0D, 0.0D, (double)var6, (double)var8);
-            var3.addVertexWithUV((double)var9, 0.0D, 0.0D, (double)var5, (double)var8);
-            var3.addVertexWithUV((double)var9, 1.0D, 0.0D, (double)var5, (double)var7);
-            var3.addVertexWithUV(0.0D, 1.0D, 0.0D, (double)var6, (double)var7);
+            var3.addVertexWithUV(0.0D, 0.0D, 0.0D, var6, var8);
+            var3.addVertexWithUV(var9, 0.0D, 0.0D, var5, var8);
+            var3.addVertexWithUV(var9, 1.0D, 0.0D, var5, var7);
+            var3.addVertexWithUV(0.0D, 1.0D, 0.0D, var6, var7);
             var3.draw();
+
+            // Face arrière
             var3.startDrawingQuads();
             var3.setNormal(0.0F, 0.0F, -1.0F);
-            var3.addVertexWithUV(0.0D, 1.0D, (double)(0.0F - var13), (double)var6, (double)var7);
-            var3.addVertexWithUV((double)var9, 1.0D, (double)(0.0F - var13), (double)var5, (double)var7);
-            var3.addVertexWithUV((double)var9, 0.0D, (double)(0.0F - var13), (double)var5, (double)var8);
-            var3.addVertexWithUV(0.0D, 0.0D, (double)(0.0F - var13), (double)var6, (double)var8);
+            var3.addVertexWithUV(0.0D, 1.0D, -var13, var6, var7);
+            var3.addVertexWithUV(var9, 1.0D, -var13, var5, var7);
+            var3.addVertexWithUV(var9, 0.0D, -var13, var5, var8);
+            var3.addVertexWithUV(0.0D, 0.0D, -var13, var6, var8);
             var3.draw();
+
+            // Tranches latérales gauche
+            
             var3.startDrawingQuads();
             var3.setNormal(-1.0F, 0.0F, 0.0F);
-
-            int var14;
-            float var15;
-            float var16;
-            float var17;
-            for (var14 = 0; var14 < tileSize; ++var14)
+            for (int var14 = 0; var14 < tileSlices; ++var14)
             {
-                var15 = var14 / (float)tileSize;
-                var16 = var6 + (var5 - var6) * var15 - (1.0f / (tileSize * 32.0f));
-                var17 = var9 * var15;
-                var3.addVertexWithUV((double)var17, 0.0D, (double)(0.0F - var13), (double)var16, (double)var8);
-                var3.addVertexWithUV((double)var17, 0.0D, 0.0D, (double)var16, (double)var8);
-                var3.addVertexWithUV((double)var17, 1.0D, 0.0D, (double)var16, (double)var7);
-                var3.addVertexWithUV((double)var17, 1.0D, (double)(0.0F - var13), (double)var16, (double)var7);
+                float var15 = var14 / (float)tileSlices;
+                float var16 = var6 + (var5 - var6) * var15 - 1.0f / (tileSlices * 32.0f);
+                float var17 = var9 * var15;
+                var3.addVertexWithUV(var17, 0.0D, -var13, var16, var8);
+                var3.addVertexWithUV(var17, 0.0D, 0.0D, var16, var8);
+                var3.addVertexWithUV(var17, 1.0D, 0.0D, var16, var7);
+                var3.addVertexWithUV(var17, 1.0D, -var13, var16, var7);
             }
-
             var3.draw();
+
+            // Tranches latérales droite
             var3.startDrawingQuads();
             var3.setNormal(1.0F, 0.0F, 0.0F);
-
-            for (var14 = 0; var14 < tileSize; ++var14)
+            for (int var14 = 0; var14 < tileSlices; ++var14)
             {
-                var15 = var14 / (float)tileSize;
-                var16 = var6 + (var5 - var6) * var15 - (1.0f / (tileSize * 32.0f));
-                var17 = var9 * var15 + 1.0F / tileSize;
-                var3.addVertexWithUV((double)var17, 1.0D, (double)(0.0F - var13), (double)var16, (double)var7);
-                var3.addVertexWithUV((double)var17, 1.0D, 0.0D, (double)var16, (double)var7);
-                var3.addVertexWithUV((double)var17, 0.0D, 0.0D, (double)var16, (double)var8);
-                var3.addVertexWithUV((double)var17, 0.0D, (double)(0.0F - var13), (double)var16, (double)var8);
+                float var15 = var14 / (float)tileSlices;
+                float var16 = var6 + (var5 - var6) * var15 - 1.0f / (tileSlices * 32.0f);
+                float var17 = var9 * var15 + 1.0F / tileSlices;
+                var3.addVertexWithUV(var17, 1.0D, -var13, var16, var7);
+                var3.addVertexWithUV(var17, 1.0D, 0.0D, var16, var7);
+                var3.addVertexWithUV(var17, 0.0D, 0.0D, var16, var8);
+                var3.addVertexWithUV(var17, 0.0D, -var13, var16, var8);
             }
-
             var3.draw();
+
+            // Tranches du haut
             var3.startDrawingQuads();
             var3.setNormal(0.0F, 1.0F, 0.0F);
-
-            for (var14 = 0; var14 < tileSize; ++var14)
+            for (int var14 = 0; var14 < tileSlices; ++var14)
             {
-                var15 = var14 / (float)tileSize;
-                var16 = var8 + (var7 - var8) * var15 - (1.0f / (tileSize * 32.0f));
-                var17 = var9 * var15 + 1.0F / tileSize;
-                var3.addVertexWithUV(0.0D, (double)var17, 0.0D, (double)var6, (double)var16);
-                var3.addVertexWithUV((double)var9, (double)var17, 0.0D, (double)var5, (double)var16);
-                var3.addVertexWithUV((double)var9, (double)var17, (double)(0.0F - var13), (double)var5, (double)var16);
-                var3.addVertexWithUV(0.0D, (double)var17, (double)(0.0F - var13), (double)var6, (double)var16);
+                float var15 = var14 / (float)tileSlices;
+                float var16 = var8 + (var7 - var8) * var15 - 1.0f / (tileSlices * 32.0f);
+                float var17 = var9 * var15 + 1.0F / tileSlices;
+                var3.addVertexWithUV(0.0D, var17, 0.0D, var6, var16);
+                var3.addVertexWithUV(var9, var17, 0.0D, var5, var16);
+                var3.addVertexWithUV(var9, var17, -var13, var5, var16);
+                var3.addVertexWithUV(0.0D, var17, -var13, var6, var16);
             }
-
             var3.draw();
+
+            // Tranches du bas
             var3.startDrawingQuads();
             var3.setNormal(0.0F, -1.0F, 0.0F);
-
-            for (var14 = 0; var14 < tileSize; ++var14)
+            for (int var14 = 0; var14 < tileSlices; ++var14) 
             {
-                var15 = var14 / (float)tileSize;
-                var16 = var8 + (var7 - var8) * var15 - (1.0f / (tileSize * 32.0f));
-                var17 = var9 * var15;
-                var3.addVertexWithUV((double)var9, (double)var17, 0.0D, (double)var5, (double)var16);
-                var3.addVertexWithUV(0.0D, (double)var17, 0.0D, (double)var6, (double)var16);
-                var3.addVertexWithUV(0.0D, (double)var17, (double)(0.0F - var13), (double)var6, (double)var16);
-                var3.addVertexWithUV((double)var9, (double)var17, (double)(0.0F - var13), (double)var5, (double)var16);
+                float var15 = var14 / (float)tileSlices;
+                float var16 = var8 + (var7 - var8) * var15 - 1.0f / (tileSlices * 32.0f);
+                float var17 = var9 * var15;
+                var3.addVertexWithUV(var9, var17, 0.0D, var5, var16);
+                var3.addVertexWithUV(0.0D, var17, 0.0D, var6, var16);
+                var3.addVertexWithUV(0.0D, var17, -var13, var6, var16);
+                var3.addVertexWithUV(var9, var17, -var13, var5, var16);
             }
-
             var3.draw();
+
             GLManager.GL.Disable(GLEnum.RescaleNormal);
         }
 
@@ -311,7 +328,7 @@ public class HeldItemRenderer
         int var2;
         if (mc.player.isOnFire())
         {
-            mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/terrain.png"));
+            mc.AtlasManager.Terrain.Bind();
             renderFireInFirstPerson(var1);
         }
 
@@ -320,11 +337,11 @@ public class HeldItemRenderer
             var2 = MathHelper.Floor(mc.player.x);
             int var3 = MathHelper.Floor(mc.player.y);
             int var4 = MathHelper.Floor(mc.player.z);
-            mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/terrain.png"));
+            mc.AtlasManager.Terrain.Bind();
             int var6 = mc.world.getBlockId(var2, var3, var4);
             if (mc.world.shouldSuffocate(var2, var3, var4))
             {
-                renderInsideOfBlock(var1, Block.Blocks[var6].getTexture(2));
+                renderInsideOfBlock(var1, Block.Blocks[var6].getTexture("north"));
             }
             else
             {
@@ -345,7 +362,7 @@ public class HeldItemRenderer
 
             if (Block.Blocks[var6] != null)
             {
-                renderInsideOfBlock(var1, Block.Blocks[var6].getTexture(2));
+                renderInsideOfBlock(var1, Block.Blocks[var6].getTexture("north"));
             }
         }
 
@@ -358,8 +375,11 @@ public class HeldItemRenderer
         GLManager.GL.Enable(GLEnum.AlphaTest);
     }
 
-    private void renderInsideOfBlock(float var1, int var2)
+    private void renderInsideOfBlock(float var1, string textureId)
     {
+        TextureAtlasManager.Instance.Terrain.Bind();
+        UVRegion uv = TextureAtlasManager.Instance.Terrain.GetUV(textureId);
+
         Tessellator var3 = Tessellator.instance;
         mc.player.getBrightnessAtEyes(var1);
         float var4 = 0.1F;
@@ -370,16 +390,16 @@ public class HeldItemRenderer
         float var7 = -1.0F;
         float var8 = 1.0F;
         float var9 = -0.5F;
-        float var10 = (1 / 128f);
-        float var11 = var2 % 16 / 256.0F - var10;
-        float var12 = (var2 % 16 + 15.99F) / 256.0F + var10;
-        float var13 = var2 / 16 / 256.0F - var10;
-        float var14 = (var2 / 16 + 15.99F) / 256.0F + var10;
+
+        // Léger débordement UV pour éviter le bleeding aux bords de tuile
+        float uBias = (uv.U1 - uv.U0) / 128.0f;
+        float vBias = (uv.V1 - uv.V0) / 128.0f;
+
         var3.startDrawingQuads();
-        var3.addVertexWithUV((double)var5, (double)var7, (double)var9, (double)var12, (double)var14);
-        var3.addVertexWithUV((double)var6, (double)var7, (double)var9, (double)var11, (double)var14);
-        var3.addVertexWithUV((double)var6, (double)var8, (double)var9, (double)var11, (double)var13);
-        var3.addVertexWithUV((double)var5, (double)var8, (double)var9, (double)var12, (double)var13);
+        var3.addVertexWithUV(var5, var7, var9, uv.U1 + uBias, uv.V1 + vBias);
+        var3.addVertexWithUV(var6, var7, var9, uv.U0 - uBias, uv.V1 + vBias);
+        var3.addVertexWithUV(var6, var8, var9, uv.U0 - uBias, uv.V0 - vBias);
+        var3.addVertexWithUV(var5, var8, var9, uv.U1 + uBias, uv.V0 - vBias);
         var3.draw();
         GLManager.GL.PopMatrix();
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
@@ -423,13 +443,9 @@ public class HeldItemRenderer
         for (int var4 = 0; var4 < 2; ++var4)
         {
             GLManager.GL.PushMatrix();
-            int var5 = Block.Fire.textureId + var4 * 16;
-            int var6 = (var5 & 15) << 4;
-            int var7 = var5 & 240;
-            float var8 = var6 / 256.0F;
-            float var9 = (var6 + 15.99F) / 256.0F;
-            float var10 = var7 / 256.0F;
-            float var11 = (var7 + 15.99F) / 256.0F;
+            string var5 = Block.Fire.textureId;
+            UVRegion uv = TextureAtlasManager.Instance.Terrain.GetUV(var5);
+            
             float var12 = (0.0F - var3) / 2.0F;
             float var13 = var12 + var3;
             float var14 = 0.0F - var3 / 2.0F;
@@ -438,10 +454,10 @@ public class HeldItemRenderer
             GLManager.GL.Translate(-(var4 * 2 - 1) * 0.24F, -0.3F, 0.0F);
             GLManager.GL.Rotate((var4 * 2 - 1) * 10.0F, 0.0F, 1.0F, 0.0F);
             var2.startDrawingQuads();
-            var2.addVertexWithUV((double)var12, (double)var14, (double)var16, (double)var9, (double)var11);
-            var2.addVertexWithUV((double)var13, (double)var14, (double)var16, (double)var8, (double)var11);
-            var2.addVertexWithUV((double)var13, (double)var15, (double)var16, (double)var8, (double)var10);
-            var2.addVertexWithUV((double)var12, (double)var15, (double)var16, (double)var9, (double)var10);
+            var2.addVertexWithUV(var12, var14, var16, uv.U1, uv.V1);
+            var2.addVertexWithUV(var13, var14, var16, uv.U0, uv.V1);
+            var2.addVertexWithUV(var13, var15, var16, uv.U0, uv.V0);
+            var2.addVertexWithUV(var12, var15, var16, uv.U1, uv.V0);
             var2.draw();
             GLManager.GL.PopMatrix();
         }

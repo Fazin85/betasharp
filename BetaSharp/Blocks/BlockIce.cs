@@ -8,7 +8,7 @@ namespace BetaSharp.Blocks;
 public class BlockIce : BlockBreakable
 {
 
-    public BlockIce(int id, int textureId) : base(id, textureId, Material.Ice, false)
+    public BlockIce(int id, string textureId) : base(id, textureId, Material.Ice, false)
     {
         slipperiness = 0.98F;
         setTickRandomly(true);

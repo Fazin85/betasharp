@@ -4,7 +4,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockDirt : Block
 {
-    public BlockDirt(int id, int textureId) : base(id, textureId, Material.Soil)
+    public BlockDirt(int id, string textureId) : base(id, textureId, Material.Soil)
     {
     }
 }

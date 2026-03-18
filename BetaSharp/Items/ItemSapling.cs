@@ -16,8 +16,8 @@ public class ItemSapling : ItemBlock
         return meta;
     }
 
-    public override int getTextureId(int meta)
+    public override string getTextureId(int meta)
     {
-        return Block.Sapling.getTexture(0, meta);
+        return Block.Sapling.getTexture("front", meta);
     }
 }

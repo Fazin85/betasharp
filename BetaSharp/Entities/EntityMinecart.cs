@@ -1,5 +1,7 @@
 using BetaSharp.Blocks;
 using BetaSharp.Inventorys;
+//using BetaSharp.Client.Rendering.Entities;
+//using BetaSharp.Inventorys;
 using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
@@ -8,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Entities;
 
-//TODO: BREAKING MINECART CRASHES THE GAME!!
+//TODO: BREAKING MINECARTS CRASHES THE GAME!!
 public class EntityMinecart : Entity, IInventory
 {
     private ItemStack[] cargoItems;
@@ -56,6 +58,8 @@ public class EntityMinecart : Entity, IInventory
         preventEntitySpawning = true;
         setBoundingBoxSpacing(0.98F, 0.7F);
         standingEyeHeight = height / 2.0F;
+        //Model = new ModelMinecart();
+        //customRenderer = new MinecartEntityRenderer();
     }
 
     protected override bool bypassesSteppingEffects()

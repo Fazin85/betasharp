@@ -35,6 +35,8 @@ using Silk.NET.OpenGL.Legacy.Extensions.ImGui;
 using Exception = System.Exception;
 using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Core.OpenGL;
+using BetaSharp.Registry;
+using com.sun.xml.@internal.ws.policy.privateutil;
 
 namespace BetaSharp.Client;
 
@@ -63,6 +65,7 @@ public partial class Minecraft
     public GuiScreen currentScreen;
     public LoadingScreenRenderer loadingScreen;
     public GameRenderer gameRenderer;
+    public TextureAtlasManager AtlasManager;
     private int ticksRan;
     private int leftClickCounter;
     private int tempDisplayWidth;
@@ -151,6 +154,8 @@ public partial class Minecraft
     public unsafe void startGame()
     {
         InitializeTimer();
+        ClassRegistry.AutoRegister();
+        ClassRegistry.DumpClasses(); 
 
         int maximumWidth = Display.getDisplayMode().getWidth();
         int maximumHeight = Display.getDisplayMode().getHeight();
@@ -271,6 +276,11 @@ public partial class Minecraft
         checkGLError("Startup");
         sndManager.LoadSoundSettings(options);
         DefaultMusicCategories.Register(sndManager);
+        AtlasManager = new TextureAtlasManager(@".\assets");
+        AtlasManager.Initialize();
+        /////////////////////////////////////////////////////////////
+        AtlasManager.Terrain.ExportToFile("terrain_atlas");
+        AtlasManager.Items.ExportToFile("items_atlas");
         textureManager.AddDynamicTexture(textureLavaFX);
         textureManager.AddDynamicTexture(textureWaterFX);
         textureManager.AddDynamicTexture(new NetherPortalSprite());
@@ -283,12 +293,12 @@ public partial class Minecraft
         terrainRenderer = new WorldRenderer(this, textureManager);
         GLManager.GL.Viewport(0, 0, (uint)displayWidth, (uint)displayHeight);
         particleManager = new ParticleManager(world, textureManager);
-
         string dataDirPath = mcDataDir.getAbsolutePath();
+        string soundDirPath = "."; // singe ! j'ai mis / et pas ".", qui a mis les sons dans la racine du volume de disque!
 
         _ = new ResourceManager()
-            .Add(new BetaResourceDownloader(this, dataDirPath))
-            .Add(new ModernAssetDownloader(this, dataDirPath,
+            .Add(new BetaResourceDownloader(this, soundDirPath))
+            .Add(new ModernAssetDownloader(this, soundDirPath,
                 [
                  "minecraft/sounds/music/menu/moog_city_2.ogg",
                  "minecraft/sounds/music/menu/mutation.ogg",
@@ -307,6 +317,8 @@ public partial class Minecraft
         {
             displayGuiScreen(new GuiMainMenu());
         }
+        
+
     }
 
     private void loadScreen()
@@ -510,7 +522,13 @@ public partial class Minecraft
                     {
                         shutdown();
                     }
-
+                    if (world != null)
+                        Timer.timescale = world.timescale;
+                    else
+                    {
+                        Timer.timescale = 1f;
+                    }
+                    
                     if (isGamePaused && world != null)
                     {
                         float previousRenderPartialTicks = Timer.renderPartialTicks;
@@ -1136,7 +1154,7 @@ public partial class Minecraft
         Profiler.Stop("playerControllerUpdate");
 
         Profiler.Start("updateDynamicTextures");
-        textureManager.BindTexture(textureManager.GetTextureId("/terrain.png"));
+        TextureAtlasManager.Instance.Terrain.Bind();
         if (!isGamePaused)
         {
             textureManager.Tick();

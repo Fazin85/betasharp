@@ -15,7 +15,7 @@ public class BlockSand : Block
         set => s_fallInstantly.Value = value;
     }
 
-    public BlockSand(int id, int textureId) : base(id, textureId, Material.Sand)
+    public BlockSand(int id, string textureId) : base(id, textureId, Material.Sand)
     {
     }
 

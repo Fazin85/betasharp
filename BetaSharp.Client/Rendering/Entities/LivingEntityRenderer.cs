@@ -157,7 +157,7 @@ public class LivingEntityRenderer : EntityRenderer
                 var5 = 1.0F;
             }
 
-            GLManager.GL.Rotate(var5 * getDeathMaxRotation(var1), 0.0F, 0.0F, 1.0F);
+            GLManager.GL.Rotate(var5 * getDeathMaxRotation(var1), (float)var1.getRotationWhenDead().x, (float)var1.getRotationWhenDead().y, (float)var1.getRotationWhenDead().z);
         }
 
     }

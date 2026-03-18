@@ -11,9 +11,9 @@ public class ItemCloth : ItemBlock
         setHasSubtypes(true);
     }
 
-    public override int getTextureId(int meta)
+    public override string getTextureId(int meta)
     {
-        return Block.Wool.getTexture(2, BlockCloth.getBlockMeta(meta));
+        return Block.Wool.getTexture("front", BlockCloth.getBlockMeta(meta));
     }
 
     public override int getPlacementMetadata(int meta)

@@ -9,10 +9,10 @@ namespace BetaSharp.Blocks;
 
 public class BlockLeaves : BlockLeavesBase
 {
-    private int spriteIndex;
+    private string spriteIndex;
     private readonly ThreadLocal<int[]> s_decayRegion = new(() => null);
 
-    public BlockLeaves(int id, int textureId) : base(id, textureId, Material.Leaves, false)
+    public BlockLeaves(int id, string textureId) : base(id, textureId, Material.Leaves, false)
     {
         spriteIndex = textureId;
         setTickRandomly(true);
@@ -20,7 +20,7 @@ public class BlockLeaves : BlockLeavesBase
 
     public override int getColor(int meta)
     {
-        return (meta & 1) == 1 ? FoliageColors.getSpruceColor() : ((meta & 2) == 2 ? FoliageColors.getBirchColor() : FoliageColors.getDefaultColor());
+        return 2;
     }
 
     public override int getColorMultiplier(BlockView blockView, int x, int y, int z)
@@ -41,6 +41,7 @@ public class BlockLeaves : BlockLeavesBase
             double downfall = blockView.getBiomeSource().DownfallMap[0];
             return FoliageColors.getFoliageColor(temperature, downfall);
         }
+        //return 1;
     }
 
     public override void onBreak(World world, int x, int y, int z)
@@ -225,15 +226,15 @@ public class BlockLeaves : BlockLeavesBase
         return !graphicsLevel;
     }
 
-    public override int getTexture(int side, int meta)
+    public override string getTexture(string side, int meta)
     {
-        return (meta & 3) == 1 ? textureId + 80 : textureId;
+        return textureId;
     }
 
     public void setGraphicsLevel(bool bl)
     {
         graphicsLevel = bl;
-        textureId = spriteIndex + (bl ? 0 : 1);
+        
     }
 
     public override void onSteppedOn(World world, int x, int y, int z, Entity entity)

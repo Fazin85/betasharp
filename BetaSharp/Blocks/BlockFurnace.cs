@@ -17,8 +17,9 @@ public class BlockFurnace : BlockWithEntity
     public BlockFurnace(int id, bool lit) : base(id, Material.Stone)
     {
         _lit = lit;
-        textureId = 45;
+        
     }
+    
 
     public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
@@ -64,22 +65,7 @@ public class BlockFurnace : BlockWithEntity
         }
     }
 
-    public override int getTextureId(BlockView blockView, int x, int y, int z, int side)
-    {
-        if (side == 1)
-        {
-            return textureId + 17;
-        }
-        else if (side == 0)
-        {
-            return textureId + 17;
-        }
-        else
-        {
-            int meta = blockView.getBlockMeta(x, y, z);
-            return side != meta ? textureId : (_lit ? textureId + 16 : textureId - 1);
-        }
-    }
+    
 
     public override void randomDisplayTick(World world, int x, int y, int z, JavaRandom random)
     {
@@ -115,10 +101,17 @@ public class BlockFurnace : BlockWithEntity
         }
     }
 
-    public override int getTexture(int side)
+    
+
+    public override string getTexture(string side) => side switch
     {
-        return side == 1 ? textureId + 17 : (side == 0 ? textureId + 17 : (side == 3 ? textureId - 1 : textureId));
-    }
+        "up" => $"{textureId}_top",
+        "down" => $"{textureId}_bottom",
+        "north" => $"{textureId}_front",
+        "east" => $"{textureId}_right",
+        "west" => $"{textureId}_left",
+        _ => $"{textureId}_side"  // south = dos
+    };
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
     {

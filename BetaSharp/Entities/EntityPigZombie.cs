@@ -16,11 +16,13 @@ public class EntityPigZombie : EntityZombie
         movementSpeed = 0.5F;
         attackStrength = 5;
         isImmuneToFire = true;
+        preys.Add(typeof(EntityPig));
+        preys.Remove(typeof(EntityPlayer));
     }
 
     public override void tick()
     {
-        movementSpeed = playerToAttack != null ? 0.95F : 0.5F;
+        movementSpeed = preyToAttack != null ? 0.95F : 0.5F;
         if (randomSoundDelay > 0 && --randomSoundDelay == 0)
         {
             world.playSound(this, "mob.zombiepig.zpigangry", getSoundVolume() * 2.0F, ((random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F) * 1.8F);
@@ -46,9 +48,9 @@ public class EntityPigZombie : EntityZombie
         angerLevel = nbt.GetShort("Anger");
     }
 
-    protected override Entity findPlayerToAttack()
+    protected override Entity searchForPreys()
     {
-        return angerLevel == 0 ? null : base.findPlayerToAttack();
+        return angerLevel == 0 ? null : base.searchForPreys();
     }
 
     public override void tickMovement()
@@ -80,7 +82,7 @@ public class EntityPigZombie : EntityZombie
 
     private void becomeAngryAt(Entity entity)
     {
-        playerToAttack = entity;
+        preyToAttack = entity;
         angerLevel = 400 + random.NextInt(400);
         randomSoundDelay = random.NextInt(40);
     }

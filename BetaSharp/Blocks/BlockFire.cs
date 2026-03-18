@@ -10,7 +10,7 @@ public class BlockFire : Block
     private readonly int[] _burnChances = new int[256];
     private readonly int[] _spreadChances = new int[256];
 
-    public BlockFire(int id, int textureId) : base(id, textureId, Material.Fire)
+    public BlockFire(int id, string textureId) : base(id, textureId, Material.Fire)
     {
         setTickRandomly(true);
     }
@@ -66,7 +66,7 @@ public class BlockFire : Block
 
     public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
-        if (!world.Rules.GetBool(DefaultRules.DoFireTick))
+        if (!world.Rules.GetBool(Cvars.sv_firetick))
         {
             return;
         }

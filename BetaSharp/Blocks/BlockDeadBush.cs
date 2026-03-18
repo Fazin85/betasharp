@@ -5,7 +5,7 @@ namespace BetaSharp.Blocks;
 public class BlockDeadBush : BlockPlant
 {
 
-    public BlockDeadBush(int i, int j) : base(i, j)
+    public BlockDeadBush(int i, string j) : base(i, j)
     {
         float halfSize = 0.4F;
         setBoundingBox(0.5F - halfSize, 0.0F, 0.5F - halfSize, 0.5F + halfSize, 0.8F, 0.5F + halfSize);
@@ -16,7 +16,7 @@ public class BlockDeadBush : BlockPlant
         return id == Block.Sand.id;
     }
 
-    public override int getTexture(int side, int meta)
+    public override string getTexture(string side, int meta)
     {
         return textureId;
     }

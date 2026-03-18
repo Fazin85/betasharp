@@ -104,7 +104,7 @@ public class BlockEntityChest : BlockEntity, IInventory
 
     public int getMaxCountPerStack()
     {
-        return 64;
+        return 99;
     }
 
     public bool canPlayerUse(EntityPlayer player)

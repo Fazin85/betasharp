@@ -5,7 +5,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockMushroom : BlockPlant
 {
-    public BlockMushroom(int i, int j) : base(i, j)
+    public BlockMushroom(int i, string j) : base(i, j)
     {
         float halfSize = 0.2F;
         setBoundingBox(0.5F - halfSize, 0.0F, 0.5F - halfSize, 0.5F + halfSize, halfSize * 2.0F, 0.5F + halfSize);

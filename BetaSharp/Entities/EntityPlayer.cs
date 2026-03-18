@@ -60,6 +60,8 @@ public abstract class EntityPlayer : EntityLiving
         rotationOffset = 180.0F;
         fireImmunityTicks = 20;
         texture = "/mob/char.png";
+        staminaDepleteRate = 0.5f;
+        staminaRestoreRate = 0.3f;
     }
 
     protected override void initDataTracker()
@@ -162,6 +164,7 @@ public abstract class EntityPlayer : EntityLiving
     public virtual void closeHandledScreen()
     {
         currentScreenHandler = playerScreenHandler;
+        world.playSound(this, "random.door_close", 0.4F, 1.0F);
     }
 
     public override void updateCloak()
@@ -734,7 +737,7 @@ public abstract class EntityPlayer : EntityLiving
         }
 
     }
-
+    
     public virtual void wakeUp(bool resetSleepTimer, bool updateSleepingPlayers, bool setSpawnPos)
     {
         setBoundingBoxSpacing(0.6F, 1.8F);
@@ -846,6 +849,8 @@ public abstract class EntityPlayer : EntityLiving
     {
         return playerSpawnCoordinate;
     }
+
+
 
     public void setSpawnPos(Vec3i? spawnPos)
     {
@@ -988,9 +993,9 @@ public abstract class EntityPlayer : EntityLiving
 
     }
 
-    public override int getItemStackTextureId(ItemStack stack)
+    public override string getItemStackTextureId(ItemStack stack)
     {
-        int var2 = base.getItemStackTextureId(stack);
+        string var2 = base.getItemStackTextureId(stack);
         if (stack.itemId == Item.FishingRod.id && fishHook != null)
         {
             var2 = stack.getTextureId() + 16;
@@ -1010,4 +1015,9 @@ public abstract class EntityPlayer : EntityLiving
             inTeleportationState = true;
         }
     }
+    // pointeurs publics
+    public bool isPlayerRunning => running;
+    public float playerforwardSpeed => (float)velocityZ;
+    public int playerStamina => stamina;
+
 }

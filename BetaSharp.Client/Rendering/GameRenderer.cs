@@ -6,6 +6,7 @@ using BetaSharp.Client.Input;
 using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Items;
+using BetaSharp.Client.Textures;
 using BetaSharp.Entities;
 using BetaSharp.Profiling;
 using BetaSharp.Util.Hit;
@@ -355,7 +356,7 @@ public class GameRenderer
 
         applyFog(0);
         GLManager.GL.Enable(GLEnum.Fog);
-        _client.textureManager.BindTexture(_client.textureManager.GetTextureId("/terrain.png"));
+        TextureAtlasManager.Instance.Terrain.Bind();
         Lighting.turnOff();
 
         Profiler.Start("sortAndRender");
@@ -392,7 +393,7 @@ public class GameRenderer
         applyFog(0);
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Disable(GLEnum.CullFace);
-        _client.textureManager.BindTexture(_client.textureManager.GetTextureId("/terrain.png"));
+        _client.AtlasManager.Terrain.Bind();
 
         Profiler.Start("sortAndRender2");
 

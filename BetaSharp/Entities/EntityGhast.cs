@@ -1,3 +1,5 @@
+//using BetaSharp.Client.Rendering.Entities;
+//using BetaSharp.Client.Rendering.Entities.Models;
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
@@ -20,6 +22,8 @@ public class EntityGhast : EntityFlying, Monster
         texture = "/mob/ghast.png";
         setBoundingBoxSpacing(4.0F, 4.0F);
         isImmuneToFire = true;
+        //Model = new ModelGhast();
+        //customRenderer = new GhastEntityRenderer();
     }
 
     protected override void initDataTracker()

@@ -34,8 +34,8 @@ public class GuiControls : GuiScreen
             _controlList.Add(new GuiSmallButton(i, leftX + i % 2 * 160, Height / 6 + 24 * (i >> 1), 70, 20, _options.GetOptionDisplayString(i)));
         }
 
-        _controlList.Add(new GuiSlider(SensitivityId, Width / 2 + 5, Height / 6 + 130, _options.MouseSensitivityOption, _options.MouseSensitivityOption.GetDisplayString(translations), _options.MouseSensitivityOption.Value).Size(125, 20));
-        _controlList.Add(new GuiSmallButton(InvertMouseId, Width / 2 - 155, Height / 6 + 130, _options.InvertMouseOption, _options.InvertMouseOption.GetDisplayString(translations)).Size(125, 20));
+        _controlList.Add(new GuiSlider(SensitivityId, Width / 2 + 5, Height / 6 + 145, _options.MouseSensitivityOption, _options.MouseSensitivityOption.GetDisplayString(translations), _options.MouseSensitivityOption.Value).Size(125, 20));
+        _controlList.Add(new GuiSmallButton(InvertMouseId, Width / 2 - 155, Height / 6 + 145, _options.InvertMouseOption, _options.InvertMouseOption.GetDisplayString(translations)).Size(125, 20));
 
         _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done")));
         _screenTitle = translations.TranslateKey("controls.title");

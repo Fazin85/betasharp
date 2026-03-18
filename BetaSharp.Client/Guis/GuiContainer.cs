@@ -1,6 +1,7 @@
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Items;
+using BetaSharp.Client.Textures;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;
 using BetaSharp.Screens;
@@ -104,7 +105,7 @@ public abstract class GuiContainer : GuiScreen
             GLManager.GL.Enable(GLEnum.DepthTest);
 
             GLManager.GL.Translate(0.0F, 0.0F, 32.0F);
-            _itemRenderer.renderItemIntoGUI(FontRenderer, mc.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
+            _itemRenderer.renderItemIntoGUI(FontRenderer, TextureAtlasManager.Instance, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
             _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, mc.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
 
             Lighting.turnOff();
@@ -142,7 +143,7 @@ public abstract class GuiContainer : GuiScreen
             }
         }
 
-        _itemRenderer.renderItemIntoGUI(FontRenderer, mc.textureManager, item, x, y);
+        _itemRenderer.renderItemIntoGUI(FontRenderer, TextureAtlasManager.Instance, item, x, y);
         _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, mc.textureManager, item, x, y);
     }
 

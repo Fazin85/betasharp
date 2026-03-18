@@ -1,6 +1,7 @@
 using BetaSharp.Blocks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Core.Textures;
+using BetaSharp.Client.Textures;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
@@ -51,24 +52,16 @@ public abstract class EntityRenderer
     {
         GLManager.GL.Disable(GLEnum.Lighting);
 
-        int textureId = Block.Fire.textureId;
-        int texX = (textureId & 15) << 4;
-        int texY = textureId & 240;
-
-        float minU;
-        float maxU;
-        float minV;
-        float maxV;
+        TextureAtlas terrainAtlas = TextureAtlasManager.Instance.Terrain;
+        terrainAtlas.Bind();
+        UVRegion uv = terrainAtlas.GetUV(Block.Fire.textureId);
 
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate((float)pos.x, (float)pos.y, (float)pos.z);
-
         float scale = ent.width * 1.4F;
         GLManager.GL.Scale(scale, scale, scale);
 
-        loadTexture("/terrain.png");
         Tessellator tess = Tessellator.instance;
-
         float widthOffset = 0.5F;
         float depthOffset = 0.0F;
         float heightRatio = ent.height / scale;
@@ -79,49 +72,24 @@ public abstract class EntityRenderer
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
 
         float zOffset = 0.0F;
-        int pass = 0;
-
         tess.startDrawingQuads();
-
         while (heightRatio > 0.0F)
         {
-            if (pass % 2 == 0)
-            {
-                minU = texX / 256.0F;
-                maxU = (texX + 15.99F) / 256.0F;
-                minV = texY / 256.0F;
-                maxV = (texY + 15.99F) / 256.0F;
-            }
-            else
-            {
-                minU = texX / 256.0F;
-                maxU = (texX + 15.99F) / 256.0F;
-                minV = (texY + 16) / 256.0F;
-                maxV = (texY + 16 + 15.99F) / 256.0F;
-            }
-
-            if (pass / 2 % 2 == 0)
-            {
-                (maxU, minU) = (minU, maxU);
-            }
-
-            tess.addVertexWithUV(widthOffset - depthOffset, 0.0F - yOffset, zOffset, maxU, maxV);
-            tess.addVertexWithUV(-widthOffset - depthOffset, 0.0F - yOffset, zOffset, minU, maxV);
-            tess.addVertexWithUV(-widthOffset - depthOffset, 1.4F - yOffset, zOffset, minU, minV);
-            tess.addVertexWithUV(widthOffset - depthOffset, 1.4F - yOffset, zOffset, maxU, minV);
-
+            tess.addVertexWithUV(widthOffset - depthOffset, 0.0F - yOffset, zOffset, uv.U1, uv.V1);
+            tess.addVertexWithUV(-widthOffset - depthOffset, 0.0F - yOffset, zOffset, uv.U0, uv.V1);
+            tess.addVertexWithUV(-widthOffset - depthOffset, 1.4F - yOffset, zOffset, uv.U0, uv.V0);
+            tess.addVertexWithUV(widthOffset - depthOffset, 1.4F - yOffset, zOffset, uv.U1, uv.V0);
             heightRatio -= 0.45F;
             yOffset -= 0.45F;
             widthOffset *= 0.9F;
             zOffset += 0.03F;
-            ++pass;
         }
-
         tess.draw();
+
         GLManager.GL.PopMatrix();
         GLManager.GL.Enable(GLEnum.Lighting);
     }
-
+    // blob shadow
     private void RenderShadow(Entity target, Vec3D pos, float shadowiness, float tickDelta)
     {
         GLManager.GL.Enable(GLEnum.Blend);

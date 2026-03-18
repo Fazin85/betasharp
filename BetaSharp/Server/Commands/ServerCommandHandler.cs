@@ -56,7 +56,8 @@ public class ServerCommandHandler
 
         Register(ChatCommands.Say, "say <message>", "broadcasts a message", "say");
         Register(ChatCommands.Tell, "tell <player> <message>", "whispers to a player", "tell");
-
+        Register(PlayerCommands.Kit, "kit [kit_number]", "gives a kit for debugging purposes", "kit");
+        Register(WorldCommands.GenStructure ,"gen <name>" ,"generates a structure" ,"gen");
         Register(AdminCommands.List, "list", "lists connected players", "list");
         Register(AdminCommands.Stop, "stop", "stops the server", "stop");
         Register(AdminCommands.SaveAll, "save-all", "forces a world save", "save-all");

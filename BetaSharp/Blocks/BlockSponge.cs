@@ -7,7 +7,7 @@ public class BlockSponge : Block
 {
     public BlockSponge(int id) : base(id, Material.Sponge)
     {
-        textureId = 48;
+        textureId = "sponge";
     }
 
     public override void onPlaced(World world, int x, int y, int z)

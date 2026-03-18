@@ -1,3 +1,5 @@
+//using BetaSharp.Client.Rendering.Entities;
+//using BetaSharp.Client.Rendering.Entities.Models;
 using BetaSharp.Items;
 using BetaSharp.Worlds;
 
@@ -9,6 +11,8 @@ public class EntityCow : EntityAnimal
     {
         this.texture = "/mob/cow.png";
         this.setBoundingBoxSpacing(0.9F, 1.3F);
+        //Model = new ModelCow();
+        //customRenderer = new CowEntityRenderer(Model, 1.3f);
     }
 
     protected override string getLivingSound()

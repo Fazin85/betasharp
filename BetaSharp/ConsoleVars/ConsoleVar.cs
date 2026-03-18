@@ -1,11 +1,11 @@
 namespace BetaSharp.Rules;
 
-public abstract class GameRule<T>(ResourceLocation key, T defaultValue, string category, string description)
-    : IGameRule<T> where T : IRuleValue
+public abstract class ConsoleVar<T>(ResourceLocation key, T defaultValue, string category, string description)
+    : IGameRule<T> where T : ICvarValue
 {
     public ResourceLocation Key { get; } = key;
     public Type ValueType => typeof(T);
-    IRuleValue IGameRule.DefaultValue => defaultValue;
+    ICvarValue Cvar.DefaultValue => defaultValue;
     public T DefaultValue { get; } = defaultValue;
     public string Category { get; } = category;
     public string Description { get; } = description;
@@ -13,12 +13,12 @@ public abstract class GameRule<T>(ResourceLocation key, T defaultValue, string c
     public abstract T Deserialize(string raw);
     public abstract string Serialize(T value);
 
-    IRuleValue IGameRule.Deserialize(string raw) => Deserialize(raw);
-    string IGameRule.Serialize(IRuleValue value) => Serialize((T)value);
+    ICvarValue Cvar.Deserialize(string raw) => Deserialize(raw);
+    string Cvar.Serialize(ICvarValue value) => Serialize((T)value);
 }
 
-public sealed class BoolRule(ResourceLocation key, bool defaultValue, string category = "general", string description = "")
-    : GameRule<BoolValue>(key, defaultValue, category, description)
+public sealed class BoolVar(ResourceLocation key, bool defaultValue, string category = "general", string description = "")
+    : ConsoleVar<BoolValue>(key, defaultValue, category, description)
 {
     public override BoolValue Deserialize(string raw) =>
         new(raw.Equals("true", StringComparison.OrdinalIgnoreCase));
@@ -26,9 +26,9 @@ public sealed class BoolRule(ResourceLocation key, bool defaultValue, string cat
     public override string Serialize(BoolValue value) => value.ToString();
 }
 
-public sealed class IntRule(ResourceLocation key, int defaultValue, int min = int.MinValue, int max = int.MaxValue,
+public sealed class IntVar(ResourceLocation key, int defaultValue, int min = int.MinValue, int max = int.MaxValue,
     string category = "general", string description = "")
-    : GameRule<IntValue>(key, defaultValue, category, description)
+    : ConsoleVar<IntValue>(key, defaultValue, category, description)
 {
     public int Min { get; } = min;
     public int Max { get; } = max;
@@ -42,9 +42,9 @@ public sealed class IntRule(ResourceLocation key, int defaultValue, int min = in
     public override string Serialize(IntValue value) => value.ToString();
 }
 
-public sealed class FloatRule(ResourceLocation key, float defaultValue, float min = float.MinValue, float max = float.MaxValue,
+public sealed class FloatVar(ResourceLocation key, float defaultValue, float min = float.MinValue, float max = float.MaxValue,
     string category = "general", string description = "")
-    : GameRule<FloatValue>(key, defaultValue, category, description)
+    : ConsoleVar<FloatValue>(key, defaultValue, category, description)
 {
     public float Min { get; } = min;
     public float Max { get; } = max;
@@ -60,7 +60,7 @@ public sealed class FloatRule(ResourceLocation key, float defaultValue, float mi
 
 public sealed class StringRule(ResourceLocation key, string defaultValue,
     string category = "general", string description = "")
-    : GameRule<StringValue>(key, defaultValue, category, description)
+    : ConsoleVar<StringValue>(key, defaultValue, category, description)
 {
     public override StringValue Deserialize(string raw) => new(raw);
     public override string Serialize(StringValue value) => value.Value;
@@ -68,7 +68,7 @@ public sealed class StringRule(ResourceLocation key, string defaultValue,
 
 public sealed class EnumRule<T>(ResourceLocation key, T defaultValue,
     string category = "general", string description = "")
-    : GameRule<EnumValue<T>>(key, new EnumValue<T>(defaultValue), category, description)
+    : ConsoleVar<EnumValue<T>>(key, new EnumValue<T>(defaultValue), category, description)
     where T : struct, Enum
 {
     public override EnumValue<T> Deserialize(string raw)

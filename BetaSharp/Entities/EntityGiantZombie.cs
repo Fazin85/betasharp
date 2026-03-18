@@ -1,3 +1,5 @@
+//using BetaSharp.Client.Rendering.Entities;
+//using BetaSharp.Client.Rendering.Entities.Models;
 using BetaSharp.Worlds;
 
 namespace BetaSharp.Entities;
@@ -12,6 +14,8 @@ public class EntityGiantZombie : EntityMonster
         health *= 10;
         standingEyeHeight *= 6.0F;
         setBoundingBoxSpacing(width * 6.0F, height * 6.0F);
+        //Model = new ModelZombie();
+        //customRenderer = new GiantEntityRenderer(Model, 6f, 6f);
     }
 
     protected override float getBlockPathWeight(int x, int y, int z)

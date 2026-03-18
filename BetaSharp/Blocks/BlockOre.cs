@@ -7,7 +7,7 @@ namespace BetaSharp.Blocks;
 public class BlockOre : Block
 {
 
-    public BlockOre(int id, int textureId) : base(id, textureId, Material.Stone)
+    public BlockOre(int id, string textureId) : base(id, textureId, Material.Stone)
     {
     }
 

@@ -1,3 +1,5 @@
+//using BetaSharp.Client.Rendering.Entities;
+using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
@@ -23,6 +25,7 @@ public class EntityFireball : Entity
     public EntityFireball(World world) : base(world)
     {
         setBoundingBoxSpacing(1.0F, 1.0F);
+        //customRenderer = new ProjectileEntityRenderer(Item.Brick.getTextureId(0));
     }
 
     protected override void initDataTracker()

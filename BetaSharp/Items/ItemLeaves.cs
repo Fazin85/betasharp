@@ -17,9 +17,9 @@ public class ItemLeaves : ItemBlock
         return meta | 8;
     }
 
-    public override int getTextureId(int meta)
+    public override string getTextureId(int meta)
     {
-        return Block.Leaves.getTexture(0, meta);
+        return Block.Leaves.getTexture("top", meta);
     }
 
     public override int getColorMultiplier(int leafType)

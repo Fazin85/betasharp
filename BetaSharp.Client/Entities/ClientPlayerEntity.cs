@@ -1,4 +1,4 @@
-﻿using BetaSharp.Blocks.Entities;
+using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Achievements;
 using BetaSharp.Client.Entities.FX;
 using BetaSharp.Client.Guis;
@@ -43,6 +43,7 @@ public class ClientPlayerEntity : EntityPlayer
         sidewaysSpeed = movementInput.moveStrafe;
         forwardSpeed = movementInput.moveForward;
         jumping = movementInput.jump;
+        running = movementInput.sprint;
     }
 
     public override void tickMovement()
@@ -51,6 +52,7 @@ public class ClientPlayerEntity : EntityPlayer
         {
             mc.guiAchievement.queueAchievementInformation(BetaSharp.Achievements.OpenInventory);
         }
+
 
         lastScreenDistortion = changeDimensionCooldown;
         if (inTeleportationState)
@@ -75,6 +77,7 @@ public class ClientPlayerEntity : EntityPlayer
             {
                 changeDimensionCooldown = 1.0F;
             }
+
 
             inTeleportationState = false;
         }
@@ -181,6 +184,12 @@ public class ClientPlayerEntity : EntityPlayer
     {
         return movementInput.sneak && !sleeping;
     }
+
+    public override bool isSprinting()
+    {
+        return movementInput.sprint && !sleeping;
+    }
+    
 
     public virtual void setHealth(int newHealth)
     {

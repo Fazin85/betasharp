@@ -7,6 +7,7 @@ public class Timer(float tps)
     public float DeltaTime { get; private set; }
     public float ticksPerSecond = tps;
     private double lastHRTime;
+    public float timescale;
     public int elapsedTicks;
     public float renderPartialTicks;
     public float timerSpeed = 1.0F;
@@ -57,7 +58,8 @@ public class Timer(float tps)
         if (frameDelta < 0.0D || frameDelta > 1.0D)
             frameDelta = 0.0D;
 
-        elapsedPartialTicks = (float)((double)elapsedPartialTicks + frameDelta * (double)timerSpeed * (double)ticksPerSecond);
+        elapsedPartialTicks = (float)((double)elapsedPartialTicks + frameDelta * (double)timerSpeed * (double)ticksPerSecond * (double)timescale);
+
         elapsedTicks = (int)elapsedPartialTicks;
         elapsedPartialTicks -= (float)elapsedTicks;
         if (elapsedTicks > 10)

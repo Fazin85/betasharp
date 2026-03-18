@@ -13,7 +13,7 @@ public class BlockRedstoneRepeater : Block
     private static readonly int[] DELAY = [1, 2, 3, 4];
     private readonly bool lit;
 
-    public BlockRedstoneRepeater(int id, bool lit) : base(id, 6, Material.PistonBreakable)
+    public BlockRedstoneRepeater(int id, bool lit) : base(id, "redstone", Material.PistonBreakable)
     {
         this.lit = lit;
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 2.0F / 16.0F, 1.0F);
@@ -54,9 +54,9 @@ public class BlockRedstoneRepeater : Block
 
     }
 
-    public override int getTexture(int side, int meta)
+    public override string getTexture(string side, int meta)
     {
-        return side == 0 ? (lit ? 99 : 115) : (side == 1 ? (lit ? 147 : 131) : 5);
+        return side == "bottom" ? (lit ? $"{textureId}_active_top" : $"{textureId}_idle_top") : (side == "top" ? (lit ? $"{textureId}_active_top" : $"{textureId}_idle_top") : textureId);
     }
 
     public override bool isSideVisible(BlockView blockView, int x, int y, int z, int side)
@@ -69,7 +69,7 @@ public class BlockRedstoneRepeater : Block
         return 15;
     }
 
-    public override int getTexture(int side)
+    public override string getTexture(string side)
     {
         return getTexture(side, 0);
     }

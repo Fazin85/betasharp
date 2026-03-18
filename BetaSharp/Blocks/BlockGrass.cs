@@ -2,6 +2,8 @@ using BetaSharp.Blocks.Materials;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Colors;
+using javax.swing.text.html;
+using BlockView = BetaSharp.Worlds.BlockView;
 
 namespace BetaSharp.Blocks;
 
@@ -9,34 +11,50 @@ public class BlockGrass : Block
 {
     public BlockGrass(int id) : base(id, Material.SolidOrganic)
     {
-        textureId = 3;
+        textureId = "grassgrass_top";
         setTickRandomly(true);
     }
 
-    public override int getTextureId(BlockView blockView, int x, int y, int z, int side)
+    public override string getTextureId(BlockView blockView, int x, int y, int z, string side)
     {
-        if (side == 1)
+        if (side == "top")
         {
-            return 0;
+            return "grass_top";
         }
-        else if (side == 0)
+        else if (side == "bottom")
         {
-            return 2;
+            return "dirt";
         }
-        else
+        else // for sides
         {
-            Material materialAbove = blockView.getMaterial(x, y + 1, z);
-            return materialAbove != Material.SnowLayer && materialAbove != Material.SnowBlock ? 3 : 68;
+            return "grass_side";
         }
     }
 
+    public override string getTexture(string side, int meta)
+    {
+        if (side == "top")
+        {
+            return "grass_top";
+        }
+        else if (side == "bottom")
+        {
+            return "dirt";
+        }
+        else // for sides
+        {
+            return "grass";
+        }
+    }
+
+    /*
     public override int getColorMultiplier(BlockView blockView, int x, int y, int z)
     {
         blockView.getBiomeSource().GetBiomesInArea(x, z, 1, 1);
         double temperature = blockView.getBiomeSource().TemperatureMap[0];
-        double downfall = blockView.getBiomeSource().DownfallMap[0];
+        double downfall = blockView.getBiomeSource().DownfallMap[0]; bullshit for now, i'll change to be brighter and have the original Classic texture
         return GrassColors.getColor(temperature, downfall);
-    }
+    }*/ 
 
     public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {

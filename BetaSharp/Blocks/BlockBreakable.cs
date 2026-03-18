@@ -7,7 +7,7 @@ public class BlockBreakable : Block
 {
     private bool hideAdjacentFaces;
 
-    protected BlockBreakable(int id, int textureId, Material material, bool hideAdjacentFaces) : base(id, textureId, material)
+    protected BlockBreakable(int id, string textureId, Material material, bool hideAdjacentFaces) : base(id, textureId, material)
     {
         this.hideAdjacentFaces = hideAdjacentFaces;
     }

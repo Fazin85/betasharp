@@ -6,7 +6,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockDetectorRail : BlockRail
 {
-    public BlockDetectorRail(int id, int textureId) : base(id, textureId, true)
+    public BlockDetectorRail(int id, string textureId) : base(id, textureId, true)
     {
         setTickRandomly(true);
     }

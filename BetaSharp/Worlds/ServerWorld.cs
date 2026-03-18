@@ -9,6 +9,7 @@ using BetaSharp.Worlds.Chunks;
 using BetaSharp.Worlds.Chunks.Storage;
 using BetaSharp.Worlds.Dimensions;
 using BetaSharp.Worlds.Storage;
+using sun.tools.tree;
 
 namespace BetaSharp.Worlds;
 
@@ -19,12 +20,15 @@ public class ServerWorld : World
     public bool savingDisabled;
     private readonly MinecraftServer server;
     private readonly Dictionary<int, Entity> entitiesById = [];
-
+    
     public ServerWorld(MinecraftServer server, IWorldStorage storage, String name, int dimensionId, long seed) : base(storage, name, seed, Dimension.FromId(dimensionId))
     {
         this.server = server;
+        base.server = server;
     }
 
+    
+    public MinecraftServer GetServer() => server;
 
     public override void updateEntity(Entity entity, bool requireLoaded)
     {

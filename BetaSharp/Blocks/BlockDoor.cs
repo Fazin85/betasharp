@@ -11,36 +11,31 @@ public class BlockDoor : Block
 {
     public BlockDoor(int id, Material material) : base(id, material)
     {
-        textureId = 97;
-        if (material == Material.Metal)
-        {
-            ++textureId;
-        }
+        textureId = "door_wood";
+        
 
         float halfWidth = 0.5F;
         float height = 1.0F;
         setBoundingBox(0.5F - halfWidth, 0.0F, 0.5F - halfWidth, 0.5F + halfWidth, height, 0.5F + halfWidth);
     }
 
-    public override int getTexture(int side, int meta)
+    public override string getTexture(string side, int meta)
     {
-        if (side != 0 && side != 1)
+        if (side != "top" && side != "bottom")
         {
             int facing = setOpen(meta);
-            if ((facing == 0 || facing == 2) ^ side <= 3)
+            if ((facing == 0 || facing == 2) ^ faceString2Int(side) <= 3)
             {
+                int textureIndex = facing / 2 + (faceString2Int(side) & 1 ^ facing);
+                textureIndex += (meta & 4) / 4;
+                string metaprefix = ((meta & 4) / 4) == 1 ? "lower" : "upper";
+                string textureId = $"{base.textureId}_{metaprefix}";
+
+
                 return textureId;
             }
             else
             {
-                int textureIndex = facing / 2 + (side & 1 ^ facing);
-                textureIndex += (meta & 4) / 4;
-                int textureId = base.textureId - (meta & 8) * 2;
-                if ((textureIndex & 1) != 0)
-                {
-                    textureId = -textureId;
-                }
-
                 return textureId;
             }
         }

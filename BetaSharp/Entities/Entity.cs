@@ -1,21 +1,28 @@
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
+using BetaSharp.Shared;
 using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
+using com.sun.tools.@internal.ws.processor.model;
+using com.sun.tools.@internal.ws.processor.modeler.wsdl;
+using Block = BetaSharp.Blocks.Block;
 using Math = System.Math;
 
 namespace BetaSharp.Entities;
 
-public abstract class Entity
+public abstract class Entity : IModelProvider
 {
     private static int nextEntityID;
+    public string RendererId { get; }
+    public string ModelId { get; }
     public int id = nextEntityID++;
     public double renderDistanceWeight = 1.0D;
     public bool preventEntitySpawning = false;
     public Entity passenger;
     public Entity vehicle;
+    
     public World world;
     public double prevX;
     public double prevY;
@@ -31,6 +38,8 @@ public abstract class Entity
     public float prevYaw;
     public float prevPitch;
     public Box boundingBox = new Box(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
+    //public ModelBase Model = new ModelQuadruped(1, 2);
+    //public EntityRenderer customRenderer = new BoxEntityRenderer();
     public bool onGround;
     public bool horizontalCollison;
     public bool verticalCollision;
@@ -60,6 +69,7 @@ public abstract class Entity
     protected int maxAir = 300;
     protected bool inWater;
     public int hearts = 0;
+    public int bolts = 0; // nombre "d'éclaires" pour indiquer le niveau de stamina
     public int air = 300;
     private bool firstTick = true;
     public string skinUrl;
@@ -1267,9 +1277,18 @@ public abstract class Entity
         return getFlag(1);
     }
 
+    public virtual bool isSprinting()
+    {
+        return getFlag(2);
+    }
+
     public void setSneaking(bool sneaking)
     {
         setFlag(1, sneaking);
+    }
+    public void setSprinting(bool sprint)
+    {
+        setFlag(2, sprint);
     }
 
     protected bool getFlag(int var1)

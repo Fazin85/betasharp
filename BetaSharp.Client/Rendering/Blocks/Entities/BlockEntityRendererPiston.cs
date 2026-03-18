@@ -1,6 +1,7 @@
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Textures;
 using BetaSharp.Worlds;
 using Silk.NET.OpenGL.Legacy;
 
@@ -17,7 +18,7 @@ public class BlockEntityRendererPiston : BlockEntitySpecialRenderer
         if (var9 != null && var1.getProgress(var8) < 1.0F)
         {
             Tessellator var10 = Tessellator.instance;
-            bindTextureByName("/terrain.png");
+            TextureAtlasManager.Instance.Terrain.Bind();
             Lighting.turnOff();
             GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
             GLManager.GL.Enable(GLEnum.Blend);
@@ -40,7 +41,7 @@ public class BlockEntityRendererPiston : BlockEntitySpecialRenderer
             }
             else if (var1.isSource() && !var1.isExtending())
             {
-                Block.PistonHead.setSprite(((BlockPistonBase)var9).getTopTexture());
+                Block.PistonHead.setSprite(((BlockPistonBase)var9).getTexture("top"));
                 renderBlocks.func_31079_a(Block.PistonHead, var1.X, var1.Y, var1.Z, var1.getProgress(var8) < 0.5F);
                 Block.PistonHead.clearSprite();
                 var10.setTranslationD((double)((float)var2 - var1.X), (double)((float)var4 - var1.Y), (double)((float)var6 - var1.Z));

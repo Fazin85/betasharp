@@ -25,7 +25,10 @@ public abstract class EntityAnimal : EntityCreature, SpawnableEntity
     {
         base.readNbt(nbt);
     }
-
+    public override Vec3D getRotationWhenDead()
+    {
+        return new Vec3D(0, 0, 1); // animal one
+    }
     public override bool canSpawn()
     {
         int x = MathHelper.Floor(base.x);

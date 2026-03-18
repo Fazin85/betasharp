@@ -7,7 +7,7 @@ namespace BetaSharp.Blocks;
 public class BlockGlowstone : Block
 {
 
-    public BlockGlowstone(int i, int j, Material material) : base(i, j, material)
+    public BlockGlowstone(int i, string j, Material material) : base(i, j, material)
     {
     }
 

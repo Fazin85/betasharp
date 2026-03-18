@@ -7,16 +7,13 @@ namespace BetaSharp.Blocks;
 
 public class BlockTallGrass : BlockPlant
 {
-    public BlockTallGrass(int i, int j) : base(i, j)
+    public BlockTallGrass(int i, string j) : base(i, j)
     {
         float halfSize = 0.4F;
         setBoundingBox(0.5F - halfSize, 0.0F, 0.5F - halfSize, 0.5F + halfSize, 0.8F, 0.5F + halfSize);
     }
 
-    public override int getTexture(int side, int meta)
-    {
-        return meta == 1 ? textureId : (meta == 2 ? textureId + 16 + 1 : (meta == 0 ? textureId + 16 : textureId));
-    }
+    public override string getTexture(string side) => textureId;
 
     public override int getColorMultiplier(BlockView blockView, int x, int y, int z)
     {
