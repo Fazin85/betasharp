@@ -1,5 +1,6 @@
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Entities;
 using BetaSharp.Entities;
 
@@ -7,7 +8,6 @@ namespace BetaSharp.Client.Rendering.Blocks.Entities;
 
 public class BlockEntityMobSpawnerRenderer : BlockEntitySpecialRenderer
 {
-
     private readonly Dictionary<string, Entity> _entityDict = [];
 
     public void renderTileEntityMobSpawner(BlockEntityMobSpawner var1, double var2, double var4, double var6, float var8)
@@ -37,7 +37,7 @@ public class BlockEntityMobSpawnerRenderer : BlockEntitySpecialRenderer
         GLManager.GL.PopMatrix();
     }
 
-    public override void renderTileEntityAt(BlockEntity blockEntity, double x, double y, double z, float tickDelta)
+    public override void renderTileEntityAt(BlockEntity blockEntity, TextureManager textureManager, double x, double y, double z, float tickDelta)
     {
         renderTileEntityMobSpawner((BlockEntityMobSpawner)blockEntity, x, y, z, tickDelta);
     }

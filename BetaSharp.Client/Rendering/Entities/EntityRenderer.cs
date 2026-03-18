@@ -17,7 +17,7 @@ public abstract class EntityRenderer
     protected World World => Dispatcher.world;
     public TextRenderer TextRenderer => Dispatcher.getTextRenderer();
 
-    public abstract void render(Entity target, double x, double y, double z, float yaw, float tickDelta);
+    public abstract void render(Entity target, TextureManager textureManager, double x, double y, double z, float yaw, float tickDelta);
 
     protected void loadTexture(string path)
     {
@@ -191,7 +191,7 @@ public abstract class EntityRenderer
 
         double minX = blockX + block.BoundingBox.MinX + offset.x;
         double maxX = blockX + block.BoundingBox.MaxX + offset.x;
-        double minY = blockY + block.BoundingBox.MinY + offset.y+ 1.0D / 64.0D;
+        double minY = blockY + block.BoundingBox.MinY + offset.y + 1.0D / 64.0D;
         double minZ = blockZ + block.BoundingBox.MinZ + offset.z;
         double maxZ = blockZ + block.BoundingBox.MaxZ + offset.z;
 
@@ -311,7 +311,6 @@ public abstract class EntityRenderer
         {
             RenderOnFire(target, pos, tickDelta);
         }
-
     }
 
     public void RenderBoundingBox(Entity target, Vec3D pos, float yaw, float tickDelta)

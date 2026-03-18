@@ -1,5 +1,6 @@
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Core.OpenGL;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 
@@ -120,7 +121,7 @@ public class LightningEntityRenderer : EntityRenderer
         GLManager.GL.Enable(GLEnum.Texture2D);
     }
 
-    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
+    public override void render(Entity target, TextureManager _, double x, double y, double z, float yaw, float tickDelta)
     {
         render((EntityLightningBolt)target, x, y, z, yaw, tickDelta);
     }

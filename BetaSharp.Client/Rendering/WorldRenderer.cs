@@ -58,7 +58,7 @@ public class WorldRenderer : IWorldAccess
         int var7 = 256 / var6 + 2;
         float var5 = 16.0F;
 
-        chunkRenderer = new(gameInstance.world);
+        chunkRenderer = new(gameInstance, gameInstance.world);
 
         int var8;
         int var9;
@@ -182,7 +182,7 @@ public class WorldRenderer : IWorldAccess
         renderDistance = _game.options.renderDistance;
 
         chunkRenderer?.Dispose();
-        chunkRenderer = new(world);
+        chunkRenderer = new(_game, world);
         ChunkMeshVersion.ClearPool();
 
         renderEntitiesStartupCounter = 2;
@@ -654,7 +654,7 @@ public class WorldRenderer : IWorldAccess
         tessellator.setTranslationD(-renderX, -renderY, -renderZ);
         tessellator.disableColor();
 
-        BlockRenderer.RenderBlockByRenderType(world, targetBlock, new BlockPos(hit.BlockX, hit.BlockY, hit.BlockZ), tessellator, 240 + (int)(damagePartialTime * 10.0F), true);
+        BlockRenderer.RenderBlockByRenderType(world, targetBlock, new BlockPos(hit.BlockX, hit.BlockY, hit.BlockZ), tessellator, renderEngine, 240 + (int)(damagePartialTime * 10.0F), true);
         tessellator.draw();
 
         tessellator.setTranslationD(0.0D, 0.0D, 0.0D);

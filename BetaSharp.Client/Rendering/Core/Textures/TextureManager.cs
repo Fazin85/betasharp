@@ -14,19 +14,26 @@ namespace BetaSharp.Client.Rendering.Core.Textures;
 public class TextureManager : IDisposable
 {
     private readonly ILogger _logger = Log.Instance.For<TextureManager>();
+
     private readonly Dictionary<string, TextureHandle> _textures = [];
     private readonly Dictionary<string, int[]> _colors = [];
     private readonly Dictionary<uint, (Image<Rgba32> Image, TextureHandle Handle)> _images = [];
+
     private readonly List<DynamicTexture> _dynamicTextures = [];
     private readonly Dictionary<string, int> _atlasTileSizes = [];
+
     private TextureHandle? _terrainHandle;
     private TextureHandle? _itemsHandle;
     private readonly GameOptions _gameOptions;
+
     private bool _clamp;
     private bool _blur;
+
     private readonly TexturePacks _texturePacks;
     private readonly BetaSharp _game;
     private readonly Image<Rgba32> _missingTextureImage = new(256, 256);
+
+    private TextureAtlasBuilder _terrainAtlasBuilder;
 
     public TextureManager(BetaSharp game, TexturePacks texturePacks, GameOptions options)
     {
@@ -40,6 +47,11 @@ public class TextureManager : IDisposable
             ctx.Fill(Color.Black, new RectangleF(128, 128, 128, 128));
         });
     }
+
+    public TextureRegion? GetTerrainRegion(string alias) => _terrainAtlasBuilder?.GetRegion(alias);
+    public TextureRegion? GetTerrainRegion(int index) => _terrainAtlasBuilder?.GetRegion(index);
+    public int GetTerrainAtlasWidth() => _terrainAtlasBuilder?.CurrentWidth ?? 256;
+    public int GetTerrainAtlasHeight() => _terrainAtlasBuilder?.CurrentHeight ?? 256;
 
     public int[] GetColors(string path)
     {
@@ -88,9 +100,27 @@ public class TextureManager : IDisposable
         {
             using Image<Rgba32> img = LoadImageFromResource(path);
 
-            _atlasTileSizes[path] = img.Width / 16;
+            if (path.Contains("terrain.png"))
+            {
+                int tileSize = img.Width / 16;
+                _terrainAtlasBuilder?.Dispose();
+                _terrainAtlasBuilder = new TextureAtlasBuilder(tileSize: tileSize, padding: 1);
 
-            Load(img, texture, path.Contains("terrain.png"));
+                _terrainAtlasBuilder.LoadLegacyAtlas(img);
+
+                // TODO: ADD NEW TEXTURES HERE IN THE FUTURE
+                // using var customTex = LoadImageFromResource("/custom_ore.png");
+                // _terrainAtlasBuilder.AddTexture("custom_ore", customTex);
+
+                using Image<Rgba32> finalAtlas = _terrainAtlasBuilder.Build();
+                _atlasTileSizes[path] = tileSize;
+                Load(finalAtlas, texture, true);
+            }
+            else
+            {
+                _atlasTileSizes[path] = img.Width / 16;
+                Load(img, texture, false);
+            }
             return handle;
         }
         catch (Exception ex)
@@ -99,16 +129,16 @@ public class TextureManager : IDisposable
             Load(_missingTextureImage, texture, false);
             return handle;
         }
-
     }
 
-    public unsafe void Load(Image<Rgba32> image, GLTexture texture, bool isTerrain)
+    private unsafe void Load(Image<Rgba32> image, GLTexture texture, bool isTerrain)
     {
         texture.Bind();
 
         if (isTerrain)
         {
-            int tileSize = image.Width / 16;
+            int tileSize = _terrainAtlasBuilder != null ? GetAtlasTileSize("/terrain.png") : image.Width / 16;
+
             Image<Rgba32>[] mips = GenerateMipmaps(image, tileSize);
             int mipCount = _gameOptions.UseMipmaps ? mips.Length : 1;
 
@@ -149,10 +179,8 @@ public class TextureManager : IDisposable
         _blur = false;
     }
 
-    public void BindTexture(TextureHandle? handle)
-    {
-        handle?.Bind();
-    }
+    public void BindTexture(TextureHandle? handle) => handle?.Bind();
+
 
     private Image<Rgba32> Rescale(Image<Rgba32> image)
     {
@@ -277,8 +305,27 @@ public class TextureManager : IDisposable
             try
             {
                 using Image<Rgba32> img = LoadImageFromResource(entry.Key);
-                _atlasTileSizes[entry.Key] = img.Width / 16;
-                Load(img, newTexture, entry.Key.Contains("terrain.png"));
+
+                if (entry.Key.Contains("terrain.png"))
+                {
+                    int tileSize = img.Width / 16;
+                    _terrainAtlasBuilder?.Dispose();
+                    _terrainAtlasBuilder = new TextureAtlasBuilder(tileSize: tileSize, padding: 1);
+                    _terrainAtlasBuilder.LoadLegacyAtlas(img);
+
+                    using Image<Rgba32> atlasImage = _terrainAtlasBuilder.Build();
+
+                    // --- DEBUG: Save the generated atlas ---
+                    atlasImage.SaveAsPng("debug_terrain_atlas.png");
+
+                    _atlasTileSizes[entry.Key] = tileSize;
+                    Load(atlasImage, newTexture, true);
+                }
+                else
+                {
+                    _atlasTileSizes[entry.Key] = img.Width / 16;
+                    Load(img, newTexture, false);
+                }
             }
             catch (Exception ex)
             {
@@ -329,10 +376,24 @@ public class TextureManager : IDisposable
             GLTexture? atlasTexture = atlasHandle?.Texture;
             if (atlasTexture == null) continue;
 
-            int targetTileSize = atlasTexture.Width / 16;
+            int targetTileSize;
+            int tileX;
+            int tileY;
 
-            int tileX = (texture.Sprite % 16) * targetTileSize;
-            int tileY = (texture.Sprite / 16) * targetTileSize;
+            if (texture.Atlas == DynamicTexture.FxImage.Terrain && _terrainAtlasBuilder != null)
+            {
+                if (_terrainAtlasBuilder.GetRegion(texture.Sprite) is not { } region)
+                    continue;
+                targetTileSize = region.Width;
+                tileX = region.PixelX;
+                tileY = region.PixelY;
+            }
+            else
+            {
+                targetTileSize = atlasTexture.Width / 16;
+                tileX = (texture.Sprite % 16) * targetTileSize;
+                tileY = (texture.Sprite / 16) * targetTileSize;
+            }
 
             int fxSize = (int)Math.Sqrt(texture.Pixels.Length / 4);
             int scale = targetTileSize / fxSize;
@@ -383,7 +444,7 @@ public class TextureManager : IDisposable
             {
                 if (rentedArray != null)
                 {
-                    System.Buffers.ArrayPool<byte>.Shared.Return(rentedArray);
+                    ArrayPool<byte>.Shared.Return(rentedArray);
                 }
             }
         }
@@ -483,6 +544,8 @@ public class TextureManager : IDisposable
     public void Dispose()
     {
         GC.SuppressFinalize(this);
+
+        _terrainAtlasBuilder?.Dispose();
 
         foreach (TextureHandle handle in _textures.Values)
         {

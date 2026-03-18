@@ -1,6 +1,7 @@
 using BetaSharp.Blocks;
 using BetaSharp.Client.Rendering.Blocks.Renderers;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
@@ -27,7 +28,7 @@ public class BlockRenderer
     private static readonly PistonExtensionRenderer s_pistonExt = new();
 
 
-    public static bool RenderBlockByRenderType(IBlockAccess world, Block block, BlockPos pos, Tessellator tess, int overrideTexture = -1, bool renderAllFaces = false)
+    public static bool RenderBlockByRenderType(IBlockAccess world, Block block, BlockPos pos, Tessellator tess, TextureManager texManager, int overrideTexture = -1, bool renderAllFaces = false)
     {
         BlockRendererType type = block.getRenderType();
 
@@ -38,6 +39,7 @@ public class BlockRenderer
             world: world,
             overrideTexture: overrideTexture,
             renderAllFaces: renderAllFaces,
+            textureManager: texManager,
             flipTexture: false,
             uvTop: 0,
             uvBottom: 0,
@@ -77,12 +79,13 @@ public class BlockRenderer
         };
     }
 
-    public static void RenderBlockOnInventory(Block block, int metadata, float brightness, Tessellator tess)
+    public static void RenderBlockOnInventory(Block block, int metadata, float brightness, Tessellator tess, TextureManager texManager)
     {
         BlockRendererType renderType = block.getRenderType();
         var uiCtx = new BlockRenderContext(
             world: NullBlockAccess.Instance,
             tess: tess,
+            textureManager: texManager,
             renderAllFaces: true,
             enableAo: false,
             overrideTexture: -1
@@ -164,13 +167,13 @@ public class BlockRenderer
             BlockPos itemPos = new BlockPos(0, 0, 0);
             tess.startDrawingQuads();
             tess.setNormal(0.0F, 1.0F, 0.0F);
-            RenderBlockByRenderType(itemWorld, block, itemPos, tess, uiCtx.OverrideTexture, true);
+            RenderBlockByRenderType(itemWorld, block, itemPos, tess, texManager, uiCtx.OverrideTexture, true);
             tess.draw();
             GLManager.GL.Translate(0.5F, 0.5F, 0.5F);
         }
     }
 
-    public static void RenderBlockFallingSand(Block block, World world, int x, int y, int z, Tessellator tess)
+    public static void RenderBlockFallingSand(Block block, World world, int x, int y, int z, Tessellator tess, TextureManager texManager)
     {
         // Directional shading multipliers for fake 3D depth
         float lightBottom = 0.5F;
@@ -181,6 +184,7 @@ public class BlockRenderer
         var entityCtx = new BlockRenderContext(
             world: world,
             tess: tess,
+            textureManager: texManager,
             renderAllFaces: true,
             enableAo: false
         );

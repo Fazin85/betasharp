@@ -9,7 +9,7 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiStats : GuiScreen
 {
-    private static readonly ItemRenderer itemRenderer = new();
+    private readonly ItemRenderer itemRenderer;
     protected GuiScreen parentScreen;
     protected string screenTitle = "Select world";
     private GuiSlotStatsGeneral slotGeneral;
@@ -22,6 +22,7 @@ public class GuiStats : GuiScreen
     {
         parentScreen = parent;
         statFileWriter = stats;
+        itemRenderer = new(parent.Game);
     }
 
     public override void InitGui()
@@ -36,6 +37,7 @@ public class GuiStats : GuiScreen
         currentSlot = slotGeneral;
         initButtons();
     }
+
     public void initButtons()
     {
         const int BUTTON_DONE = 0;
@@ -83,7 +85,6 @@ public class GuiStats : GuiScreen
                     currentSlot.ActionPerformed(button);
                     break;
             }
-
         }
     }
 

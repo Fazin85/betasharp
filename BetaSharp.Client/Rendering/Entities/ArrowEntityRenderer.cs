@@ -1,5 +1,6 @@
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Core.OpenGL;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 
@@ -7,7 +8,6 @@ namespace BetaSharp.Client.Rendering.Entities;
 
 public class ArrowEntityRenderer : EntityRenderer
 {
-
     public void renderArrow(EntityArrow var1, double var2, double var4, double var6, float var8, float var9)
     {
         if (var1.prevYaw != 0.0F || var1.prevPitch != 0.0F)
@@ -71,7 +71,7 @@ public class ArrowEntityRenderer : EntityRenderer
         }
     }
 
-    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
+    public override void render(Entity target, TextureManager _, double x, double y, double z, float yaw, float tickDelta)
     {
         renderArrow((EntityArrow)target, x, y, z, yaw, tickDelta);
     }

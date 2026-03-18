@@ -15,9 +15,20 @@ public class ItemRenderer : EntityRenderer
 {
     private readonly JavaRandom random = new();
     public bool useCustomDisplayColor = true;
+    private readonly TextureManager textureManager;
+
+    public ItemRenderer(BetaSharp game)
+    {
+        textureManager = game.textureManager;
+        ShadowRadius = 0.15F;
+        ShadowStrength = 12.0F / 16.0F;
+    }
 
     public ItemRenderer()
     {
+        // Fallback for GUI/static usage; will be wired to the singleton's texture manager.
+        textureManager = EntityRenderDispatcher.instance?.textureManager
+                         ?? throw new InvalidOperationException("EntityRenderDispatcher.instance must be initialized before using parameterless ItemRenderer.");
         ShadowRadius = 0.15F;
         ShadowStrength = 12.0F / 16.0F;
     }
@@ -56,7 +67,7 @@ public class ItemRenderer : EntityRenderer
             loadTexture("/terrain.png");
             float var28 = 0.25F;
             if (!Block.Blocks[var10.itemId].isFullCube() && var10.itemId != Block.Slab.id
-                && Block.Blocks[var10.itemId].getRenderType() != BlockRendererType.PistonBase)
+                                                         && Block.Blocks[var10.itemId].getRenderType() != BlockRendererType.PistonBase)
             {
                 var28 = 0.5F;
             }
@@ -74,7 +85,7 @@ public class ItemRenderer : EntityRenderer
                     GLManager.GL.Translate(var16, var17, var18);
                 }
 
-                BlockRenderer.RenderBlockOnInventory(Block.Blocks[var10.itemId], var10.getDamage(), var1.getBrightnessAtEyes(var9), Tessellator.instance);
+                BlockRenderer.RenderBlockOnInventory(Block.Blocks[var10.itemId], var10.getDamage(), var1.getBrightnessAtEyes(var9), Tessellator.instance, textureManager);
                 GLManager.GL.PopMatrix();
             }
         }
@@ -164,7 +175,7 @@ public class ItemRenderer : EntityRenderer
             }
 
             GLManager.GL.Rotate(-90.0F, 0.0F, 1.0F, 0.0F);
-            BlockRenderer.RenderBlockOnInventory(var14, var4, 1.0F, Tessellator.instance);
+            BlockRenderer.RenderBlockOnInventory(var14, var4, 1.0F, Tessellator.instance, textureManager);
             GLManager.GL.PopMatrix();
         }
         else if (var5 >= 0)
@@ -235,7 +246,6 @@ public class ItemRenderer : EntityRenderer
                 GLManager.GL.Enable(GLEnum.DepthTest);
                 GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
             }
-
         }
     }
 
@@ -264,7 +274,7 @@ public class ItemRenderer : EntityRenderer
         var10.draw();
     }
 
-    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
+    public override void render(Entity target, TextureManager _, double x, double y, double z, float yaw, float tickDelta)
     {
         doRenderItem((EntityItem)target, x, y, z, yaw, tickDelta);
     }

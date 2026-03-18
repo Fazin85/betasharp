@@ -2,13 +2,13 @@ using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Guis;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Entities.Models;
 
 namespace BetaSharp.Client.Rendering.Blocks.Entities;
 
 public class BlockEntitySignRenderer : BlockEntitySpecialRenderer
 {
-
     private readonly SignModel signModel = new();
 
     public void renderTileEntitySignAt(BlockEntitySign var1, double var2, double var4, double var6, float var8)
@@ -80,7 +80,7 @@ public class BlockEntitySignRenderer : BlockEntitySpecialRenderer
         GLManager.GL.PopMatrix();
     }
 
-    public override void renderTileEntityAt(BlockEntity blockEntity, double x, double y, double z, float tickDelta)
+    public override void renderTileEntityAt(BlockEntity blockEntity, TextureManager textureManager, double x, double y, double z, float tickDelta)
     {
         renderTileEntitySignAt((BlockEntitySign)blockEntity, x, y, z, tickDelta);
     }

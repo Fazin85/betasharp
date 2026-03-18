@@ -243,6 +243,8 @@ public partial class BetaSharp
         GrassColors.loadColors(textureManager.GetColors("/misc/grasscolor.png"));
         FoliageColors.loadColors(textureManager.GetColors("/misc/foliagecolor.png"));
         gameRenderer = new GameRenderer(this);
+
+        EntityRenderDispatcher.Initialize(this);
         EntityRenderDispatcher.instance.skinManager = skinManager;
         EntityRenderDispatcher.instance.heldItemRenderer = new HeldItemRenderer(this);
         statFileWriter = new StatFileWriter(session, gameDataDir);

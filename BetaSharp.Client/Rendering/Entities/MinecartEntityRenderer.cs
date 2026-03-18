@@ -1,6 +1,7 @@
 using BetaSharp.Blocks;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Entities.Models;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
@@ -17,7 +18,7 @@ public class MinecartEntityRenderer : EntityRenderer
         modelMinecart = new ModelMinecart();
     }
 
-    public void render(EntityMinecart var1, double x, double y, double z, float yaw, float tickDelta)
+    public void render(EntityMinecart var1, TextureManager textureManager, double x, double y, double z, float yaw, float tickDelta)
     {
         GLManager.GL.PushMatrix();
         double var10 = var1.lastTickX + (var1.x - var1.lastTickX) * (double)tickDelta;
@@ -67,11 +68,11 @@ public class MinecartEntityRenderer : EntityRenderer
             GLManager.GL.Rotate(90.0F, 0.0F, 1.0F, 0.0F);
             if (var1.type == 1)
             {
-                BlockRenderer.RenderBlockOnInventory(Block.Chest, 0, var1.getBrightnessAtEyes(tickDelta), Tessellator.instance);
+                BlockRenderer.RenderBlockOnInventory(Block.Chest, 0, var1.getBrightnessAtEyes(tickDelta), Tessellator.instance, textureManager);
             }
             else if (var1.type == 2)
             {
-                BlockRenderer.RenderBlockOnInventory(Block.Furnace, 0, var1.getBrightnessAtEyes(tickDelta), Tessellator.instance);
+                BlockRenderer.RenderBlockOnInventory(Block.Furnace, 0, var1.getBrightnessAtEyes(tickDelta), Tessellator.instance, textureManager);
             }
 
             GLManager.GL.Rotate(-90.0F, 0.0F, 1.0F, 0.0F);
@@ -85,8 +86,8 @@ public class MinecartEntityRenderer : EntityRenderer
         GLManager.GL.PopMatrix();
     }
 
-    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
+    public override void render(Entity target, TextureManager textureManager, double x, double y, double z, float yaw, float tickDelta)
     {
-        render((EntityMinecart)target, x, y, z, yaw, tickDelta);
+        render((EntityMinecart)target, textureManager, x, y, z, yaw, tickDelta);
     }
 }

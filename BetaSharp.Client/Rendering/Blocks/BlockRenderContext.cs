@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using BetaSharp.Blocks;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
@@ -10,6 +11,7 @@ public ref struct BlockRenderContext
 {
     public readonly IBlockAccess World;
     public readonly Tessellator Tess;
+    public readonly TextureManager TextureManager;
 
     public int OverrideTexture;
     public readonly bool RenderAllFaces;
@@ -30,7 +32,7 @@ public ref struct BlockRenderContext
     public bool CustomFlag;
 
     public BlockRenderContext(
-        IBlockAccess world, Tessellator tess,
+        IBlockAccess world, Tessellator tess, TextureManager textureManager,
         int overrideTexture = -1, bool renderAllFaces = false,
         bool flipTexture = false, Box? bounds = null,
         int uvTop = 0, int uvBottom = 0,
@@ -41,6 +43,7 @@ public ref struct BlockRenderContext
     {
         World = world;
         Tess = tess;
+        TextureManager = textureManager;
 
         OverrideTexture = overrideTexture;
         RenderAllFaces = renderAllFaces;
@@ -63,36 +66,102 @@ public ref struct BlockRenderContext
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static float Clamp(float value) => value < 0f ? 0f : (value > 1f ? 1f : value);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly void GetIconUVs(int textureId, out float minU, out float minV, out float maxU, out float maxV)
+    {
+        if (TextureManager?.GetTerrainRegion(textureId) is { } region)
+        {
+            var uvs = region.GetNormalizedUVs(TextureManager.GetTerrainAtlasWidth(), TextureManager.GetTerrainAtlasHeight());
+            minU = uvs.uMin;
+            minV = uvs.vMin;
+            maxU = uvs.uMax;
+            maxV = uvs.vMax;
+        }
+        else
+        {
+            minU = ((textureId & 15) << 4) / 256.0f;
+            maxU = minU + 0.0624609375f; // 15.99 / 256
+            minV = (textureId & 240) / 256.0f;
+            maxV = minV + 0.0624609375f;
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private readonly void CalculateUv(float h, float v, int rotation, int textureId, out float u, out float outV)
+    {
+        GetIconUVs(textureId, out float minU, out float minV, out float maxU, out float maxV);
+        float uSpan = maxU - minU;
+        float vSpan = maxV - minV;
+
+        if (rotation == 0 && !FlipTexture)
+        {
+            u = minU + h * uSpan;
+            outV = minV + v * vSpan;
+            return;
+        }
+
+        float fU, fV;
+        switch (rotation)
+        {
+            case 1:
+                fU = v;
+                fV = 1.0f - h;
+                break;
+            case 2:
+                fU = 1.0f - h;
+                fV = 1.0f - v;
+                break;
+            case 3:
+                fU = 1.0f - v;
+                fV = h;
+                break;
+            case 4:
+                fU = 1.0f - h;
+                fV = v;
+                break;
+            case 5:
+                fU = v;
+                fV = h;
+                break;
+            case 6:
+                fU = h;
+                fV = 1.0f - v;
+                break;
+            case 7:
+                fU = 1.0f - v;
+                fV = 1.0f - h;
+                break;
+            default:
+                fU = h;
+                fV = v;
+                break;
+        }
+
+        fU = FlipTexture ? 1.0f - fU : fU;
+        u = minU + fU * uSpan;
+        outV = minV + fV * vSpan;
+    }
+
     internal readonly void DrawBottomFace(Block block, in Vec3D pos, in FaceColors colors, int textureId, bool flipped = false)
     {
         Box bb = OverrideBounds ?? block.BoundingBox;
-        int texU = (textureId & 15) << 4;
-        int texV = textureId & 240;
 
-        float bbMinX = (float)bb.MinX;
-        float bbMaxX = (float)bb.MaxX;
-        float bbMinZ = (float)bb.MinZ;
-        float bbMaxZ = (float)bb.MaxZ;
+        float bbMinX = (float)bb.MinX, bbMaxX = (float)bb.MaxX;
+        float bbMinZ = (float)bb.MinZ, bbMaxZ = (float)bb.MaxZ;
 
-        float bMinX = Clamp(bbMinX);
-        float bMaxX = Clamp(bbMaxX);
-        float bMinZ = Clamp(bbMinZ);
-        float bMaxZ = Clamp(bbMaxZ);
+        float bMinX = Clamp(bbMinX), bMaxX = Clamp(bbMaxX);
+        float bMinZ = Clamp(bbMinZ), bMaxZ = Clamp(bbMaxZ);
 
-        CalculateUv(bMinX, bMaxZ, UvRotateBottom, texU, texV, out float u0, out float v0);
-        CalculateUv(bMinX, bMinZ, UvRotateBottom, texU, texV, out float u1, out float v1);
-        CalculateUv(bMaxX, bMinZ, UvRotateBottom, texU, texV, out float u2, out float v2);
-        CalculateUv(bMaxX, bMaxZ, UvRotateBottom, texU, texV, out float u3, out float v3);
+        // Updated to pass textureId instead of raw texU/texV
+        CalculateUv(bMinX, bMaxZ, UvRotateBottom, textureId, out float u0, out float v0);
+        CalculateUv(bMinX, bMinZ, UvRotateBottom, textureId, out float u1, out float v1);
+        CalculateUv(bMaxX, bMinZ, UvRotateBottom, textureId, out float u2, out float v2);
+        CalculateUv(bMaxX, bMaxZ, UvRotateBottom, textureId, out float u3, out float v3);
 
-        float pX = (float)pos.x;
-        float pY = (float)pos.y;
-        float pZ = (float)pos.z;
-
-        float minX = pX + bbMinX;
-        float maxX = pX + bbMaxX;
+        float pX = (float)pos.x, pY = (float)pos.y, pZ = (float)pos.z;
+        float minX = pX + bbMinX, maxX = pX + bbMaxX;
         float minY = pY + (float)bb.MinY;
-        float minZ = pZ + bbMinZ;
-        float maxZ = pZ + bbMaxZ;
+        float minZ = pZ + bbMinZ, maxZ = pZ + bbMaxZ;
 
         if (EnableAo)
         {
@@ -131,33 +200,22 @@ public ref struct BlockRenderContext
     internal readonly void DrawTopFace(Block block, in Vec3D pos, in FaceColors colors, int textureId, bool flipped = false)
     {
         Box bb = OverrideBounds ?? block.BoundingBox;
-        int texU = (textureId & 15) << 4;
-        int texV = textureId & 240;
+        float bbMinX = (float)bb.MinX, bbMaxX = (float)bb.MaxX;
+        float bbMinZ = (float)bb.MinZ, bbMaxZ = (float)bb.MaxZ;
 
-        float bbMinX = (float)bb.MinX;
-        float bbMaxX = (float)bb.MaxX;
-        float bbMinZ = (float)bb.MinZ;
-        float bbMaxZ = (float)bb.MaxZ;
+        float bMinX = Clamp(bbMinX), bMaxX = Clamp(bbMaxX);
+        float bMinZ = Clamp(bbMinZ), bMaxZ = Clamp(bbMaxZ);
 
-        float bMinX = Clamp(bbMinX);
-        float bMaxX = Clamp(bbMaxX);
-        float bMinZ = Clamp(bbMinZ);
-        float bMaxZ = Clamp(bbMaxZ);
+        // Updated
+        CalculateUv(bMaxX, bMaxZ, UvRotateTop, textureId, out float u0, out float v0);
+        CalculateUv(bMaxX, bMinZ, UvRotateTop, textureId, out float u1, out float v1);
+        CalculateUv(bMinX, bMinZ, UvRotateTop, textureId, out float u2, out float v2);
+        CalculateUv(bMinX, bMaxZ, UvRotateTop, textureId, out float u3, out float v3);
 
-        CalculateUv(bMaxX, bMaxZ, UvRotateTop, texU, texV, out float u0, out float v0);
-        CalculateUv(bMaxX, bMinZ, UvRotateTop, texU, texV, out float u1, out float v1);
-        CalculateUv(bMinX, bMinZ, UvRotateTop, texU, texV, out float u2, out float v2);
-        CalculateUv(bMinX, bMaxZ, UvRotateTop, texU, texV, out float u3, out float v3);
-
-        float pX = (float)pos.x;
-        float pY = (float)pos.y;
-        float pZ = (float)pos.z;
-
-        float minX = pX + bbMinX;
-        float maxX = pX + bbMaxX;
+        float pX = (float)pos.x, pY = (float)pos.y, pZ = (float)pos.z;
+        float minX = pX + bbMinX, maxX = pX + bbMaxX;
         float maxY = pY + (float)bb.MaxY;
-        float minZ = pZ + bbMinZ;
-        float maxZ = pZ + bbMaxZ;
+        float minZ = pZ + bbMinZ, maxZ = pZ + bbMaxZ;
 
         if (EnableAo)
         {
@@ -196,28 +254,19 @@ public ref struct BlockRenderContext
     internal readonly void DrawNorthFace(Block block, in Vec3D pos, in FaceColors colors, int textureId, bool flipped = false)
     {
         Box bb = OverrideBounds ?? block.BoundingBox;
-        int texU = (textureId & 15) << 4;
-        int texV = textureId & 240;
+        float bbMinY = (float)bb.MinY, bbMaxY = (float)bb.MaxY;
+        float bbMinZ = (float)bb.MinZ, bbMaxZ = (float)bb.MaxZ;
 
-        float bbMinY = (float)bb.MinY;
-        float bbMaxY = (float)bb.MaxY;
-        float bbMinZ = (float)bb.MinZ;
-        float bbMaxZ = (float)bb.MaxZ;
+        // Updated
+        CalculateUv(bbMinZ, 1.0f - bbMaxY, UvRotateNorth, textureId, out float uTl, out float vTl);
+        CalculateUv(bbMinZ, 1.0f - bbMinY, UvRotateNorth, textureId, out float uBl, out float vBl);
+        CalculateUv(bbMaxZ, 1.0f - bbMinY, UvRotateNorth, textureId, out float uBr, out float vBr);
+        CalculateUv(bbMaxZ, 1.0f - bbMaxY, UvRotateNorth, textureId, out float uTr, out float vTr);
 
-        CalculateUv(bbMinZ, 1.0f - bbMaxY, UvRotateNorth, texU, texV, out float uTl, out float vTl);
-        CalculateUv(bbMinZ, 1.0f - bbMinY, UvRotateNorth, texU, texV, out float uBl, out float vBl);
-        CalculateUv(bbMaxZ, 1.0f - bbMinY, UvRotateNorth, texU, texV, out float uBr, out float vBr);
-        CalculateUv(bbMaxZ, 1.0f - bbMaxY, UvRotateNorth, texU, texV, out float uTr, out float vTr);
-
-        float pX = (float)pos.x;
-        float pY = (float)pos.y;
-        float pZ = (float)pos.z;
-
+        float pX = (float)pos.x, pY = (float)pos.y, pZ = (float)pos.z;
         float minX = pX + (float)bb.MinX;
-        float minY = pY + bbMinY;
-        float maxY = pY + bbMaxY;
-        float minZ = pZ + bbMinZ;
-        float maxZ = pZ + bbMaxZ;
+        float minY = pY + bbMinY, maxY = pY + bbMaxY;
+        float minZ = pZ + bbMinZ, maxZ = pZ + bbMaxZ;
 
         if (EnableAo)
         {
@@ -256,33 +305,19 @@ public ref struct BlockRenderContext
     internal readonly void DrawSouthFace(Block block, in Vec3D pos, in FaceColors colors, int textureId, bool flipped = false)
     {
         Box bb = OverrideBounds ?? block.BoundingBox;
-        int texU = (textureId & 15) << 4;
-        int texV = textureId & 240;
+        float bMinY = Clamp((float)bb.MinY), bMaxY = Clamp((float)bb.MaxY);
+        float bMinZ = Clamp((float)bb.MinZ), bMaxZ = Clamp((float)bb.MaxZ);
 
-        float bbMinY = (float)bb.MinY;
-        float bbMaxY = (float)bb.MaxY;
-        float bbMinZ = (float)bb.MinZ;
-        float bbMaxZ = (float)bb.MaxZ;
+        // Updated
+        CalculateUv(1.0f - bMaxZ, 1.0f - bMaxY, UvRotateSouth, textureId, out float uTl, out float vTl);
+        CalculateUv(1.0f - bMaxZ, 1.0f - bMinY, UvRotateSouth, textureId, out float uBl, out float vBl);
+        CalculateUv(1.0f - bMinZ, 1.0f - bMinY, UvRotateSouth, textureId, out float uBr, out float vBr);
+        CalculateUv(1.0f - bMinZ, 1.0f - bMaxY, UvRotateSouth, textureId, out float uTr, out float vTr);
 
-        float bMinY = Clamp(bbMinY);
-        float bMaxY = Clamp(bbMaxY);
-        float bMinZ = Clamp(bbMinZ);
-        float bMaxZ = Clamp(bbMaxZ);
-
-        CalculateUv(1.0f - bMaxZ, 1.0f - bMaxY, UvRotateSouth, texU, texV, out float uTl, out float vTl);
-        CalculateUv(1.0f - bMaxZ, 1.0f - bMinY, UvRotateSouth, texU, texV, out float uBl, out float vBl);
-        CalculateUv(1.0f - bMinZ, 1.0f - bMinY, UvRotateSouth, texU, texV, out float uBr, out float vBr);
-        CalculateUv(1.0f - bMinZ, 1.0f - bMaxY, UvRotateSouth, texU, texV, out float uTr, out float vTr);
-
-        float pX = (float)pos.x;
-        float pY = (float)pos.y;
-        float pZ = (float)pos.z;
-
+        float pX = (float)pos.x, pY = (float)pos.y, pZ = (float)pos.z;
         float posX = pX + (float)bb.MaxX;
-        float minY = pY + bbMinY;
-        float maxY = pY + bbMaxY;
-        float minZ = pZ + bbMinZ;
-        float maxZ = pZ + bbMaxZ;
+        float minY = pY + (float)bb.MinY, maxY = pY + (float)bb.MaxY;
+        float minZ = pZ + (float)bb.MinZ, maxZ = pZ + (float)bb.MaxZ;
 
         if (EnableAo)
         {
@@ -321,32 +356,18 @@ public ref struct BlockRenderContext
     internal readonly void DrawEastFace(Block block, in Vec3D pos, in FaceColors colors, int textureId, bool flipped = false)
     {
         Box bb = OverrideBounds ?? block.BoundingBox;
-        int texU = (textureId & 15) << 4;
-        int texV = textureId & 240;
+        float bMinX = Clamp((float)bb.MinX), bMaxX = Clamp((float)bb.MaxX);
+        float bMinY = Clamp((float)bb.MinY), bMaxY = Clamp((float)bb.MaxY);
 
-        float bbMinX = (float)bb.MinX;
-        float bbMaxX = (float)bb.MaxX;
-        float bbMinY = (float)bb.MinY;
-        float bbMaxY = (float)bb.MaxY;
+        // Updated
+        CalculateUv(1.0f - bMaxX, 1.0f - bMaxY, UvRotateEast, textureId, out float uTl, out float vTl);
+        CalculateUv(1.0f - bMaxX, 1.0f - bMinY, UvRotateEast, textureId, out float uBl, out float vBl);
+        CalculateUv(1.0f - bMinX, 1.0f - bMinY, UvRotateEast, textureId, out float uBr, out float vBr);
+        CalculateUv(1.0f - bMinX, 1.0f - bMaxY, UvRotateEast, textureId, out float uTr, out float vTr);
 
-        float bMinX = Clamp(bbMinX);
-        float bMaxX = Clamp(bbMaxX);
-        float bMinY = Clamp(bbMinY);
-        float bMaxY = Clamp(bbMaxY);
-
-        CalculateUv(1.0f - bMaxX, 1.0f - bMaxY, UvRotateEast, texU, texV, out float uTl, out float vTl);
-        CalculateUv(1.0f - bMaxX, 1.0f - bMinY, UvRotateEast, texU, texV, out float uBl, out float vBl);
-        CalculateUv(1.0f - bMinX, 1.0f - bMinY, UvRotateEast, texU, texV, out float uBr, out float vBr);
-        CalculateUv(1.0f - bMinX, 1.0f - bMaxY, UvRotateEast, texU, texV, out float uTr, out float vTr);
-
-        float pX = (float)pos.x;
-        float pY = (float)pos.y;
-        float pZ = (float)pos.z;
-
-        float minX = pX + bbMinX;
-        float maxX = pX + bbMaxX;
-        float minY = pY + bbMinY;
-        float maxY = pY + bbMaxY;
+        float pX = (float)pos.x, pY = (float)pos.y, pZ = (float)pos.z;
+        float minX = pX + (float)bb.MinX, maxX = pX + (float)bb.MaxX;
+        float minY = pY + (float)bb.MinY, maxY = pY + (float)bb.MaxY;
         float minZ = pZ + (float)bb.MinZ;
 
         if (EnableAo)
@@ -386,32 +407,18 @@ public ref struct BlockRenderContext
     internal readonly void DrawWestFace(Block block, in Vec3D pos, in FaceColors colors, int textureId, bool flipped = false)
     {
         Box bb = OverrideBounds ?? block.BoundingBox;
-        int texU = (textureId & 15) << 4;
-        int texV = textureId & 240;
+        float bMinX = Clamp((float)bb.MinX), bMaxX = Clamp((float)bb.MaxX);
+        float bMinY = Clamp((float)bb.MinY), bMaxY = Clamp((float)bb.MaxY);
 
-        float bbMinX = (float)bb.MinX;
-        float bbMaxX = (float)bb.MaxX;
-        float bbMinY = (float)bb.MinY;
-        float bbMaxY = (float)bb.MaxY;
+        // Updated
+        CalculateUv(bMinX, 1.0f - bMaxY, UvRotateWest, textureId, out float uTl, out float vTl);
+        CalculateUv(bMinX, 1.0f - bMinY, UvRotateWest, textureId, out float uBl, out float vBl);
+        CalculateUv(bMaxX, 1.0f - bMinY, UvRotateWest, textureId, out float uBr, out float vBr);
+        CalculateUv(bMaxX, 1.0f - bMaxY, UvRotateWest, textureId, out float uTr, out float vTr);
 
-        float bMinX = Clamp(bbMinX);
-        float bMaxX = Clamp(bbMaxX);
-        float bMinY = Clamp(bbMinY);
-        float bMaxY = Clamp(bbMaxY);
-
-        CalculateUv(bMinX, 1.0f - bMaxY, UvRotateWest, texU, texV, out float uTl, out float vTl);
-        CalculateUv(bMinX, 1.0f - bMinY, UvRotateWest, texU, texV, out float uBl, out float vBl);
-        CalculateUv(bMaxX, 1.0f - bMinY, UvRotateWest, texU, texV, out float uBr, out float vBr);
-        CalculateUv(bMaxX, 1.0f - bMaxY, UvRotateWest, texU, texV, out float uTr, out float vTr);
-
-        float pX = (float)pos.x;
-        float pY = (float)pos.y;
-        float pZ = (float)pos.z;
-
-        float minX = pX + bbMinX;
-        float maxX = pX + bbMaxX;
-        float minY = pY + bbMinY;
-        float maxY = pY + bbMaxY;
+        float pX = (float)pos.x, pY = (float)pos.y, pZ = (float)pos.z;
+        float minX = pX + (float)bb.MinX, maxX = pX + (float)bb.MaxX;
+        float minY = pY + (float)bb.MinY, maxY = pY + (float)bb.MaxY;
         float maxZ = pZ + (float)bb.MaxZ;
 
         if (EnableAo)
@@ -693,30 +700,24 @@ public ref struct BlockRenderContext
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal readonly void DrawTorch(in Block block, in Vec3D pos, float tiltX, float tiltZ)
     {
-        const float texScale = 1.0f / 256.0f;
-        const float radius = 1.0f / 16.0f;
-        const float height = 10.0f / 16.0f;
-        const float tipOffsetBase = 1.0f - height;
-
-        const float topMinUOffset = 7.0f * texScale;
-        const float topMaxUOffset = 9.0f * texScale;
-        const float topMinVOffset = 6.0f * texScale;
-        const float topMaxVOffset = 8.0f * texScale;
+        float radius = 1.0f / 16.0f;
+        float height = 10.0f / 16.0f;
+        float tipOffsetBase = 1.0f - height;
 
         int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTexture(0);
 
-        int texU = (textureId & 15) << 4;
-        int texV = textureId & 240;
+        // 1. Get the dynamic bounds from the new padded atlas
+        GetIconUVs(textureId, out float minU, out float minV, out float maxU, out float maxV);
 
-        float minU = texU * texScale;
-        float maxU = (texU + 15.99f) * texScale;
-        float minV = texV * texScale;
-        float maxV = (texV + 15.99f) * texScale;
+        // 2. Calculate spans to map the top face proportionally within the padded region
+        float uSpan = maxU - minU;
+        float vSpan = maxV - minV;
 
-        float topMinU = minU + topMinUOffset;
-        float topMinV = minV + topMinVOffset;
-        float topMaxU = minU + topMaxUOffset;
-        float topMaxV = minV + topMaxVOffset;
+        // 3. Map the specific torch sub-pixels (the inner 2x2 square) using proportional math
+        float topMinU = minU + (7.0f / 16.0f) * uSpan;
+        float topMaxU = minU + (9.0f / 16.0f) * uSpan;
+        float topMinV = minV + (6.0f / 16.0f) * vSpan;
+        float topMaxV = minV + (8.0f / 16.0f) * vSpan;
 
         float pX = (float)pos.x;
         float pY = (float)pos.y;
@@ -787,7 +788,6 @@ public ref struct BlockRenderContext
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private readonly void CalculateUv(float h, float v, int rotation, int texU, int texV, out float u, out float outV)
     {
-        //  0 and no flip are the most common states
         if (rotation == 0 && !FlipTexture)
         {
             u = texU * 0.00390625f + h * 0.0625f;
@@ -797,7 +797,6 @@ public ref struct BlockRenderContext
 
         float fU, fV;
 
-        // Stripped down switch (pure assignment, no inline math)
         switch (rotation)
         {
             case 1:

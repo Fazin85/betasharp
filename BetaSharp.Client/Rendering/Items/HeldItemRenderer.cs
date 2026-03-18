@@ -4,6 +4,7 @@ using BetaSharp.Client.Entities;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Core.OpenGL;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Items;
@@ -22,9 +23,11 @@ public class HeldItemRenderer
     private readonly MapItemRenderer mapRenderer;
 
     private int field_20099_f = -1;
+    private TextureManager textureManager;
 
     public HeldItemRenderer(BetaSharp game)
     {
+        textureManager = game.textureManager;
         _game = game;
         mapRenderer = new MapItemRenderer(game.fontRenderer, game.options, game.textureManager);
     }
@@ -35,7 +38,7 @@ public class HeldItemRenderer
         if (item.itemId < 256 && BlockRenderer.IsSideLit(Block.Blocks[item.itemId].getRenderType()))
         {
             _game.textureManager.BindTexture(_game.textureManager.GetTextureId("/terrain.png"));
-            BlockRenderer.RenderBlockOnInventory(Block.Blocks[item.itemId], item.getDamage(), entity.getBrightnessAtEyes(1.0F), Tessellator.instance);
+            BlockRenderer.RenderBlockOnInventory(Block.Blocks[item.itemId], item.getDamage(), entity.getBrightnessAtEyes(1.0F), Tessellator.instance, textureManager);
         }
         else
         {
@@ -485,7 +488,6 @@ public class HeldItemRenderer
             itemToRender = var2;
             field_20099_f = var1.inventory.selectedSlot;
         }
-
     }
 
     public void func_9449_b()

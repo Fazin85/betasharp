@@ -1,6 +1,7 @@
 using BetaSharp.Blocks;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
@@ -64,7 +65,7 @@ internal class ChunkMeshGenerator : IDisposable
         }
     }
 
-    public void MeshChunk(World world, Vector3D<int> pos, long version)
+    public void MeshChunk(World world, Vector3D<int> pos, long version,TextureManager renderEngine)
     {
         WorldRegionSnapshot cache = new(
             world,
@@ -81,7 +82,7 @@ internal class ChunkMeshGenerator : IDisposable
 
             try
             {
-                MeshBuildResult mesh = GenerateMesh(pos, version, cache);
+                MeshBuildResult mesh = GenerateMesh(pos, version, cache,renderEngine);
                 lock (results)
                     results.Enqueue(mesh);
             }
@@ -93,7 +94,7 @@ internal class ChunkMeshGenerator : IDisposable
         });
     }
 
-    private MeshBuildResult GenerateMesh(Vector3D<int> pos, long version, WorldRegionSnapshot cache)
+    private MeshBuildResult GenerateMesh(Vector3D<int> pos, long version, WorldRegionSnapshot cache,TextureManager renderEngine)
     {
         int minX = pos.X;
         int minY = pos.Y;
@@ -133,7 +134,7 @@ internal class ChunkMeshGenerator : IDisposable
                         if (blockPass != pass)
                             hasNextPass = true;
                         else
-                            BlockRenderer.RenderBlockByRenderType(cache, b, new BlockPos(x, y, z), tess);
+                            BlockRenderer.RenderBlockByRenderType(cache, b, new BlockPos(x, y, z), tess,renderEngine);
                     }
                 }
             }

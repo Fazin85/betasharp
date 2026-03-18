@@ -1,5 +1,6 @@
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Core.OpenGL;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Entities;
 
 namespace BetaSharp.Client.Rendering.Entities;
@@ -14,7 +15,7 @@ public class ProjectileEntityRenderer : EntityRenderer
         itemIconIndex = var1;
     }
 
-    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
+    public override void render(Entity target,TextureManager _, double x, double y, double z, float yaw, float tickDelta)
     {
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate((float)x, (float)y, (float)z);

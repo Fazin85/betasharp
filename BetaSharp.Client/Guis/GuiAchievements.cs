@@ -12,7 +12,6 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiAchievements : GuiScreen
 {
-
     private static readonly int field_27126_s = global::BetaSharp.Achievements.minColumn * 24 - 112;
     private static readonly int field_27125_t = global::BetaSharp.Achievements.minRow * 24 - 112;
     private static readonly int field_27124_u = global::BetaSharp.Achievements.maxColumn * 24 - 77;
@@ -67,7 +66,6 @@ public class GuiAchievements : GuiScreen
         {
             base.KeyTyped(eventChar, eventKey);
         }
-
     }
 
     public override void Render(int var1, int var2, float var3)
@@ -146,7 +144,6 @@ public class GuiAchievements : GuiScreen
             field_27114_o += var1 * 0.85D;
             field_27113_p += var3 * 0.85D;
         }
-
     }
 
     protected void func_27110_k()
@@ -276,9 +273,7 @@ public class GuiAchievements : GuiScreen
                 }
                 else if (canUnlock)
                 {
-                    color = Math.Sin(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() % 600L / 600.0D * Math.PI * 2.0D) > 0.6D ?
-                        Color.Blue :
-                        Color.BlueAlpha;
+                    color = Math.Sin(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() % 600L / 600.0D * Math.PI * 2.0D) > 0.6D ? Color.Blue : Color.BlueAlpha;
                 }
                 else
                 {
@@ -291,7 +286,7 @@ public class GuiAchievements : GuiScreen
         }
 
         Achievement var27 = null;
-        ItemRenderer var29 = new();
+        ItemRenderer var29 = new(Game);
         GLManager.GL.PushMatrix();
         GLManager.GL.Rotate(180.0F, 1.0F, 0.0F, 0.0F);
         Lighting.turnOn();
@@ -403,7 +398,8 @@ public class GuiAchievements : GuiScreen
                 FontRenderer.DrawStringWrapped(var39, var17, var33 + 12, var34, Color.AchievementRequiresRed);
             }
 
-            FontRenderer.DrawStringWithShadow(var31, var17, var33, statFileWriter.CanUnlockAchievement(var27) ? var27.isChallenge() ? Color.AchievementChallengeYellow : Color.White : var27.isChallenge() ? Color.AchievementChallengeLockedYellow : Color.Gray80);
+            FontRenderer.DrawStringWithShadow(var31, var17, var33,
+                statFileWriter.CanUnlockAchievement(var27) ? var27.isChallenge() ? Color.AchievementChallengeYellow : Color.White : var27.isChallenge() ? Color.AchievementChallengeLockedYellow : Color.Gray80);
         }
 
         GLManager.GL.Enable(GLEnum.DepthTest);

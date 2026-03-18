@@ -26,7 +26,7 @@ public class GuiAchievement : Gui
     public GuiAchievement(BetaSharp game)
     {
         _theGame = game;
-        _itemRender = new ItemRenderer();
+        _itemRender = new ItemRenderer(game);
     }
 
     public void queueTakenAchievement(Achievement achievement)

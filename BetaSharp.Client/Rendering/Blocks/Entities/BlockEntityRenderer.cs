@@ -83,7 +83,7 @@ public class BlockEntityRenderer
     public void RenderTileEntityAt(BlockEntity var1, double var2, double var4, double var6, float var8)
     {
         BlockEntitySpecialRenderer? var9 = GetSpecialRendererForEntity(var1);
-        var9?.renderTileEntityAt(var1, var2, var4, var6, var8);
+        var9?.renderTileEntityAt(var1,TextureManager, var2, var4, var6, var8);
 
     }
 

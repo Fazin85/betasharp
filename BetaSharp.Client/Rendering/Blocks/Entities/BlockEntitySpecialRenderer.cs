@@ -8,7 +8,7 @@ public abstract class BlockEntitySpecialRenderer
 {
     protected BlockEntityRenderer tileEntityRenderer;
 
-    public abstract void renderTileEntityAt(BlockEntity blockEntity, double x, double y, double z, float tickDelta);
+    public abstract void renderTileEntityAt(BlockEntity blockEntity,TextureManager textureManager, double x, double y, double z, float tickDelta);
 
     protected void bindTextureByName(string var1)
     {

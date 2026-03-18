@@ -3,6 +3,7 @@ using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Rendering.Blocks.Renderers;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Core.OpenGL;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Client.Rendering.Blocks.Entities;
@@ -12,7 +13,7 @@ public class BlockEntityRendererPiston : BlockEntitySpecialRenderer
     private readonly PistonBaseRenderer _pistonBaseRenderer = new();
     private readonly PistonExtensionRenderer _pistonExtensionRenderer = new();
 
-    public override void renderTileEntityAt(BlockEntity blockEntity, double x, double y, double z, float tickDelta)
+    public override void renderTileEntityAt(BlockEntity blockEntity, TextureManager textureManager, double x, double y, double z, float tickDelta)
     {
         if (blockEntity is not BlockEntityPiston piston)
         {
@@ -44,6 +45,7 @@ public class BlockEntityRendererPiston : BlockEntitySpecialRenderer
                 world: piston.World,
                 tess: tess,
                 renderAllFaces: true,
+                textureManager:textureManager,
                 aoBlendMode: BetaSharp.isAmbientOcclusionEnabled() ? 1 : 0
             );
 

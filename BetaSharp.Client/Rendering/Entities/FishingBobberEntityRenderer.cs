@@ -1,6 +1,7 @@
 using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Core.OpenGL;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 
@@ -8,7 +9,6 @@ namespace BetaSharp.Client.Rendering.Entities;
 
 public class FishingBobberEntityRenderer : EntityRenderer
 {
-
     public void render(EntityFish var1, double x, double y, double z, float yaw, float tickDelta)
     {
         GLManager.GL.PushMatrix();
@@ -84,10 +84,9 @@ public class FishingBobberEntityRenderer : EntityRenderer
             GLManager.GL.Enable(GLEnum.Lighting);
             GLManager.GL.Enable(GLEnum.Texture2D);
         }
-
     }
 
-    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
+    public override void render(Entity target, TextureManager _, double x, double y, double z, float yaw, float tickDelta)
     {
         render((EntityFish)target, x, y, z, yaw, tickDelta);
     }

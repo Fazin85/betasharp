@@ -4,6 +4,7 @@ using BetaSharp.Client.Guis;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Core.OpenGL;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Entities.Models;
 using BetaSharp.Entities;
 using BetaSharp.Items;
@@ -13,7 +14,6 @@ namespace BetaSharp.Client.Rendering.Entities;
 
 public class PlayerEntityRenderer : LivingEntityRenderer
 {
-
     private readonly ModelBiped modelBipedMain;
     private readonly ModelBiped modelArmorChestplate = new(1.0F);
     private readonly ModelBiped modelArmor = new(0.5F);
@@ -122,7 +122,6 @@ public class PlayerEntityRenderer : LivingEntityRenderer
                 }
             }
         }
-
     }
 
     protected void renderSpecials(EntityPlayer var1, float var2)
@@ -255,7 +254,6 @@ public class PlayerEntityRenderer : LivingEntityRenderer
             Dispatcher.heldItemRenderer.renderItem(var1, var21);
             GLManager.GL.PopMatrix();
         }
-
     }
 
     protected void func_186_b(EntityPlayer var1, float var2)
@@ -281,7 +279,6 @@ public class PlayerEntityRenderer : LivingEntityRenderer
         {
             base.func_22012_b(var1, var2, var4, var6);
         }
-
     }
 
     protected void func_22017_a(EntityPlayer var1, float var2, float var3, float var4)
@@ -296,7 +293,6 @@ public class PlayerEntityRenderer : LivingEntityRenderer
         {
             base.rotateCorpse(var1, var2, var3, var4);
         }
-
     }
 
     protected override void passSpecialRender(EntityLiving var1, double var2, double var4, double var6)
@@ -334,7 +330,7 @@ public class PlayerEntityRenderer : LivingEntityRenderer
         renderPlayer((EntityPlayer)var1, var2, var4, var6, var8, var9);
     }
 
-    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
+    public override void render(Entity target, TextureManager _, double x, double y, double z, float yaw, float tickDelta)
     {
         renderPlayer((EntityPlayer)target, x, y, z, yaw, tickDelta);
     }

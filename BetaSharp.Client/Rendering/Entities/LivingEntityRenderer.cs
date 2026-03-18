@@ -1,6 +1,7 @@
 using BetaSharp.Client.Guis;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Core.OpenGL;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Entities.Models;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
@@ -11,7 +12,6 @@ namespace BetaSharp.Client.Rendering.Entities;
 
 public class LivingEntityRenderer : EntityRenderer
 {
-
     protected ModelBase mainModel;
     protected ModelBase renderPassModel;
     private readonly ILogger<LivingEntityRenderer> _logger = Log.Instance.For<LivingEntityRenderer>();
@@ -159,7 +159,6 @@ public class LivingEntityRenderer : EntityRenderer
 
             GLManager.GL.Rotate(var5 * getDeathMaxRotation(var1), 0.0F, 0.0F, 1.0F);
         }
-
     }
 
     protected float func_167_c(EntityLiving var1, float var2)
@@ -206,7 +205,6 @@ public class LivingEntityRenderer : EntityRenderer
         {
             renderLivingLabel(var1, var1.id.ToString(), var2, var4, var6, 64);
         }
-
     }
 
     protected void renderLivingLabel(EntityLiving var1, string var2, double var3, double var5, double var7, int var9)
@@ -256,7 +254,7 @@ public class LivingEntityRenderer : EntityRenderer
         }
     }
 
-    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
+    public override void render(Entity target, TextureManager _, double x, double y, double z, float yaw, float tickDelta)
     {
         doRenderLiving((EntityLiving)target, x, y, z, yaw, tickDelta);
     }

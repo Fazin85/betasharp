@@ -1,3 +1,4 @@
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Entities.Models;
 using BetaSharp.Entities;
 
@@ -5,7 +6,6 @@ namespace BetaSharp.Client.Rendering.Entities;
 
 public class WolfEntityRenderer : LivingEntityRenderer
 {
-
     public WolfEntityRenderer(ModelBase mainModel, float shadowRadius) : base(mainModel, shadowRadius)
     {
     }
@@ -39,7 +39,7 @@ public class WolfEntityRenderer : LivingEntityRenderer
         renderWolf((EntityWolf)var1, var2, var4, var6, var8, var9);
     }
 
-    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
+    public override void render(Entity target, TextureManager _, double x, double y, double z, float yaw, float tickDelta)
     {
         renderWolf((EntityWolf)target, x, y, z, yaw, tickDelta);
     }

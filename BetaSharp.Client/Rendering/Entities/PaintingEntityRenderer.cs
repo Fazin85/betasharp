@@ -1,5 +1,6 @@
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Core.OpenGL;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 
@@ -7,7 +8,7 @@ namespace BetaSharp.Client.Rendering.Entities;
 
 public class PaintingEntityRenderer : EntityRenderer
 {
-    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
+    public override void render(Entity target, TextureManager _, double x, double y, double z, float yaw, float tickDelta)
     {
         RenderPainting((EntityPainting)target, x, y, z, yaw);
     }
@@ -124,6 +125,4 @@ public class PaintingEntityRenderer : EntityRenderer
         float light = Dispatcher.world.getLuminance(checkX, checkY, checkZ);
         GLManager.GL.Color3(light, light, light);
     }
-
-
 }
