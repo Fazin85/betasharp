@@ -32,7 +32,16 @@ internal sealed partial class HostingViewModel(ProcessService processService, Na
     {
         if (IsRunning)
         {
+            ArgumentNullException.ThrowIfNull(_process);
+
+            await WriteAsync("stop");
+
+            await _process
+                .WaitForExitAsync()
+                .WaitAsync(TimeSpan.FromSeconds(5));
+
             Stop();
+
             return;
         }
 
@@ -58,16 +67,7 @@ internal sealed partial class HostingViewModel(ProcessService processService, Na
     [RelayCommand]
     private async Task WriteAsync()
     {
-        if (string.IsNullOrWhiteSpace(Input))
-        {
-            return;
-        }
-
-        ArgumentNullException.ThrowIfNull(_process);
-
-        await _process.StandardInput.WriteLineAsync(Input);
-        await _process.StandardInput.FlushAsync();
-
+        await WriteAsync(Input);
         Input = string.Empty;
     }
 
@@ -85,28 +85,42 @@ internal sealed partial class HostingViewModel(ProcessService processService, Na
 
     private void Stop()
     {
-        ArgumentNullException.ThrowIfNull(_process);
-
         Message = "Stopping";
 
-        try
+        if (_process is not null)
         {
-            _process.Exited -= OnExited;
-            _process.OutputDataReceived -= OnOutputDataReceived;
+            try
+            {
+                _process.Exited -= OnExited;
+                _process.OutputDataReceived -= OnOutputDataReceived;
 
-            _process.CancelOutputRead();
+                _process.CancelOutputRead();
 
-            _process.Kill();
-        }
-        finally
-        {
-            _process.Dispose();
-            _process = null;
+                _process.Kill();
+            }
+            finally
+            {
+                _process.Dispose();
+                _process = null;
+            }
         }
 
         Message = "Run";
 
         IsRunning = false;
+    }
+
+    private async Task WriteAsync(string? input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return;
+        }
+
+        ArgumentNullException.ThrowIfNull(_process);
+
+        await _process.StandardInput.WriteLineAsync(input);
+        await _process.StandardInput.FlushAsync();
     }
 
     private void OnOutputDataReceived(object sender, DataReceivedEventArgs eventArgs)
