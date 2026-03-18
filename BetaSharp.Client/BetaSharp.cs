@@ -162,6 +162,21 @@ public partial class BetaSharp
     {
         hasCrashed = true;
         _logger.LogError(crashInfo, "BetaSharp has crashed!");
+
+        // Also write a crash file here (in addition to Log's UnhandledException hook),
+        // because most crashes on Linux happen inside the main loop where we catch exceptions.
+        try
+        {
+            string baseDir = PathHelper.GetAppDir(nameof(BetaSharp));
+            string crashDir = Path.Combine(baseDir, "logs", "crashes");
+            Directory.CreateDirectory(crashDir);
+            string path = Path.Combine(crashDir, $"{DateTime.Now:yyyy-MM-dd_HH.mm.ss}.log");
+            File.WriteAllText(path, crashInfo.ToString());
+        }
+        catch
+        {
+            // Best-effort only.
+        }
     }
 
     public unsafe void startGame()
@@ -1752,7 +1767,12 @@ public partial class BetaSharp
         int slashIndex = resourcePath.IndexOf("/");
         string category = resourcePath.Substring(0, slashIndex);
         resourcePath = resourcePath.Substring(slashIndex + 1);
-        if (category.StartsWith("sound", StringComparison.OrdinalIgnoreCase))
+
+        // Legacy resources use both "sound/" and "newsound/" prefixes.
+        // Treat both as regular sound effects so keys like "random.click"
+        // (which live under newsound/random/click.ogg) are registered.
+        if (category.StartsWith("sound", StringComparison.OrdinalIgnoreCase) ||
+            category.StartsWith("newsound", StringComparison.OrdinalIgnoreCase))
         {
             sndManager.AddSound(resourcePath, resourceFile);
         }

@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using BetaSharp.Network.Packets;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace BetaSharp.Network;
 
@@ -180,8 +181,6 @@ public class Connection
                     disconnect("disconnect.endOfStream");
                     break;
                 }
-
-                Task.Delay(10);
             }
             catch (Exception exception)
             {
@@ -200,6 +199,7 @@ public class Connection
                 ArgumentNullException.ThrowIfNull(_networkStream);
 
                 Packet? packet;
+                bool wrote = false;
 
                 if (!sendQueue.IsEmpty)
                 {
@@ -212,6 +212,7 @@ public class Connection
 
                     Packet.Write(packet, _networkStream);
                     packet.Return();
+                    wrote = true;
                 }
 
                 if (!delayedSendQueue.IsEmpty && _delay-- <= 0)
@@ -227,11 +228,18 @@ public class Connection
 
                     Packet.Write(packet, _networkStream);
                     packet.Return();
+                    wrote = true;
                 }
 
-                _networkStream.Flush();
-
-                Task.Delay(10);
+                if (wrote)
+                {
+                    _networkStream.Flush();
+                }
+                else
+                {
+                    // Prevent a tight spin-loop when there's nothing to send.
+                    Thread.Sleep(1);
+                }
             }
             catch (Exception exception)
             {

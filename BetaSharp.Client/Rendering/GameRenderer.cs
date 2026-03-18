@@ -31,6 +31,8 @@ public class GameRenderer
     private Entity _targetedEntity;
     private readonly MouseFilter _mouseFilterXAxis = new();
     private readonly MouseFilter _mouseFilterYAxis = new();
+    private readonly FrustrumCuller _frustrumCuller = new();
+    private readonly List<Entity> _scratchTargetEntities = new();
 
     private long _prevFrameTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
 ;
@@ -97,7 +99,13 @@ public class GameRenderer
         _targetedEntity = null;
 
         float searchMargin = 1.0F;
-        List<Entity> entities = _client.world.getEntities(_client.camera, _client.camera.boundingBox.Stretch(lookVec.x * reachDistance, lookVec.y * reachDistance, lookVec.z * reachDistance).Expand((double)searchMargin, (double)searchMargin, (double)searchMargin));
+        _scratchTargetEntities.Clear();
+        List<Entity> entities = _client.world.getEntities(
+            _client.camera,
+            _client.camera.boundingBox
+                .Stretch(lookVec.x * reachDistance, lookVec.y * reachDistance, lookVec.z * reachDistance)
+                .Expand((double)searchMargin, (double)searchMargin, (double)searchMargin),
+            _scratchTargetEntities);
 
         double closestDistance = 0.0D;
         for (int i = 0; i < entities.Count; ++i)
@@ -379,8 +387,7 @@ public class GameRenderer
         GLManager.GL.Enable(GLEnum.Fog);
         applyFog(1);
 
-        FrustrumCuller frustrumCuller = new();
-        frustrumCuller.setPosition(entX, entY, entZ);
+        _frustrumCuller.setPosition(entX, entY, entZ);
 
         applyFog(0);
         GLManager.GL.Enable(GLEnum.Fog);
@@ -388,14 +395,14 @@ public class GameRenderer
         Lighting.turnOff();
 
         Profiler.Start("sortAndRender");
-        worldRenderer.sortAndRender(entity, 0, (double)tickDelta, frustrumCuller);
+        worldRenderer.sortAndRender(entity, 0, (double)tickDelta, _frustrumCuller);
         Profiler.Stop("sortAndRender");
 
         GLManager.GL.ShadeModel(GLEnum.Flat);
         Lighting.turnOn();
 
         Profiler.Start("renderEntities");
-        worldRenderer.renderEntities(entity.getPosition(tickDelta), frustrumCuller, tickDelta);
+        worldRenderer.renderEntities(entity.getPosition(tickDelta), _frustrumCuller, tickDelta);
         Profiler.Stop("renderEntities");
 
         particleManager.func_1187_b(entity, tickDelta);
@@ -425,7 +432,7 @@ public class GameRenderer
 
         Profiler.Start("sortAndRender2");
 
-        worldRenderer.sortAndRender(entity, 1, tickDelta, frustrumCuller);
+        worldRenderer.sortAndRender(entity, 1, tickDelta, _frustrumCuller);
 
         GLManager.GL.ShadeModel(GLEnum.Flat);
 

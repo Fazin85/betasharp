@@ -37,6 +37,28 @@ cd BetaSharp.(Launcher/Client/Server)
 dotnet build
 ```
 
+## Notes (Fork fixes)
+
+This fork includes a couple of pragmatic fixes for common real-world issues when running Beta 1.7.3 content on modern networks/servers.
+
+### Sounds / SFX only music playing
+
+If you only hear music but not sound effects, the classic Beta resource bucket (`MinecraftResources`) wasn’t being downloaded, so `sound/` never gets installed into the client sound pools.
+
+- **Fix**: `BetaSharp.Client/Resource/BetaResourceDownloader.cs` now downloads legacy resources **through the Betacraft proxy by default** (`betacraft.uk:11705`), with direct HTTPS as a fallback. This makes `sound/` and `streaming/` assets reliably load on networks where direct access is blocked.
+
+### Crash on joining vanilla Beta 1.7.3 servers (Linux)
+
+Some servers/plugins can send entity tracker metadata updates before the corresponding entity spawn packet arrives. This caused a client crash (NRE) and an immediate disconnect (`disconnect.endOfStream` on the server).
+
+- **Fix**: `BetaSharp.Client/Network/ClientNetworkHandler.cs` now guards `onEntityTrackerUpdate` and buffers a small number of tracker updates until the entity exists, applying them after spawn. Tracker updates are also applied defensively to avoid crashing on unexpected metadata.
+
+### Performance tweaks
+
+- **Targeting allocations**: `GameRenderer.UpdateTargetedEntity` now reuses a scratch entity list instead of allocating a new `List<Entity>` every frame for crosshair targeting.
+- **Chunk render stats cost**: `ChunkRenderer` no longer scans all subchunks every frame just to compute frustum stats; instead it samples every few frames, which reduces O(N) work on large view distances while keeping debug info useful.
+- **Frustum culler reuse**: `GameRenderer` now reuses a single `FrustrumCuller` instance across frames instead of allocating a new one each frame.
+
 ## Contributing
 
 Contributions are welcome! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests.
