@@ -200,15 +200,17 @@ public class SoundManager
 
             if (soundChannels[i].Status == SoundStatus.Stopped)
             {
-                soundChannels[i].SoundBuffer = buffer;
+                soundChannels[i].Dispose();
+                soundChannels[i] = new SFML.Audio.Sound(buffer);
                 return soundChannels[i];
             }
         }
 
         SFML.Audio.Sound stolen = soundChannels[0];
         stolen.Stop();
-        stolen.SoundBuffer = buffer;
-        return stolen;
+        stolen.Dispose();
+        soundChannels[0] = new SFML.Audio.Sound(buffer);
+        return soundChannels[0];
     }
 
     public void PlayRandomMusicIfReady(ResourceLocation category)
@@ -317,10 +319,19 @@ public class SoundManager
         _currentStreaming = new Music(SanitizePath(entry.SoundUrl.LocalPath))
         {
             Volume = 0.5F * _options.SoundVolume * 100.0F,
-            IsLooping = false,
-            RelativeToListener = false,
-            Position = new(x, y, z)
+            IsLooping = false
         };
+
+        if (OperatingSystem.IsMacOS())
+        {
+            _currentStreaming.RelativeToListener = true;
+            _currentStreaming.Position = new Vector3f(0.0F, 0.0F, 0.0F);
+        }
+        else
+        {
+            _currentStreaming.RelativeToListener = false;
+            _currentStreaming.Position = new Vector3f(x, y, z);
+        }
 
         _currentStreaming.Play();
     }
@@ -337,7 +348,7 @@ public class SoundManager
 
         SFML.Audio.Sound sound = getFreeSoundChannel(buffer);
 
-        if (buffer.ChannelCount > 1)
+        if (OperatingSystem.IsMacOS() || buffer.ChannelCount > 1)
         {
             sound.RelativeToListener = true;
             sound.Position = new Vector3f(0.0F, 0.0F, 0.0F);
