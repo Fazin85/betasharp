@@ -44,6 +44,11 @@ public class ClientNetworkHandler : NetHandler
     private int ticks;
     private int lastKeepAliveTime;
 
+    // Some servers/plugins may send tracker updates before the corresponding spawn packet arrives.
+    // Buffer a small number per-entity to avoid crashing/desync.
+    private readonly Dictionary<int, Queue<byte[]>> _pendingTrackerUpdates = new();
+    private const int MaxPendingTrackerUpdatesPerEntity = 8;
+
     public ClientNetworkHandler(BetaSharp game, string address, int port)
     {
         this._game = game;
@@ -244,6 +249,7 @@ public class ClientNetworkHandler : NetHandler
     {
         EntityPainting ent = new(worldClient, packet.xPosition, packet.yPosition, packet.zPosition, packet.direction, packet.title);
         worldClient.ForceEntity(packet.entityId, ent);
+        ApplyPendingTrackerUpdates(ent);
     }
 
     public override void onEntityVelocityUpdate(EntityVelocityUpdateS2CPacket packet)
@@ -258,7 +264,26 @@ public class ClientNetworkHandler : NetHandler
     public override void onEntityTrackerUpdate(EntityTrackerUpdateS2CPacket packet)
     {
         Entity ent = getEntityByID(packet.EntityId);
-        ent.DataSynchronizer.ApplyChanges(new MemoryStream(packet.Data));
+        if (ent == null)
+        {
+            // Entity not known yet; buffer update (bounded) and apply after spawn.
+            if (!_pendingTrackerUpdates.TryGetValue(packet.EntityId, out Queue<byte[]>? q))
+            {
+                q = new Queue<byte[]>();
+                _pendingTrackerUpdates[packet.EntityId] = q;
+            }
+
+            if (q.Count >= MaxPendingTrackerUpdatesPerEntity)
+            {
+                q.Dequeue();
+            }
+
+            // Packet.Data comes from ReadUntil and is unique per packet; safe to keep reference.
+            q.Enqueue(packet.Data);
+            return;
+        }
+
+        ApplyTrackerUpdate(ent, packet.Data);
     }
 
     public override void onPlayerSpawn(PlayerSpawnS2CPacket packet)
@@ -284,6 +309,7 @@ public class ClientNetworkHandler : NetHandler
 
         ent.setPositionAndAngles(x, y, z, rotation, pitch);
         worldClient.ForceEntity(packet.entityId, ent);
+        ApplyPendingTrackerUpdates(ent);
     }
 
     public override void onEntityPosition(EntityPositionS2CPacket packet)
@@ -548,7 +574,33 @@ public class ClientNetworkHandler : NetHandler
         ent.setPositionAndAngles(x, y, z, yaw, pitch);
         ent.interpolateOnly = true;
         worldClient.ForceEntity(packet.entityId, ent);
-        ent.DataSynchronizer.ApplyChanges(new MemoryStream(packet.Data));
+        ApplyTrackerUpdate(ent, packet.Data);
+        ApplyPendingTrackerUpdates(ent);
+    }
+
+    private void ApplyTrackerUpdate(Entity entity, byte[] data)
+    {
+        try
+        {
+            entity.DataSynchronizer.ApplyChanges(new MemoryStream(data));
+        }
+        catch (Exception ex)
+        {
+            // Never crash the client because a server sent unexpected tracker metadata.
+            _logger.LogWarning(ex, $"Failed to apply entity tracker update for id={entity.id} type={entity.GetType().Name}");
+        }
+    }
+
+    private void ApplyPendingTrackerUpdates(Entity entity)
+    {
+        if (_pendingTrackerUpdates.TryGetValue(entity.id, out Queue<byte[]>? q))
+        {
+            _pendingTrackerUpdates.Remove(entity.id);
+            while (q.Count > 0)
+            {
+                ApplyTrackerUpdate(entity, q.Dequeue());
+            }
+        }
     }
 
     public override void onWorldTimeUpdate(WorldTimeUpdateS2CPacket packet)

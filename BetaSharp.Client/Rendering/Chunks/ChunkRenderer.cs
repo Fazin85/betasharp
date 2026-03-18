@@ -177,19 +177,25 @@ public class ChunkRenderer : IChunkVisibilityVisitor
 
         AddNearbySections(cameraChunkPos, _frameIndex, renderParams.Camera);
 
-        int frustumCount = 0;
         int visitedVisibleCount = _visibleRenderers.Count;
 
-        foreach (SubChunkState state in _renderers.Values)
+        // Full frustum stats scan is only needed for debug; sampling every few frames
+        // avoids an O(N) walk over all subchunks every frame.
+        if (_frameIndex % 8 == 0)
         {
-            if (renderParams.Camera.isBoundingBoxInFrustum(state.Renderer.BoundingBox))
+            int frustumCount = 0;
+            foreach (SubChunkState state in _renderers.Values)
             {
-                frustumCount++;
+                if (renderParams.Camera.isBoundingBoxInFrustum(state.Renderer.BoundingBox))
+                {
+                    frustumCount++;
+                }
             }
+
+            ChunksInFrustum = frustumCount;
+            ChunksOccluded = frustumCount - visitedVisibleCount;
         }
 
-        ChunksInFrustum = frustumCount;
-        ChunksOccluded = frustumCount - visitedVisibleCount;
         ChunksRendered = visitedVisibleCount;
 
         if (renderParams.RenderOccluded)

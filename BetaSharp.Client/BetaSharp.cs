@@ -162,6 +162,21 @@ public partial class BetaSharp
     {
         hasCrashed = true;
         _logger.LogError(crashInfo, "BetaSharp has crashed!");
+
+        // Also write a crash file here (in addition to Log's UnhandledException hook),
+        // because most crashes on Linux happen inside the main loop where we catch exceptions.
+        try
+        {
+            string baseDir = PathHelper.GetAppDir(nameof(BetaSharp));
+            string crashDir = Path.Combine(baseDir, "logs", "crashes");
+            Directory.CreateDirectory(crashDir);
+            string path = Path.Combine(crashDir, $"{DateTime.Now:yyyy-MM-dd_HH.mm.ss}.log");
+            File.WriteAllText(path, crashInfo.ToString());
+        }
+        catch
+        {
+            // Best-effort only.
+        }
     }
 
     public unsafe void startGame()
@@ -313,7 +328,7 @@ public partial class BetaSharp
         textureManager.AddDynamicTexture(new FireSprite(0));
         textureManager.AddDynamicTexture(new FireSprite(1));
         terrainRenderer = new WorldRenderer(this, textureManager);
-        GLManager.GL.Viewport(0, 0, (uint)displayWidth, (uint)displayHeight);
+        GLManager.GL.Viewport(0, 0, (uint)Display.getFramebufferWidth(), (uint)Display.getFramebufferHeight());
         particleManager = new ParticleManager(world, textureManager);
 
         string dataDirPath = gameDataDir;
@@ -330,7 +345,7 @@ public partial class BetaSharp
 
         checkGLError("Post startup");
         ingameGUI = new GuiIngame(this);
-        PostProcessManager = new PostProcessManager(displayWidth, displayHeight, options);
+        PostProcessManager = new PostProcessManager(Display.getFramebufferWidth(), Display.getFramebufferHeight(), options);
 
         statFileWriter.ReadStat(Stats.Stats.StartGameStat, 1);
         if (serverName != null)
@@ -353,7 +368,7 @@ public partial class BetaSharp
         GLManager.GL.MatrixMode(GLEnum.Modelview);
         GLManager.GL.LoadIdentity();
         GLManager.GL.Translate(0.0F, 0.0F, -2000.0F);
-        GLManager.GL.Viewport(0, 0, (uint)displayWidth, (uint)displayHeight);
+        GLManager.GL.Viewport(0, 0, (uint)Display.getFramebufferWidth(), (uint)Display.getFramebufferHeight());
         GLManager.GL.ClearColor(0.0F, 0.0F, 0.0F, 0.0F);
         Tessellator tessellator = Tessellator.instance;
         GLManager.GL.Disable(GLEnum.Lighting);
@@ -878,17 +893,19 @@ public partial class BetaSharp
             if (!isTakingScreenshot)
             {
                 isTakingScreenshot = true;
-                int size = displayWidth * displayHeight * 3;
+                int fbWidth = Display.getFramebufferWidth();
+                int fbHeight = Display.getFramebufferHeight();
+                int size = fbWidth * fbHeight * 3;
                 byte[] pixels = new byte[size];
                 GLManager.GL.PixelStore(PixelStoreParameter.PackAlignment, 1);
                 unsafe
                 {
                     fixed (byte* p = pixels)
                     {
-                        GLManager.GL.ReadPixels(0, 0, (uint)displayWidth, (uint)displayHeight, PixelFormat.Rgb, PixelType.UnsignedByte, p);
+                        GLManager.GL.ReadPixels(0, 0, (uint)fbWidth, (uint)fbHeight, PixelFormat.Rgb, PixelType.UnsignedByte, p);
                     }
                 }
-                string result = ScreenShotHelper.saveScreenshot(gameDataDir, displayWidth, displayHeight, pixels);
+                string result = ScreenShotHelper.saveScreenshot(gameDataDir, fbWidth, fbHeight, pixels);
                 ingameGUI.addChatMessage(result);
             }
         }
@@ -1154,8 +1171,8 @@ public partial class BetaSharp
 
                 Display.setDisplayMode(Display.getDesktopDisplayMode());
                 Display.setFullscreen(true);
-                displayWidth = Display.getDisplayMode().getWidth();
-                displayHeight = Display.getDisplayMode().getHeight();
+                displayWidth = Display.getWidth();
+                displayHeight = Display.getHeight();
                 if (displayWidth <= 0)
                 {
                     displayWidth = 1;
@@ -1236,7 +1253,7 @@ public partial class BetaSharp
             currentScreen.SetWorldAndResolution(this, scaledWidth, scaledHeight);
         }
 
-        PostProcessManager.Resize(displayWidth, displayHeight);
+        PostProcessManager.Resize(Display.getFramebufferWidth(), Display.getFramebufferHeight());
     }
 
     public void ClickMiddleMouseButton()
@@ -1740,32 +1757,30 @@ public partial class BetaSharp
 
     public void installResource(string resourcePath, FileInfo resourceFile)
     {
-        if (!resourceFile.FullName.EndsWith("ogg"))
+        string extension = resourceFile.Extension.ToLowerInvariant();
+        if (extension != ".ogg" && extension != ".wav")
         {
-            //TODO: ADD SUPPORT FOR MUS SFX?
+            // Ignore non-audio files (like .mus or .txt)
             return;
         }
 
         int slashIndex = resourcePath.IndexOf("/");
         string category = resourcePath.Substring(0, slashIndex);
         resourcePath = resourcePath.Substring(slashIndex + 1);
-        if (category.Equals("sound", StringComparison.OrdinalIgnoreCase))
+
+        // Legacy resources use both "sound/" and "newsound/" prefixes.
+        // Treat both as regular sound effects so keys like "random.click"
+        // (which live under newsound/random/click.ogg) are registered.
+        if (category.StartsWith("sound", StringComparison.OrdinalIgnoreCase) ||
+            category.StartsWith("newsound", StringComparison.OrdinalIgnoreCase))
         {
             sndManager.AddSound(resourcePath, resourceFile);
         }
-        else if (category.Equals("newsound", StringComparison.OrdinalIgnoreCase))
-        {
-            sndManager.AddSound(resourcePath, resourceFile);
-        }
-        else if (category.Equals("streaming", StringComparison.OrdinalIgnoreCase))
+        else if (category.StartsWith("streaming", StringComparison.OrdinalIgnoreCase))
         {
             sndManager.AddStreaming(resourcePath, resourceFile);
         }
-        else if (category.Equals("music", StringComparison.OrdinalIgnoreCase))
-        {
-            sndManager.AddMusic(DefaultMusicCategories.Game, resourcePath, resourceFile);
-        }
-        else if (category.Equals("newmusic", StringComparison.OrdinalIgnoreCase))
+        else if (category.StartsWith("music", StringComparison.OrdinalIgnoreCase))
         {
             sndManager.AddMusic(DefaultMusicCategories.Game, resourcePath, resourceFile);
         }

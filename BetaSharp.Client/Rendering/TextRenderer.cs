@@ -173,6 +173,17 @@ public class TextRenderer
         if (_glyphCache.TryGetValue(c, out GlyphInfo info))
             return info;
 
+        // Defensive: some servers/plugins may send control chars (including '\0') in kick messages/chat.
+        // Those can break font measurement/drawing on some platforms/drivers. Treat them as spaces.
+        if (char.IsControl(c))
+        {
+            c = ' ';
+            if (_glyphCache.TryGetValue(c, out info))
+                return info;
+        }
+
+        try
+        {
         ReadOnlySpan<char> charSpan = stackalloc char[] { c };
         FontRectangle advanceRect = TextMeasurer.MeasureAdvance(charSpan, _textOptions);
 
@@ -236,6 +247,22 @@ public class TextRenderer
         _glyphCache[c] = info;
         _atlasX += cellW;
         return info;
+        }
+        catch (Exception ex)
+        {
+            // Fallback to a safe ASCII glyph to avoid crashing the entire client on bad input.
+            _logger.LogWarning(ex, $"Failed to rasterize glyph U+{(int)c:X4}. Falling back to '?'");
+            char fallback = '?';
+            if (c == fallback)
+            {
+                // As an absolute last resort, return a 0-width glyph.
+                info = new GlyphInfo(0, 0, 0, 0, 0, 0, 0);
+                _glyphCache[c] = info;
+                return info;
+            }
+
+            return GetOrCreateGlyph(fallback);
+        }
     }
 
     private unsafe void UploadAtlasSubImage(int x, int y, int width, int height)
@@ -308,6 +335,7 @@ public class TextRenderer
 
         for (int i = 0; i < text.Length; ++i)
         {
+            // Handle Minecraft-style color codes. If a trailing '§' appears without a code, ignore it.
             for (; text.Length > i + 1 && text[i] == ColorCodeChar; i += 2)
             {
                 int colorCode = HexToDec(text[i + 1]);
@@ -316,6 +344,12 @@ public class TextRenderer
 
             if (i < text.Length)
             {
+                // Skip control characters (incl. '\0', '\r', etc.) to avoid platform-specific font issues.
+                if (char.IsControl(text[i]))
+                {
+                    continue;
+                }
+
                 GlyphInfo glyph = GetOrCreateGlyph(text[i]);
                 if (glyph.Width > 0 && glyph.Height > 0)
                 {

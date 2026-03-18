@@ -13,10 +13,10 @@ public class SoundManager
 
     private readonly Dictionary<ResourceLocation, MusicCategory> _musicCategories = [];
 
-    private readonly Dictionary<string, List<SoundBuffer>> _soundBuffers = [];
+    private readonly Dictionary<string, List<string>> _soundPaths = [];
 
-    private const int MaxChannels = 32;
-    private readonly SFML.Audio.Sound[] soundChannels = new SFML.Audio.Sound[MaxChannels];
+    private const int MaxChannels = 8;
+    private readonly SFML.Audio.Music[] soundChannels = new SFML.Audio.Music[MaxChannels];
 
     private int _soundSourceSuffix = 0;
     private GameOptions _options;
@@ -112,14 +112,7 @@ public class SoundManager
             }
         }
 
-        foreach (var bufferList in _soundBuffers.Values)
-        {
-            foreach (var buffer in bufferList)
-            {
-                buffer.Dispose();
-            }
-        }
-        _soundBuffers.Clear();
+        _soundPaths.Clear();
 
     }
 
@@ -161,25 +154,24 @@ public class SoundManager
 
         resourceName = resourceName.Replace("/", ".");
 
-        if (!_soundBuffers.TryGetValue(resourceName, out List<SoundBuffer>? value))
+        if (!_soundPaths.TryGetValue(resourceName, out List<string>? value))
         {
             value = [];
-            _soundBuffers[resourceName] = value;
+            _soundPaths[resourceName] = value;
         }
 
-        SoundBuffer buffer = new(filepath);
-        value.Add(buffer);
+        value.Add(filepath);
 
     }
 
-    private SoundBuffer getRandomSoundBuffer(string name)
+    private string getRandomSoundPath(string name)
     {
         if (name == null)
         {
             return null;
         }
 
-        if (!_soundBuffers.TryGetValue(name, out List<SoundBuffer>? value) || value.Count == 0)
+        if (!_soundPaths.TryGetValue(name, out List<string>? value) || value.Count == 0)
         {
             return null;
         }
@@ -188,27 +180,29 @@ public class SoundManager
         return value[index];
     }
 
-    private SFML.Audio.Sound getFreeSoundChannel(SoundBuffer buffer)
+    private SFML.Audio.Music getFreeSoundChannel(string filepath)
     {
         for (int i = 0; i < MaxChannels; i++)
         {
             if (soundChannels[i] == null)
             {
-                soundChannels[i] = new SFML.Audio.Sound(buffer);
+                soundChannels[i] = new SFML.Audio.Music(filepath);
                 return soundChannels[i];
             }
 
             if (soundChannels[i].Status == SoundStatus.Stopped)
             {
-                soundChannels[i].SoundBuffer = buffer;
+                soundChannels[i].Dispose();
+                soundChannels[i] = new SFML.Audio.Music(filepath);
                 return soundChannels[i];
             }
         }
 
-        SFML.Audio.Sound stolen = soundChannels[0];
+        SFML.Audio.Music stolen = soundChannels[0];
         stolen.Stop();
-        stolen.SoundBuffer = buffer;
-        return stolen;
+        stolen.Dispose();
+        soundChannels[0] = new SFML.Audio.Music(filepath);
+        return soundChannels[0];
     }
 
     public void PlayRandomMusicIfReady(ResourceLocation category)
@@ -317,10 +311,19 @@ public class SoundManager
         _currentStreaming = new Music(SanitizePath(entry.SoundUrl.LocalPath))
         {
             Volume = 0.5F * _options.SoundVolume * 100.0F,
-            IsLooping = false,
-            RelativeToListener = false,
-            Position = new(x, y, z)
+            IsLooping = false
         };
+
+        if (OperatingSystem.IsMacOS())
+        {
+            _currentStreaming.RelativeToListener = true;
+            _currentStreaming.Position = new Vector3f(0.0F, 0.0F, 0.0F);
+        }
+        else
+        {
+            _currentStreaming.RelativeToListener = false;
+            _currentStreaming.Position = new Vector3f(x, y, z);
+        }
 
         _currentStreaming.Play();
     }
@@ -329,16 +332,23 @@ public class SoundManager
     {
         if (!(_started && _options.SoundVolume != 0.0F)) return;
 
-        SoundBuffer buffer = getRandomSoundBuffer(name);
-        if (buffer == null || volume <= 0.0F) return;
-
+        string filepath = getRandomSoundPath(name);
+        if (filepath == null || volume <= 0.0F) return;
 
         _soundSourceSuffix = (_soundSourceSuffix + 1) % 256;
 
-        SFML.Audio.Sound sound = getFreeSoundChannel(buffer);
+        SFML.Audio.Music sound = getFreeSoundChannel(filepath);
 
-        sound.Position = new Vector3f(x, y, z);
-        sound.RelativeToListener = false;
+        if (OperatingSystem.IsMacOS())
+        {
+            sound.RelativeToListener = true;
+            sound.Position = new Vector3f(0.0F, 0.0F, 0.0F);
+        }
+        else
+        {
+            sound.Position = new Vector3f(x, y, z);
+            sound.RelativeToListener = false;
+        }
 
         float minDistance = 16.0F;
         if (volume > 1.0F)
@@ -364,12 +374,12 @@ public class SoundManager
     {
         if (!(_started && _options.SoundVolume != 0.0F)) return;
 
-        SoundBuffer buffer = getRandomSoundBuffer(name);
-        if (buffer == null) return;
+        string filepath = getRandomSoundPath(name);
+        if (filepath == null) return;
 
         _soundSourceSuffix = (_soundSourceSuffix + 1) % 256;
 
-        SFML.Audio.Sound sound = getFreeSoundChannel(buffer);
+        SFML.Audio.Music sound = getFreeSoundChannel(filepath);
 
         sound.RelativeToListener = true;
         sound.Position = new Vector3f(0.0F, 0.0F, 0.0F);
