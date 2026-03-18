@@ -43,7 +43,10 @@ public abstract class World : IWorldContext
         Pathing = new PathFinder(this);
         Storage = worldStorage;
         StateManager = new PersistentStateManager(worldStorage);
-        Properties = new WorldProperties(settings, levelName);
+
+        WorldProperties? loadedProperties = worldStorage.LoadProperties();
+        Properties = loadedProperties ?? new WorldProperties(settings, levelName);
+
         dimension = dim;
         dim.SetWorld(this);
 
