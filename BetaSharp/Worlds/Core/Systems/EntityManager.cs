@@ -551,6 +551,20 @@ public class EntityManager
         int maxY = MathHelper.Floor(area.MaxY + 1.0D);
         int minZ = MathHelper.Floor(area.MinZ);
         int maxZ = MathHelper.Floor(area.MaxZ + 1.0D);
+        if (minX > maxX)
+        {
+            (minX, maxX) = (maxX, minX);
+        }
+
+        if (minY > maxY)
+        {
+            (minY, maxY) = (maxY, minY);
+        }
+
+        if (minZ > maxZ)
+        {
+            (minZ, maxZ) = (maxZ, minZ);
+        }
 
         for (int x = minX; x < maxX; ++x)
         {

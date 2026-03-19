@@ -711,6 +711,31 @@ public abstract class EntityLiving : Entity
 
     public virtual void tickMovement()
     {
+        if (world.IsRemote && this is not EntityPlayer)
+        {
+            int minChunkX = MathHelper.Floor(boundingBox.MinX) >> 4;
+            int maxChunkX = MathHelper.Floor(boundingBox.MaxX) >> 4;
+            int minChunkZ = MathHelper.Floor(boundingBox.MinZ) >> 4;
+            int maxChunkZ = MathHelper.Floor(boundingBox.MaxZ) >> 4;
+
+            for (int chunkX = minChunkX; chunkX <= maxChunkX; ++chunkX)
+            {
+                for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ)
+                {
+                    var chunk = world.ChunkHost.GetChunk(chunkX, chunkZ);
+                    if (!chunk.Loaded)
+                    {
+                        jumping = false;
+                        sidewaysSpeed = 0.0F;
+                        forwardSpeed = 0.0F;
+                        rotationSpeed = 0.0F;
+                        velocityX = velocityY = velocityZ = 0.0D;
+                        return;
+                    }
+                }
+            }
+        }
+
         if (newPosRotationIncrements > 0)
         {
             double newX = x + (newPosX - x) / (double)newPosRotationIncrements;

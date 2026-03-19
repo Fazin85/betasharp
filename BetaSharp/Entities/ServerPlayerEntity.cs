@@ -26,6 +26,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     private const int MaxChunkPackets = 16;
     private readonly ItemStack?[] equipment = [null, null, null, null, null];
     public HashSet<ChunkPos> activeChunks = new();
+    public Dictionary<ChunkPos, long> ChunksTerrainSentToClient { get; } = [];
     public ServerPlayerInteractionManager interactionManager;
     private int joinInvulnerabilityTicks = 60;
     private int lastHealthScore = -99999999;
@@ -185,6 +186,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
                 }
 
                 SendChunkData(world, chunkPos);
+                ChunksTerrainSentToClient[chunkPos] = Environment.TickCount64;
                 SendBlockEntityUpdates(world, chunkPos);
             }
         }

@@ -150,6 +150,18 @@ internal class RegionChunkStorage : IChunkStorage
             chunk.SkyLight = new ChunkNibbleArray(chunk.Blocks.Length);
             chunk.PopulateHeightMap();
         }
+        else if (chunk.HeightMap.Length == 256)
+        {
+            // NBT bytes are unsigned in C#; corrupt or non-vanilla values >127 break spawn/light logic.
+            for (int i = 0; i < 256; i++)
+            {
+                if (chunk.HeightMap[i] > 127)
+                {
+                    chunk.PopulateHeightMapOnly();
+                    break;
+                }
+            }
+        }
 
         if (!chunk.BlockLight.IsInitialized)
         {

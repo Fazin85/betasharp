@@ -641,6 +641,7 @@ public class Chunk
         }
 
         Profiler.Stop(isFullChunk ? "loadFromPacketFull" : "loadFromPacketSmall");
+        Loaded = true;
         return offset;
     }
 

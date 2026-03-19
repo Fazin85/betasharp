@@ -52,8 +52,8 @@ public class PlayerManager
 
     public void updatePlayerAfterDimensionChange(ServerPlayerEntity player)
     {
-        // Removal from the source chunk map is handled by sendPlayerToDimension before coordinate scaling.
         player.activeChunks.Clear();
+        player.ChunksTerrainSentToClient.Clear();
         GetChunkMap(player.dimensionId).addPlayer(player);
         ServerWorld var2 = _server.getWorld(player.dimensionId);
         var2.ChunkCache.LoadChunk((int)player.x >> 4, (int)player.z >> 4);

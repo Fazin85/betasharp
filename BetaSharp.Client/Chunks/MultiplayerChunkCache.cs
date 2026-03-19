@@ -9,7 +9,10 @@ public class MultiplayerChunkCache(World world) : IChunkSource
     private readonly Chunk _empty = new EmptyChunk(world, new byte[-short.MinValue], 0, 0);
     private readonly Dictionary<ChunkPos, Chunk> _chunkByPos = [];
 
-    public bool IsChunkLoaded(int x, int y) => _chunkByPos.ContainsKey(new ChunkPos(x, y));
+    public bool IsChunkLoaded(int x, int z)
+    {
+        return _chunkByPos.ContainsKey(new ChunkPos(x, z));
+    }
 
     public void UnloadChunk(int x, int z)
     {
@@ -31,7 +34,10 @@ public class MultiplayerChunkCache(World world) : IChunkSource
         Array.Fill(chunk.SkyLight.Bytes, (byte)255);
         _chunkByPos[key] = chunk;
 
-        chunk.Loaded = true;
+        // Keep it "unloaded" until the server sends ChunkData / deltas.
+        // This prevents the client from running local physics/collision against
+        // an incomplete terrain state.
+        chunk.Loaded = false;
         return chunk;
     }
 

@@ -156,7 +156,9 @@ internal static class NaturalSpawner
                 {
                     EntityLiving entity = Monsters[r](world);
 
-                    entity.setPositionAndAnglesKeepPrevAngles(spawnX + 0.5D, spawnY, spawnZ + 0.5D,
+                    // Feet must be on the validated air column (newSpawnY), not random spawnY — spawnY
+                    // can be inside stone and collision resolution rockets mobs to the surface.
+                    entity.setPositionAndAnglesKeepPrevAngles(spawnX + 0.5D, newSpawnY, spawnZ + 0.5D,
                         world.Random.NextFloat() * 360.0F, 0.0F);
                     if (entity.canSpawn())
                     {

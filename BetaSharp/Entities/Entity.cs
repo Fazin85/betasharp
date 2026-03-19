@@ -283,6 +283,30 @@ public abstract class Entity
 
     public virtual void move(double x, double y, double z)
     {
+        // Client stability: mobs/items should not run local collision resolution
+        // against unloaded terrain (which can "deepen" them into blocks and then
+        // depenetrate upward). Only players are allowed to move normally.
+        if (world.IsRemote && this is not EntityPlayer)
+        {
+            int minChunkX = MathHelper.Floor(boundingBox.MinX) >> 4;
+            int maxChunkX = MathHelper.Floor(boundingBox.MaxX) >> 4;
+            int minChunkZ = MathHelper.Floor(boundingBox.MinZ) >> 4;
+            int maxChunkZ = MathHelper.Floor(boundingBox.MaxZ) >> 4;
+
+            for (int chunkX = minChunkX; chunkX <= maxChunkX; ++chunkX)
+            {
+                for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ)
+                {
+                    var chunk = world.ChunkHost.GetChunk(chunkX, chunkZ);
+                    if (!chunk.Loaded)
+                    {
+                        velocityX = velocityY = velocityZ = 0.0D;
+                        return;
+                    }
+                }
+            }
+        }
+
         if (noClip)
         {
             boundingBox.Translate(x, y, z);
@@ -833,8 +857,40 @@ public abstract class Entity
                 var4 *= (double)0.05F;
                 var2 *= (double)(1.0F - pushSpeedReduction);
                 var4 *= (double)(1.0F - pushSpeedReduction);
+                const double maxHorizontalImpulsePerCollision = 0.05D;
+                const double maxHorizontalSpeed = 0.05D;
+                if (var2 > maxHorizontalImpulsePerCollision) var2 = maxHorizontalImpulsePerCollision;
+                else if (var2 < -maxHorizontalImpulsePerCollision) var2 = -maxHorizontalImpulsePerCollision;
+
+                if (var4 > maxHorizontalImpulsePerCollision) var4 = maxHorizontalImpulsePerCollision;
+                else if (var4 < -maxHorizontalImpulsePerCollision) var4 = -maxHorizontalImpulsePerCollision;
+
+                double impulseMag = MathHelper.Sqrt(var2 * var2 + var4 * var4);
+                if (impulseMag > maxHorizontalImpulsePerCollision)
+                {
+                    double s = maxHorizontalImpulsePerCollision / impulseMag;
+                    var2 *= s;
+                    var4 *= s;
+                }
+
                 addVelocity(-var2, 0.0D, -var4);
                 entity.addVelocity(var2, 0.0D, var4);
+
+                double speedThis = MathHelper.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
+                if (speedThis > maxHorizontalSpeed)
+                {
+                    double s = maxHorizontalSpeed / speedThis;
+                    velocityX *= s;
+                    velocityZ *= s;
+                }
+
+                double speedOther = MathHelper.Sqrt(entity.velocityX * entity.velocityX + entity.velocityZ * entity.velocityZ);
+                if (speedOther > maxHorizontalSpeed)
+                {
+                    double s = maxHorizontalSpeed / speedOther;
+                    entity.velocityX *= s;
+                    entity.velocityZ *= s;
+                }
             }
 
         }
@@ -1296,12 +1352,18 @@ public abstract class Entity
 
     protected virtual bool pushOutOfBlocks(double x, double y, double z)
     {
+        // Only players should attempt "push out of blocks".
+        if (this is not EntityPlayer)
+        {
+            return false;
+        }
+
         int floorX = MathHelper.Floor(x);
         int floorY = MathHelper.Floor(y);
         int floorZ = MathHelper.Floor(z);
-        double fracX = x - (double)floorX;
-        double fracY = y - (double)floorY;
-        double fracZ = z - (double)floorZ;
+        double fracX = x - floorX;
+        double fracY = y - floorY;
+        double fracZ = z - floorZ;
         if (world.Reader.ShouldSuffocate(floorX, floorY, floorZ))
         {
             bool canPushWest = !world.Reader.ShouldSuffocate(floorX - 1, floorY, floorZ);

@@ -154,6 +154,12 @@ internal class ChunkMap
         return chunkMapping.TryGetValue(key, out TrackedChunk? trackedChunk) && trackedChunk != null && trackedChunk.HasPlayersAndHasBeenSent();
     }
 
+    internal static bool HasPlayerReceivedChunkTerrain(ServerPlayerEntity player, int chunkX, int chunkZ)
+    {
+        var pos = new ChunkPos(chunkX, chunkZ);
+        return player.ChunksTerrainSentToClient.ContainsKey(pos);
+    }
+
     public void OnChunkDecorated(int chunkX, int chunkZ)
     {
         long key = GetChunkHash(chunkX, chunkZ);

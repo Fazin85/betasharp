@@ -58,6 +58,11 @@ public class WorldReader : IBlockReader
 
     public bool ShouldSuffocate(int x, int y, int z)
     {
+        if (!IsPosLoaded(x, y, z))
+        {
+            return false;
+        }
+
         Block? block = Block.Blocks[GetBlockId(x, y, z)];
         return block != null && block.material.Suffocates && block.isFullCube();
     }
