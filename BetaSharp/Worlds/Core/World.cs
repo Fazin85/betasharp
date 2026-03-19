@@ -43,7 +43,15 @@ public abstract class World : IWorldContext
         StateManager = new PersistentStateManager(worldStorage);
 
         WorldProperties? loadedProperties = worldStorage.LoadProperties();
-        Properties = loadedProperties ?? new WorldProperties(settings, levelName);
+        bool shouldInitializeSpawn = loadedProperties == null;
+        if (loadedProperties == null)
+        {
+            Properties = new WorldProperties(settings, levelName);
+        }
+        else
+        {
+            Properties = loadedProperties;
+        }
 
         if (dim != null)
         {
@@ -58,16 +66,10 @@ public abstract class World : IWorldContext
             Dimension = Dimension.FromId(0);
         }
 
-        bool shouldInitializeSpawn = false;
-        if (Properties == null)
-        {
-            Properties = new WorldProperties(settings, levelName);
-            shouldInitializeSpawn = true;
-        }
-        else
-        {
-            Properties.LevelName = levelName;
-        }
+
+
+        Properties.LevelName = levelName;
+
 
         if (Dimension is OverworldDimension && Properties.TerrainType == WorldType.Sky)
         {
@@ -118,6 +120,13 @@ public abstract class World : IWorldContext
                 EventListeners[i].notifyEntityRemoved(ent);
             }
         };
+
+
+        if (shouldInitializeSpawn)
+        {
+            _logger.LogInformation("Initializing spawn point for new world");
+            InitializeSpawnPoint();
+        }
     }
 
     public ChunkHost BlockHost { get; }
@@ -199,27 +208,45 @@ public abstract class World : IWorldContext
     private void InitializeSpawnPoint()
     {
         EventProcessingEnabled = true;
-        int x = 0;
-        int y = 64;
-
-        int z;
-        for (
-            z = 0;
-            !Dimension.IsValidSpawnPoint(x, z);
-            z += Random.NextInt(64) - Random.NextInt(64))
+        try
         {
-            x += Random.NextInt(64) - Random.NextInt(64);
-        }
+            int x = 0;
+            int z = 0;
+            int y = 64;
 
-        if (Properties.TerrainType == WorldType.Sky)
+            const int maxAttempts = 512;
+            int attempts = 0;
+
+            while (!Dimension.IsValidSpawnPoint(x, z) && attempts++ < maxAttempts)
+            {
+                x += Random.NextInt(64) - Random.NextInt(64);
+                z += Random.NextInt(64) - Random.NextInt(64);
+            }
+
+            if (!Dimension.IsValidSpawnPoint(x, z))
+            {
+                x = 0;
+                z = 0;
+                UpdateSpawnPosition();
+                x = Properties.SpawnX;
+                z = Properties.SpawnZ;
+            }
+
+            if (Properties.TerrainType == WorldType.Sky)
+            {
+                int topY = Reader.GetTopSolidBlockY(x, z);
+                if (topY > 0)
+                {
+                    y = topY;
+                }
+            }
+
+            Properties.SetSpawn(x, y, z);
+        }
+        finally
         {
-            int topY = Reader.GetTopSolidBlockY(x, z);
-            if (topY > 0)
-                y = topY;
+            EventProcessingEnabled = false;
         }
-
-        Properties.SetSpawn(x, y, z);
-        EventProcessingEnabled = false;
     }
 
     public virtual void UpdateSpawnPosition()
