@@ -77,6 +77,11 @@ public class BlockRail : Block
         if (!@event.World.IsRemote)
         {
             updateShape(@event.World, @event.X, @event.Y, @event.Z, true);
+            if (id == PoweredRail.id)
+            {
+                int meta = @event.World.Reader.GetBlockMeta(@event.X, @event.Y, @event.Z);
+                neighborUpdate(new OnTickEvent(@event.World, @event.X, @event.Y, @event.Z, meta, id));
+            }
         }
     }
 
@@ -140,11 +145,9 @@ public class BlockRail : Block
 
                 if (stateChanged)
                 {
-                    @event.World.Broadcaster.NotifyNeighbors(@event.X, @event.Y - 1, @event.Z, id);
-                    if (railMeta == 2 || railMeta == 3 || railMeta == 4 || railMeta == 5)
-                    {
-                        @event.World.Broadcaster.NotifyNeighbors(@event.X, @event.Y + 1, @event.Z, id);
-                    }
+                    // Notify all six neighbors of the rail so horizontally adjacent powered rails
+                    // receive neighborUpdate and can propagate power along the line.
+                    @event.World.Broadcaster.NotifyNeighbors(@event.X, @event.Y, @event.Z, id);
                 }
             }
             else if (id > 0 && Blocks[id].canEmitRedstonePower() && !alwaysStraight && RailLogic.GetNAdjacentTracks(new RailLogic(this, @event.World, new Vec3i(@event.X, @event.Y, @event.Z))) == 3)
