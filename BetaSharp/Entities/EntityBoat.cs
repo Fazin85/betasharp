@@ -155,50 +155,53 @@ public class EntityBoat : Entity
         prevX = x;
         prevY = y;
         prevZ = z;
-        byte waterlevelSamples = 5;
-        double waterImmersionLevel = 0.0D;
+        byte var1 = 5;
+        double var2 = 0.0D;
 
-        for (int i = 0; i < waterlevelSamples; ++i)
+        for (int i = 0; i < var1; ++i)
         {
-            double checkMinY = boundingBox.MinY + (boundingBox.MaxY - boundingBox.MinY) * (double)(i + 0) / (double)waterlevelSamples - 0.125D;
-            double checkMaxY = boundingBox.MinY + (boundingBox.MaxY - boundingBox.MinY) * (double)(i + 1) / (double)waterlevelSamples - 0.125D;
-            Box checkBox = new Box(boundingBox.MinX, checkMinY, boundingBox.MinZ, boundingBox.MaxX, checkMaxY, boundingBox.MaxZ);
-            if (world.isFluidInBox(checkBox, Material.Water))
+            double var5 = boundingBox.MinY + (boundingBox.MaxY - boundingBox.MinY) * (double)(i + 0) / (double)var1 - 0.125D;
+            double var7 = boundingBox.MinY + (boundingBox.MaxY - boundingBox.MinY) * (double)(i + 1) / (double)var1 - 0.125D;
+            Box var9 = new Box(boundingBox.MinX, var5, boundingBox.MinZ, boundingBox.MaxX, var7, boundingBox.MaxZ);
+            if (world.isFluidInBox(var9, Material.Water))
             {
-                waterImmersionLevel += 1.0D / (double)waterlevelSamples;
+                var2 += 1.0D / (double)var1;
             }
         }
 
+        double var6;
+        double var8;
+        double var10;
+        double var21;
         if (world.isRemote)
         {
             if (lerpSteps > 0)
             {
-                double lerpedX = x + (targetX - x) / (double)lerpSteps;
-                double lerpedY = y + (targetY - y) / (double)lerpSteps;
-                double lerpedZ = z + (targetZ - z) / (double)lerpSteps;
+                var21 = x + (targetX - x) / (double)lerpSteps;
+                var6 = y + (targetY - y) / (double)lerpSteps;
+                var8 = z + (targetZ - z) / (double)lerpSteps;
 
-                double yawDelta;
-                for (yawDelta = this.targetYaw - (double)yaw; yawDelta < -180.0D; yawDelta += 360.0D)
+                for (var10 = this.targetYaw - (double)yaw; var10 < -180.0D; var10 += 360.0D)
                 {
                 }
 
-                while (yawDelta >= 180.0D)
+                while (var10 >= 180.0D)
                 {
-                    yawDelta -= 360.0D;
+                    var10 -= 360.0D;
                 }
 
-                yaw = (float)((double)yaw + yawDelta / (double)lerpSteps);
+                yaw = (float)((double)yaw + var10 / (double)lerpSteps);
                 pitch = (float)((double)pitch + (targetPitch - (double)pitch) / (double)lerpSteps);
                 --lerpSteps;
-                setPosition(lerpedX, lerpedY, lerpedZ);
+                setPosition(var21, var6, var8);
                 setRotation(yaw, pitch);
             }
             else
             {
-                double newX = x + velocityX;
-                double newY = y + velocityY;
-                double newZ = z + velocityZ;
-                setPosition(newX, newY, newZ);
+                var21 = x + velocityX;
+                var6 = y + velocityY;
+                var8 = z + velocityZ;
+                setPosition(var21, var6, var8);
                 if (onGround)
                 {
                     velocityX *= 0.5D;
@@ -214,10 +217,10 @@ public class EntityBoat : Entity
         }
         else
         {
-            if (waterImmersionLevel < 1.0D)
+            if (var2 < 1.0D)
             {
-                double buoyancyFactor = waterImmersionLevel * 2.0D - 1.0D;
-                velocityY += (double)0.04F * buoyancyFactor;
+                var21 = var2 * 2.0D - 1.0D;
+                velocityY += (double)0.04F * var21;
             }
             else
             {
@@ -235,25 +238,25 @@ public class EntityBoat : Entity
                 velocityZ += passenger.velocityZ * 0.2D;
             }
 
-            double maxHorizontalSpeed = 0.4D;
-            if (velocityX < -maxHorizontalSpeed)
+            var21 = 0.4D;
+            if (velocityX < -var21)
             {
-                velocityX = -maxHorizontalSpeed;
+                velocityX = -var21;
             }
 
-            if (velocityX > maxHorizontalSpeed)
+            if (velocityX > var21)
             {
-                velocityX = maxHorizontalSpeed;
+                velocityX = var21;
             }
 
-            if (velocityZ < -maxHorizontalSpeed)
+            if (velocityZ < -var21)
             {
-                velocityZ = -maxHorizontalSpeed;
+                velocityZ = -var21;
             }
 
-            if (velocityZ > maxHorizontalSpeed)
+            if (velocityZ > var21)
             {
-                velocityZ = maxHorizontalSpeed;
+                velocityZ = var21;
             }
 
             if (onGround)
@@ -264,13 +267,13 @@ public class EntityBoat : Entity
             }
 
             move(velocityX, velocityY, velocityZ);
-            double horizontalSpeed = System.Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
-            if (horizontalSpeed > 0.15D)
+            var6 = System.Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
+            if (var6 > 0.15D)
             {
-                double cosYaw = System.Math.Cos((double)yaw * System.Math.PI / 180.0D);
-                double sinYaw = System.Math.Sin((double)yaw * System.Math.PI / 180.0D);
+                var8 = System.Math.Cos((double)yaw * System.Math.PI / 180.0D);
+                var10 = System.Math.Sin((double)yaw * System.Math.PI / 180.0D);
 
-                for (int var12 = 0; (double)var12 < 1.0D + horizontalSpeed * 60.0D; ++var12)
+                for (int var12 = 0; (double)var12 < 1.0D + var6 * 60.0D; ++var12)
                 {
                     double randomOffset = (double)(random.NextFloat() * 2.0F - 1.0F);
                     double sideOffset = (double)(random.NextInt(2) * 2 - 1) * 0.7D;
@@ -278,20 +281,20 @@ public class EntityBoat : Entity
                     double particleZ;
                     if (random.NextBoolean())
                     {
-                        particleX = x - cosYaw * randomOffset * 0.8D + sinYaw * sideOffset;
-                        particleZ = z - sinYaw * randomOffset * 0.8D - cosYaw * sideOffset;
+                        particleX = x - var8 * randomOffset * 0.8D + var10 * sideOffset;
+                        particleZ = z - var10 * randomOffset * 0.8D - var8 * sideOffset;
                         world.addParticle("splash", particleX, y - 0.125D, particleZ, velocityX, velocityY, velocityZ);
                     }
                     else
                     {
-                        particleX = x + cosYaw + sinYaw * randomOffset * 0.7D;
-                        particleZ = z + sinYaw - cosYaw * randomOffset * 0.7D;
+                        particleX = x + var8 + var10 * randomOffset * 0.7D;
+                        particleZ = z + var10 - var8 * randomOffset * 0.7D;
                         world.addParticle("splash", particleX, y - 0.125D, particleZ, velocityX, velocityY, velocityZ);
                     }
                 }
             }
 
-            if (horizontalCollison && horizontalSpeed > 0.15D)
+            if (horizontalCollison && var6 > 0.15D)
             {
                 if (!world.isRemote)
                 {
@@ -317,16 +320,16 @@ public class EntityBoat : Entity
             }
 
             pitch = 0.0F;
-            double targetYawAngle = (double)yaw;
-            double dx = prevX - x;
-            double dz = prevZ - z;
-            if (dx * dx + dz * dz > 0.001D)
+            var8 = (double)yaw;
+            var10 = prevX - x;
+            double var23 = prevZ - z;
+            if (var10 * var10 + var23 * var23 > 0.001D)
             {
-                targetYawAngle = (double)((float)(System.Math.Atan2(dz, dx) * 180.0D / System.Math.PI));
+                var8 = (double)((float)(System.Math.Atan2(var23, var10) * 180.0D / System.Math.PI));
             }
 
             double yawDelta;
-            for (yawDelta = targetYawAngle - (double)yaw; yawDelta >= 180.0D; yawDelta -= 360.0D)
+            for (yawDelta = var8 - (double)yaw; yawDelta >= 180.0D; yawDelta -= 360.0D)
             {
             }
 

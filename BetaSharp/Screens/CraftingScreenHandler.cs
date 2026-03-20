@@ -27,27 +27,27 @@ public class CraftingScreenHandler : ScreenHandler
         this.z = z;
         AddSlot(new CraftingResultSlot(playerInventory.player, input, result, 0, 124, 35));
 
-        int row;
-        int col;
-        for (row = 0; row < 3; ++row)
+        int var6;
+        int var7;
+        for (var6 = 0; var6 < 3; ++var6)
         {
-            for (col = 0; col < 3; ++col)
+            for (var7 = 0; var7 < 3; ++var7)
             {
-                AddSlot(new Slot(input, col + row * 3, 30 + col * 18, 17 + row * 18));
+                AddSlot(new Slot(input, var7 + var6 * 3, 30 + var7 * 18, 17 + var6 * 18));
             }
         }
 
-        for (row = 0; row < 3; ++row)
+        for (var6 = 0; var6 < 3; ++var6)
         {
-            for (col = 0; col < 9; ++col)
+            for (var7 = 0; var7 < 9; ++var7)
             {
-                AddSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
+                AddSlot(new Slot(playerInventory, var7 + var6 * 9 + 9, 8 + var7 * 18, 84 + var6 * 18));
             }
         }
 
-        for (row = 0; row < 9; ++row)
+        for (var6 = 0; var6 < 9; ++var6)
         {
-            AddSlot(new Slot(playerInventory, row, 8 + row * 18, 142));
+            AddSlot(new Slot(playerInventory, var6, 8 + var6 * 18, 142));
         }
 
         onSlotUpdate(input);
@@ -63,12 +63,12 @@ public class CraftingScreenHandler : ScreenHandler
         base.onClosed(player);
         if (!world.isRemote)
         {
-            for (int i = 0; i < 9; ++i)
+            for (int var2 = 0; var2 < 9; ++var2)
             {
-                ItemStack itemStack = input.getStack(i);
-                if (itemStack != null)
+                ItemStack var3 = input.getStack(var2);
+                if (var3 != null)
                 {
-                    player.dropItem(itemStack);
+                    player.dropItem(var3);
                 }
             }
 
@@ -82,46 +82,46 @@ public class CraftingScreenHandler : ScreenHandler
 
     public override ItemStack quickMove(int slotNumber)
     {
-        ItemStack itemStack = null;
-        Slot slot = Slots[slotNumber];
-        if (slot != null && slot.hasStack())
+        ItemStack var2 = null;
+        Slot var3 = Slots[slotNumber];
+        if (var3 != null && var3.hasStack())
         {
-            ItemStack itemCopy = slot.getStack();
-            itemStack = itemCopy.copy();
+            ItemStack var4 = var3.getStack();
+            var2 = var4.copy();
             if (slotNumber == 0)
             {
-                insertItem(itemCopy, 10, 46, true);
+                insertItem(var4, 10, 46, true);
             }
             else if (slotNumber >= 10 && slotNumber < 37)
             {
-                insertItem(itemCopy, 37, 46, false);
+                insertItem(var4, 37, 46, false);
             }
             else if (slotNumber >= 37 && slotNumber < 46)
             {
-                insertItem(itemCopy, 10, 37, false);
+                insertItem(var4, 10, 37, false);
             }
             else
             {
-                insertItem(itemCopy, 10, 46, false);
+                insertItem(var4, 10, 46, false);
             }
 
-            if (itemCopy.count == 0)
+            if (var4.count == 0)
             {
-                slot.setStack(null);
+                var3.setStack(null);
             }
             else
             {
-                slot.markDirty();
+                var3.markDirty();
             }
 
-            if (itemCopy.count == itemStack.count)
+            if (var4.count == var2.count)
             {
                 return null;
             }
 
-            slot.onTakeItem(itemCopy);
+            var3.onTakeItem(var4);
         }
 
-        return itemStack;
+        return var2;
     }
 }

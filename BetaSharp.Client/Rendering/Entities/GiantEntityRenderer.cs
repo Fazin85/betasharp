@@ -9,18 +9,18 @@ public class GiantEntityRenderer : LivingEntityRenderer
 
     private readonly float scale;
 
-    public GiantEntityRenderer(ModelBase mainModel, float shadowRadius, float entityScale) : base(mainModel, shadowRadius * entityScale)
+    public GiantEntityRenderer(ModelBase mainModel, float var2, float var3) : base(mainModel, var2 * var3)
     {
-        scale = entityScale;
+        scale = var3;
     }
 
-    protected void preRenderScale(EntityGiantZombie entity, float partialTicks)
+    protected void preRenderScale(EntityGiantZombie var1, float var2)
     {
         GLManager.GL.Scale(scale, scale, scale);
     }
 
-    protected override void preRenderCallback(EntityLiving entity, float partialTicks)
+    protected override void preRenderCallback(EntityLiving var1, float var2)
     {
-        preRenderScale((EntityGiantZombie)entity, partialTicks);
+        preRenderScale((EntityGiantZombie)var1, var2);
     }
 }

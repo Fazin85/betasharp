@@ -9,226 +9,226 @@ public abstract class NetHandler
 {
     public abstract bool isServerSide();
 
-    public virtual void handleChunkData(ChunkDataS2CPacket packet)
+    public virtual void handleChunkData(ChunkDataS2CPacket var1)
     {
     }
 
-    public virtual void handle(Packet packet)
+    public virtual void handle(Packet var1)
     {
     }
 
-    public virtual void onDisconnected(string message, object[]? args)
+    public virtual void onDisconnected(string var1, object[]? var2)
     {
     }
 
-    public virtual void onDisconnect(DisconnectPacket packet)
+    public virtual void onDisconnect(DisconnectPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onHello(LoginHelloPacket packet)
+    public virtual void onHello(LoginHelloPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onPlayerMove(PlayerMovePacket packet)
+    public virtual void onPlayerMove(PlayerMovePacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet)
+    public virtual void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void handlePlayerAction(PlayerActionC2SPacket packet)
+    public virtual void handlePlayerAction(PlayerActionC2SPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onBlockUpdate(BlockUpdateS2CPacket packet)
+    public virtual void onBlockUpdate(BlockUpdateS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onChunkStatusUpdate(ChunkStatusUpdateS2CPacket packet)
+    public virtual void onChunkStatusUpdate(ChunkStatusUpdateS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onPlayerSpawn(PlayerSpawnS2CPacket packet)
+    public virtual void onPlayerSpawn(PlayerSpawnS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onEntity(EntityS2CPacket packet)
+    public virtual void onEntity(EntityS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onEntityPosition(EntityPositionS2CPacket packet)
+    public virtual void onEntityPosition(EntityPositionS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onPlayerInteractBlock(PlayerInteractBlockC2SPacket packet)
+    public virtual void onPlayerInteractBlock(PlayerInteractBlockC2SPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onUpdateSelectedSlot(UpdateSelectedSlotC2SPacket packet)
+    public virtual void onUpdateSelectedSlot(UpdateSelectedSlotC2SPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onEntityDestroy(EntityDestroyS2CPacket packet)
+    public virtual void onEntityDestroy(EntityDestroyS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onItemEntitySpawn(ItemEntitySpawnS2CPacket packet)
+    public virtual void onItemEntitySpawn(ItemEntitySpawnS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onItemPickupAnimation(ItemPickupAnimationS2CPacket packet)
+    public virtual void onItemPickupAnimation(ItemPickupAnimationS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onChatMessage(ChatMessagePacket packet)
+    public virtual void onChatMessage(ChatMessagePacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onEntitySpawn(EntitySpawnS2CPacket packet)
+    public virtual void onEntitySpawn(EntitySpawnS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onEntityAnimation(EntityAnimationPacket packet)
+    public virtual void onEntityAnimation(EntityAnimationPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void handleClientCommand(ClientCommandC2SPacket packet)
+    public virtual void handleClientCommand(ClientCommandC2SPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onHandshake(HandshakePacket packet)
+    public virtual void onHandshake(HandshakePacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onLivingEntitySpawn(LivingEntitySpawnS2CPacket packet)
+    public virtual void onLivingEntitySpawn(LivingEntitySpawnS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onWorldTimeUpdate(WorldTimeUpdateS2CPacket packet)
+    public virtual void onWorldTimeUpdate(WorldTimeUpdateS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket packet)
+    public virtual void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onEntityVelocityUpdate(EntityVelocityUpdateS2CPacket packet)
+    public virtual void onEntityVelocityUpdate(EntityVelocityUpdateS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onEntityTrackerUpdate(EntityTrackerUpdateS2CPacket packet)
+    public virtual void onEntityTrackerUpdate(EntityTrackerUpdateS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onEntityVehicleSet(EntityVehicleSetS2CPacket packet)
+    public virtual void onEntityVehicleSet(EntityVehicleSetS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void handleInteractEntity(PlayerInteractEntityC2SPacket packet)
+    public virtual void handleInteractEntity(PlayerInteractEntityC2SPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onEntityStatus(EntityStatusS2CPacket packet)
+    public virtual void onEntityStatus(EntityStatusS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onHealthUpdate(HealthUpdateS2CPacket packet)
+    public virtual void onHealthUpdate(HealthUpdateS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onPlayerRespawn(PlayerRespawnPacket packet)
+    public virtual void onPlayerRespawn(PlayerRespawnPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onExplosion(ExplosionS2CPacket packet)
+    public virtual void onExplosion(ExplosionS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onOpenScreen(OpenScreenS2CPacket packet)
+    public virtual void onOpenScreen(OpenScreenS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onCloseScreen(CloseScreenS2CPacket packet)
+    public virtual void onCloseScreen(CloseScreenS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onClickSlot(ClickSlotC2SPacket packet)
+    public virtual void onClickSlot(ClickSlotC2SPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onScreenHandlerSlotUpdate(ScreenHandlerSlotUpdateS2CPacket packet)
+    public virtual void onScreenHandlerSlotUpdate(ScreenHandlerSlotUpdateS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onInventory(InventoryS2CPacket packet)
+    public virtual void onInventory(InventoryS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void handleUpdateSign(UpdateSignPacket packet)
+    public virtual void handleUpdateSign(UpdateSignPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onScreenHandlerPropertyUpdate(ScreenHandlerPropertyUpdateS2CPacket packet)
+    public virtual void onScreenHandlerPropertyUpdate(ScreenHandlerPropertyUpdateS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onEntityEquipmentUpdate(EntityEquipmentUpdateS2CPacket packet)
+    public virtual void onEntityEquipmentUpdate(EntityEquipmentUpdateS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onScreenHandlerAcknowledgement(ScreenHandlerAcknowledgementPacket packet)
+    public virtual void onScreenHandlerAcknowledgement(ScreenHandlerAcknowledgementPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onPaintingEntitySpawn(PaintingEntitySpawnS2CPacket packet)
+    public virtual void onPaintingEntitySpawn(PaintingEntitySpawnS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onPlayNoteSound(PlayNoteSoundS2CPacket packet)
+    public virtual void onPlayNoteSound(PlayNoteSoundS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
     public virtual void onPlayerConnectionUpdate(PlayerConnectionUpdateS2CPacket packet)
@@ -236,38 +236,38 @@ public abstract class NetHandler
         handle(packet);
     }
 
-    public virtual void onIncreaseStat(IncreaseStatS2CPacket packet)
+    public virtual void onIncreaseStat(IncreaseStatS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onPlayerSleepUpdate(PlayerSleepUpdateS2CPacket packet)
+    public virtual void onPlayerSleepUpdate(PlayerSleepUpdateS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onPlayerInput(PlayerInputC2SPacket packet)
+    public virtual void onPlayerInput(PlayerInputC2SPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onGameStateChange(GameStateChangeS2CPacket packet)
+    public virtual void onGameStateChange(GameStateChangeS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onLightningEntitySpawn(GlobalEntitySpawnS2CPacket packet)
+    public virtual void onLightningEntitySpawn(GlobalEntitySpawnS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onMapUpdate(MapUpdateS2CPacket packet)
+    public virtual void onMapUpdate(MapUpdateS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 
-    public virtual void onWorldEvent(WorldEventS2CPacket packet)
+    public virtual void onWorldEvent(WorldEventS2CPacket var1)
     {
-        handle(packet);
+        handle(var1);
     }
 }

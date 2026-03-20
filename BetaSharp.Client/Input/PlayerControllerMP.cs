@@ -22,55 +22,55 @@ public class PlayerControllerMP : PlayerController
     private readonly ClientNetworkHandler netClientHandler;
     private int currentPlayerItem;
 
-    public PlayerControllerMP(BetaSharp game, ClientNetworkHandler clientHandler) : base(game)
+    public PlayerControllerMP(BetaSharp var1, ClientNetworkHandler var2) : base(var1)
     {
-        netClientHandler = clientHandler;
+        netClientHandler = var2;
     }
 
-    public override void flipPlayer(EntityPlayer player)
+    public override void flipPlayer(EntityPlayer var1)
     {
-        player.yaw = -180.0F;
+        var1.yaw = -180.0F;
     }
 
-    public override bool sendBlockRemoved(int x, int y, int z, int face)
+    public override bool sendBlockRemoved(int x, int y, int z, int var4)
     {
         int blockId = Game.world.getBlockId(x, y, z);
-        bool success = base.sendBlockRemoved(x, y, z, face);
-        ItemStack heldItem = Game.player.getHand();
-        if (heldItem != null)
+        bool var6 = base.sendBlockRemoved(x, y, z, var4);
+        ItemStack var7 = Game.player.getHand();
+        if (var7 != null)
         {
-            heldItem.postMine(blockId, x, y, z, Game.player);
-            if (heldItem.count == 0)
+            var7.postMine(blockId, x, y, z, Game.player);
+            if (var7.count == 0)
             {
-                heldItem.onRemoved(Game.player);
+                var7.onRemoved(Game.player);
                 Game.player.clearStackInHand();
             }
         }
 
-        return success;
+        return var6;
     }
 
-    public override void clickBlock(int x, int y, int z, int face)
+    public override void clickBlock(int var1, int var2, int var3, int var4)
     {
-        if (!isHittingBlock || x != currentBlockX || y != currentBlockY || z != currentblockZ)
+        if (!isHittingBlock || var1 != currentBlockX || var2 != currentBlockY || var3 != currentblockZ)
         {
-            netClientHandler.addToSendQueue(PlayerActionC2SPacket.Get(0, x, y, z, face));
-            int blockId = Game.world.getBlockId(x, y, z);
-            if (blockId > 0 && curBlockDamageMP == 0.0F)
+            netClientHandler.addToSendQueue(PlayerActionC2SPacket.Get(0, var1, var2, var3, var4));
+            int var5 = Game.world.getBlockId(var1, var2, var3);
+            if (var5 > 0 && curBlockDamageMP == 0.0F)
             {
-                Block.Blocks[blockId].onBlockBreakStart(Game.world, x, y, z, Game.player);
+                Block.Blocks[var5].onBlockBreakStart(Game.world, var1, var2, var3, Game.player);
             }
 
-            if (blockId > 0 && Block.Blocks[blockId].getHardness(Game.player) >= 1.0F)
+            if (var5 > 0 && Block.Blocks[var5].getHardness(Game.player) >= 1.0F)
             {
-                sendBlockRemoved(x, y, z, face);
+                sendBlockRemoved(var1, var2, var3, var4);
             }
             else
             {
                 isHittingBlock = true;
-                currentBlockX = x;
-                currentBlockY = y;
-                currentblockZ = z;
+                currentBlockX = var1;
+                currentBlockY = var2;
+                currentblockZ = var3;
                 curBlockDamageMP = 0.0F;
                 prevBlockDamageMP = 0.0F;
                 field_9441_h = 0.0F;
@@ -85,7 +85,7 @@ public class PlayerControllerMP : PlayerController
         isHittingBlock = false;
     }
 
-    public override void sendBlockRemoving(int x, int y, int z, int face)
+    public override void sendBlockRemoving(int var1, int var2, int var3, int var4)
     {
         if (isHittingBlock)
         {
@@ -96,28 +96,28 @@ public class PlayerControllerMP : PlayerController
             }
             else
             {
-                if (x == currentBlockX && y == currentBlockY && z == currentblockZ)
+                if (var1 == currentBlockX && var2 == currentBlockY && var3 == currentblockZ)
                 {
-                    int blockId = Game.world.getBlockId(x, y, z);
-                    if (blockId == 0)
+                    int var5 = Game.world.getBlockId(var1, var2, var3);
+                    if (var5 == 0)
                     {
                         isHittingBlock = false;
                         return;
                     }
 
-                    Block block = Block.Blocks[blockId];
-                    curBlockDamageMP += block.getHardness(Game.player);
-                    if (field_9441_h % 4.0F == 0.0F && block != null)
+                    Block var6 = Block.Blocks[var5];
+                    curBlockDamageMP += var6.getHardness(Game.player);
+                    if (field_9441_h % 4.0F == 0.0F && var6 != null)
                     {
-                        Game.sndManager.PlaySound(block.soundGroup.StepSound, (float)x + 0.5F, (float)y + 0.5F, (float)z + 0.5F, (block.soundGroup.Volume + 1.0F) / 8.0F, block.soundGroup.Pitch * 0.5F);
+                        Game.sndManager.PlaySound(var6.soundGroup.StepSound, (float)var1 + 0.5F, (float)var2 + 0.5F, (float)var3 + 0.5F, (var6.soundGroup.Volume + 1.0F) / 8.0F, var6.soundGroup.Pitch * 0.5F);
                     }
 
                     ++field_9441_h;
                     if (curBlockDamageMP >= 1.0F)
                     {
                         isHittingBlock = false;
-                        netClientHandler.addToSendQueue(PlayerActionC2SPacket.Get(2, x, y, z, face));
-                        sendBlockRemoved(x, y, z, face);
+                        netClientHandler.addToSendQueue(PlayerActionC2SPacket.Get(2, var1, var2, var3, var4));
+                        sendBlockRemoved(var1, var2, var3, var4);
                         curBlockDamageMP = 0.0F;
                         prevBlockDamageMP = 0.0F;
                         field_9441_h = 0.0F;
@@ -126,14 +126,14 @@ public class PlayerControllerMP : PlayerController
                 }
                 else
                 {
-                    clickBlock(x, y, z, face);
+                    clickBlock(var1, var2, var3, var4);
                 }
 
             }
         }
     }
 
-    public override void setPartialTime(float partialTicks)
+    public override void setPartialTime(float var1)
     {
         if (curBlockDamageMP <= 0.0F)
         {
@@ -142,9 +142,9 @@ public class PlayerControllerMP : PlayerController
         }
         else
         {
-            float interpolatedDamage = prevBlockDamageMP + (curBlockDamageMP - prevBlockDamageMP) * partialTicks;
-            Game.ingameGUI._damageGuiPartialTime = interpolatedDamage;
-            Game.terrainRenderer.damagePartialTime = interpolatedDamage;
+            float var2 = prevBlockDamageMP + (curBlockDamageMP - prevBlockDamageMP) * var1;
+            Game.ingameGUI._damageGuiPartialTime = var2;
+            Game.terrainRenderer.damagePartialTime = var2;
         }
 
     }
@@ -154,9 +154,9 @@ public class PlayerControllerMP : PlayerController
         return 4.0F;
     }
 
-    public override void func_717_a(World world)
+    public override void func_717_a(World var1)
     {
-        base.func_717_a(world);
+        base.func_717_a(var1);
     }
 
     public override void updateController()
@@ -168,61 +168,61 @@ public class PlayerControllerMP : PlayerController
 
     private void syncCurrentPlayItem()
     {
-        int selectedSlot = Game.player.inventory.selectedSlot;
-        if (selectedSlot != currentPlayerItem)
+        int var1 = Game.player.inventory.selectedSlot;
+        if (var1 != currentPlayerItem)
         {
-            currentPlayerItem = selectedSlot;
+            currentPlayerItem = var1;
             netClientHandler.addToSendQueue(UpdateSelectedSlotC2SPacket.Get(currentPlayerItem));
         }
 
     }
 
-    public override bool sendPlaceBlock(EntityPlayer player, World world, ItemStack stack, int x, int y, int z, int face)
+    public override bool sendPlaceBlock(EntityPlayer var1, World var2, ItemStack var3, int var4, int var5, int var6, int var7)
     {
         syncCurrentPlayItem();
-        netClientHandler.addToSendQueue(PlayerInteractBlockC2SPacket.Get(x, y, z, face, player.inventory.getSelectedItem()));
-        bool result = base.sendPlaceBlock(player, world, stack, x, y, z, face);
-        return result;
+        netClientHandler.addToSendQueue(PlayerInteractBlockC2SPacket.Get(var4, var5, var6, var7, var1.inventory.getSelectedItem()));
+        bool var8 = base.sendPlaceBlock(var1, var2, var3, var4, var5, var6, var7);
+        return var8;
     }
 
-    public override bool sendUseItem(EntityPlayer player, World world, ItemStack stack)
+    public override bool sendUseItem(EntityPlayer var1, World var2, ItemStack var3)
     {
         syncCurrentPlayItem();
-        netClientHandler.addToSendQueue(PlayerInteractBlockC2SPacket.Get(-1, -1, -1, 255, player.inventory.getSelectedItem()));
-        bool result = base.sendUseItem(player, world, stack);
-        return result;
+        netClientHandler.addToSendQueue(PlayerInteractBlockC2SPacket.Get(-1, -1, -1, 255, var1.inventory.getSelectedItem()));
+        bool var4 = base.sendUseItem(var1, var2, var3);
+        return var4;
     }
 
-    public override EntityPlayer createPlayer(World world)
+    public override EntityPlayer createPlayer(World var1)
     {
-        return new EntityClientPlayerMP(Game, world, Game.session, netClientHandler);
+        return new EntityClientPlayerMP(Game, var1, Game.session, netClientHandler);
     }
 
-    public override void attackEntity(EntityPlayer player, Entity target)
-    {
-        syncCurrentPlayItem();
-        netClientHandler.addToSendQueue(PlayerInteractEntityC2SPacket.Get(player.id, target.id, 1));
-        player.attack(target);
-    }
-
-    public override void interactWithEntity(EntityPlayer player, Entity entity)
+    public override void attackEntity(EntityPlayer var1, Entity var2)
     {
         syncCurrentPlayItem();
-        netClientHandler.addToSendQueue(PlayerInteractEntityC2SPacket.Get(player.id, entity.id, 0));
-        player.interact(entity);
+        netClientHandler.addToSendQueue(PlayerInteractEntityC2SPacket.Get(var1.id, var2.id, 1));
+        var1.attack(var2);
     }
 
-    public override ItemStack func_27174_a(int slotId, int button, int mode, bool isShift, EntityPlayer player)
+    public override void interactWithEntity(EntityPlayer var1, Entity var2)
     {
-        short revision = player.currentScreenHandler.nextRevision(player.inventory);
-        ItemStack result = base.func_27174_a(slotId, button, mode, isShift, player);
-        netClientHandler.addToSendQueue(ClickSlotC2SPacket.Get(slotId, button, mode, isShift, result, revision));
-        return result;
+        syncCurrentPlayItem();
+        netClientHandler.addToSendQueue(PlayerInteractEntityC2SPacket.Get(var1.id, var2.id, 0));
+        var1.interact(var2);
     }
 
-    public override void func_20086_a(int slotId, EntityPlayer player)
+    public override ItemStack func_27174_a(int var1, int var2, int var3, bool var4, EntityPlayer var5)
     {
-        if (slotId != -9999)
+        short var6 = var5.currentScreenHandler.nextRevision(var5.inventory);
+        ItemStack var7 = base.func_27174_a(var1, var2, var3, var4, var5);
+        netClientHandler.addToSendQueue(ClickSlotC2SPacket.Get(var1, var2, var3, var4, var7, var6));
+        return var7;
+    }
+
+    public override void func_20086_a(int var1, EntityPlayer var2)
+    {
+        if (var1 != -9999)
         {
         }
     }

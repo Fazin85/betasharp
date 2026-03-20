@@ -37,7 +37,7 @@ public class CreeperEntityRenderer : LivingEntityRenderer
         GLManager.GL.Scale(scaleX, scaleY, scaleX);
     }
 
-    protected int UpdateCreeperColorMultiplier(EntityCreeper ent, float lightBrightness, float partialTick)
+    protected int UpdateCreeperColorMultiplier(EntityCreeper ent, float var2, float partialTick)
     {
         float progress = ent.GetCreeperFlashTime(partialTick);
         if ((int)(progress * 10.0F) % 2 == 0)
@@ -64,30 +64,30 @@ public class CreeperEntityRenderer : LivingEntityRenderer
         }
     }
 
-    protected bool func_27006_a(EntityCreeper ent, int renderPass, float partialTicks)
+    protected bool func_27006_a(EntityCreeper ent, int var2, float var3)
     {
         if (ent.Powered.Value)
         {
-            if (renderPass == 1)
+            if (var2 == 1)
             {
-                float tickCounter = ent.age + partialTicks;
+                float var4 = ent.age + var3;
                 loadTexture("/armor/power.png");
                 GLManager.GL.MatrixMode(GLEnum.Texture2D); //wtf?
                 GLManager.GL.LoadIdentity();
-                float uOffset = tickCounter * 0.01F;
-                float vOffset = tickCounter * 0.01F;
-                GLManager.GL.Translate(uOffset, vOffset, 0.0F);
+                float var5 = var4 * 0.01F;
+                float var6 = var4 * 0.01F;
+                GLManager.GL.Translate(var5, var6, 0.0F);
                 setRenderPassModel(model);
                 GLManager.GL.MatrixMode(GLEnum.Modelview);
                 GLManager.GL.Enable(GLEnum.Blend);
-                float intensity = 0.5F;
-                GLManager.GL.Color4(intensity, intensity, intensity, 1.0F);
+                float var7 = 0.5F;
+                GLManager.GL.Color4(var7, var7, var7, 1.0F);
                 GLManager.GL.Disable(GLEnum.Lighting);
                 GLManager.GL.BlendFunc(GLEnum.One, GLEnum.One);
                 return true;
             }
 
-            if (renderPass == 2)
+            if (var2 == 2)
             {
                 GLManager.GL.MatrixMode(GLEnum.Texture);
                 GLManager.GL.LoadIdentity();
@@ -100,7 +100,7 @@ public class CreeperEntityRenderer : LivingEntityRenderer
         return false;
     }
 
-    protected bool func_27007_b(EntityCreeper ent, int renderPass, float partialTicks)
+    protected bool func_27007_b(EntityCreeper ent, int var2, float var3)
     {
         return false;
     }
@@ -110,18 +110,18 @@ public class CreeperEntityRenderer : LivingEntityRenderer
         UpdateCreeperScale((EntityCreeper)ent, partialTick);
     }
 
-    protected override int getColorMultiplier(EntityLiving ent, float lightBrightness, float partialTick)
+    protected override int getColorMultiplier(EntityLiving ent, float var2, float partialTick)
     {
-        return UpdateCreeperColorMultiplier((EntityCreeper)ent, lightBrightness, partialTick);
+        return UpdateCreeperColorMultiplier((EntityCreeper)ent, var2, partialTick);
     }
 
-    protected override bool shouldRenderPass(EntityLiving ent, int renderPass, float partialTicks)
+    protected override bool shouldRenderPass(EntityLiving ent, int var2, float var3)
     {
-        return func_27006_a((EntityCreeper)ent, renderPass, partialTicks);
+        return func_27006_a((EntityCreeper)ent, var2, var3);
     }
 
-    protected override bool func_27005_b(EntityLiving ent, int renderPass, float partialTicks)
+    protected override bool func_27005_b(EntityLiving ent, int var2, float var3)
     {
-        return func_27007_b((EntityCreeper)ent, renderPass, partialTicks);
+        return func_27007_b((EntityCreeper)ent, var2, var3);
     }
 }

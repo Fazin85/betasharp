@@ -14,56 +14,56 @@ public class MovementInputFromOptions : MovementInput
         _gameSettings = options;
     }
 
-    public override void checkKeyForMovementInput(int keyCode, bool pressed)
+    public override void checkKeyForMovementInput(int var1, bool var2)
     {
-        int actionIndex = -1;
-        if (keyCode == _gameSettings.KeyBindForward.keyCode)
+        int var3 = -1;
+        if (var1 == _gameSettings.KeyBindForward.keyCode)
         {
-            actionIndex = 0;
+            var3 = 0;
         }
 
-        if (keyCode == _gameSettings.KeyBindBack.keyCode)
+        if (var1 == _gameSettings.KeyBindBack.keyCode)
         {
-            actionIndex = 1;
+            var3 = 1;
         }
 
-        if (keyCode == _gameSettings.KeyBindLeft.keyCode)
+        if (var1 == _gameSettings.KeyBindLeft.keyCode)
         {
-            actionIndex = 2;
+            var3 = 2;
         }
 
-        if (keyCode == _gameSettings.KeyBindRight.keyCode)
+        if (var1 == _gameSettings.KeyBindRight.keyCode)
         {
-            actionIndex = 3;
+            var3 = 3;
         }
 
-        if (keyCode == _gameSettings.KeyBindJump.keyCode)
+        if (var1 == _gameSettings.KeyBindJump.keyCode)
         {
-            actionIndex = 4;
+            var3 = 4;
         }
 
-        if (keyCode == _gameSettings.KeyBindSneak.keyCode)
+        if (var1 == _gameSettings.KeyBindSneak.keyCode)
         {
-            actionIndex = 5;
+            var3 = 5;
         }
 
-        if (actionIndex >= 0)
+        if (var3 >= 0)
         {
-            _movementKeyStates[actionIndex] = pressed;
+            _movementKeyStates[var3] = var2;
         }
 
     }
 
     public override void resetKeyState()
     {
-        for (int i = 0; i < 10; ++i)
+        for (int var1 = 0; var1 < 10; ++var1)
         {
-            _movementKeyStates[i] = false;
+            _movementKeyStates[var1] = false;
         }
         ControllerManager.SneakToggle = false;
     }
 
-    public override void updatePlayerMoveState(EntityPlayer player)
+    public override void updatePlayerMoveState(EntityPlayer var1)
     {
         moveStrafe = 0.0F;
         moveForward = 0.0F;

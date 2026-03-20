@@ -16,52 +16,52 @@ public class PlayerControllerSP : PlayerController
     private float field_1069_h;
     private int blockHitWait;
 
-    public PlayerControllerSP(BetaSharp game) : base(game)
+    public PlayerControllerSP(BetaSharp var1) : base(var1)
     {
     }
 
-    public override void flipPlayer(EntityPlayer player)
+    public override void flipPlayer(EntityPlayer var1)
     {
-        player.yaw = -180.0F;
+        var1.yaw = -180.0F;
     }
 
-    public override bool sendBlockRemoved(int x, int y, int z, int face)
+    public override bool sendBlockRemoved(int x, int y, int z, int var4)
     {
         int blockId = Game.world.getBlockId(x, y, z);
-        int blockMeta = Game.world.getBlockMeta(x, y, z);
-        bool success = base.sendBlockRemoved(x, y, z, face);
-        ItemStack heldItem = Game.player.getHand();
-        bool canHarvest = Game.player.canHarvest(Block.Blocks[blockId]);
-        if (heldItem != null)
+        int var6 = Game.world.getBlockMeta(x, y, z);
+        bool var7 = base.sendBlockRemoved(x, y, z, var4);
+        ItemStack var8 = Game.player.getHand();
+        bool var9 = Game.player.canHarvest(Block.Blocks[blockId]);
+        if (var8 != null)
         {
-            heldItem.postMine(blockId, x, y, z, Game.player);
-            if (heldItem.count == 0)
+            var8.postMine(blockId, x, y, z, Game.player);
+            if (var8.count == 0)
             {
-                heldItem.onRemoved(Game.player);
+                var8.onRemoved(Game.player);
                 Game.player.clearStackInHand();
             }
         }
 
-        if (success && canHarvest)
+        if (var7 && var9)
         {
-            Block.Blocks[blockId].afterBreak(Game.world, Game.player, x, y, z, blockMeta);
+            Block.Blocks[blockId].afterBreak(Game.world, Game.player, x, y, z, var6);
         }
 
-        return success;
+        return var7;
     }
 
-    public override void clickBlock(int x, int y, int z, int face)
+    public override void clickBlock(int var1, int var2, int var3, int var4)
     {
-        Game.world.extinguishFire(Game.player, x, y, z, face);
-        int blockId = Game.world.getBlockId(x, y, z);
-        if (blockId > 0 && curBlockDamage == 0.0F)
+        Game.world.extinguishFire(Game.player, var1, var2, var3, var4);
+        int var5 = Game.world.getBlockId(var1, var2, var3);
+        if (var5 > 0 && curBlockDamage == 0.0F)
         {
-            Block.Blocks[blockId].onBlockBreakStart(Game.world, x, y, z, Game.player);
+            Block.Blocks[var5].onBlockBreakStart(Game.world, var1, var2, var3, Game.player);
         }
 
-        if (blockId > 0 && Block.Blocks[blockId].getHardness(Game.player) >= 1.0F)
+        if (var5 > 0 && Block.Blocks[var5].getHardness(Game.player) >= 1.0F)
         {
-            sendBlockRemoved(x, y, z, face);
+            sendBlockRemoved(var1, var2, var3, var4);
         }
 
     }
@@ -72,7 +72,7 @@ public class PlayerControllerSP : PlayerController
         blockHitWait = 0;
     }
 
-    public override void sendBlockRemoving(int x, int y, int z, int face)
+    public override void sendBlockRemoving(int var1, int var2, int var3, int var4)
     {
         if (blockHitWait > 0)
         {
@@ -80,25 +80,25 @@ public class PlayerControllerSP : PlayerController
         }
         else
         {
-            if (x == field_1074_c && y == field_1073_d && z == field_1072_e)
+            if (var1 == field_1074_c && var2 == field_1073_d && var3 == field_1072_e)
             {
-                int blockId = Game.world.getBlockId(x, y, z);
-                if (blockId == 0)
+                int var5 = Game.world.getBlockId(var1, var2, var3);
+                if (var5 == 0)
                 {
                     return;
                 }
 
-                Block block = Block.Blocks[blockId];
-                curBlockDamage += block.getHardness(Game.player);
-                if (field_1069_h % 4.0F == 0.0F && block != null)
+                Block var6 = Block.Blocks[var5];
+                curBlockDamage += var6.getHardness(Game.player);
+                if (field_1069_h % 4.0F == 0.0F && var6 != null)
                 {
-                    Game.sndManager.PlaySound(block.soundGroup.StepSound, (float)x + 0.5F, (float)y + 0.5F, (float)z + 0.5F, (block.soundGroup.Volume + 1.0F) / 8.0F, block.soundGroup.Pitch * 0.5F);
+                    Game.sndManager.PlaySound(var6.soundGroup.StepSound, (float)var1 + 0.5F, (float)var2 + 0.5F, (float)var3 + 0.5F, (var6.soundGroup.Volume + 1.0F) / 8.0F, var6.soundGroup.Pitch * 0.5F);
                 }
 
                 ++field_1069_h;
                 if (curBlockDamage >= 1.0F)
                 {
-                    sendBlockRemoved(x, y, z, face);
+                    sendBlockRemoved(var1, var2, var3, var4);
                     curBlockDamage = 0.0F;
                     prevBlockDamage = 0.0F;
                     field_1069_h = 0.0F;
@@ -110,15 +110,15 @@ public class PlayerControllerSP : PlayerController
                 curBlockDamage = 0.0F;
                 prevBlockDamage = 0.0F;
                 field_1069_h = 0.0F;
-                field_1074_c = x;
-                field_1073_d = y;
-                field_1072_e = z;
+                field_1074_c = var1;
+                field_1073_d = var2;
+                field_1072_e = var3;
             }
 
         }
     }
 
-    public override void setPartialTime(float partialTicks)
+    public override void setPartialTime(float var1)
     {
         if (curBlockDamage <= 0.0F)
         {
@@ -127,9 +127,9 @@ public class PlayerControllerSP : PlayerController
         }
         else
         {
-            float interpolatedDamage = prevBlockDamage + (curBlockDamage - prevBlockDamage) * partialTicks;
-            Game.ingameGUI._damageGuiPartialTime = interpolatedDamage;
-            Game.terrainRenderer.damagePartialTime = interpolatedDamage;
+            float var2 = prevBlockDamage + (curBlockDamage - prevBlockDamage) * var1;
+            Game.ingameGUI._damageGuiPartialTime = var2;
+            Game.terrainRenderer.damagePartialTime = var2;
         }
 
     }
@@ -139,9 +139,9 @@ public class PlayerControllerSP : PlayerController
         return 4.0F;
     }
 
-    public override void func_717_a(World world)
+    public override void func_717_a(World var1)
     {
-        base.func_717_a(world);
+        base.func_717_a(var1);
     }
 
     public override void updateController()

@@ -44,43 +44,43 @@ internal class BlockLever : Block
 
     public override void onPlaced(World world, int x, int y, int z, int direction)
     {
-        int blockMetadata = world.getBlockMeta(x, y, z);
-        int toggleState = blockMetadata & 8;
-        blockMetadata &= 7;
-        blockMetadata = -1;
+        int var6 = world.getBlockMeta(x, y, z);
+        int var7 = var6 & 8;
+        var6 &= 7;
+        var6 = -1;
         if (direction == 1 && world.shouldSuffocate(x, y - 1, z))
         {
-            blockMetadata = 5 + world.random.NextInt(2);
+            var6 = 5 + world.random.NextInt(2);
         }
 
         if (direction == 2 && world.shouldSuffocate(x, y, z + 1))
         {
-            blockMetadata = 4;
+            var6 = 4;
         }
 
         if (direction == 3 && world.shouldSuffocate(x, y, z - 1))
         {
-            blockMetadata = 3;
+            var6 = 3;
         }
 
         if (direction == 4 && world.shouldSuffocate(x + 1, y, z))
         {
-            blockMetadata = 2;
+            var6 = 2;
         }
 
         if (direction == 5 && world.shouldSuffocate(x - 1, y, z))
         {
-            blockMetadata = 1;
+            var6 = 1;
         }
 
-        if (blockMetadata == -1)
+        if (var6 == -1)
         {
             dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
             world.setBlock(x, y, z, 0);
         }
         else
         {
-            world.setBlockMeta(x, y, z, blockMetadata + toggleState);
+            world.setBlockMeta(x, y, z, var6 + var7);
         }
     }
 
@@ -88,39 +88,39 @@ internal class BlockLever : Block
     {
         if (breakIfCannotPlaceAt(world, x, y, z))
         {
-            int leverOrientation = world.getBlockMeta(x, y, z) & 7;
-            bool shouldBreak = false;
-            if (!world.shouldSuffocate(x - 1, y, z) && leverOrientation == 1)
+            int var6 = world.getBlockMeta(x, y, z) & 7;
+            bool var7 = false;
+            if (!world.shouldSuffocate(x - 1, y, z) && var6 == 1)
             {
-                shouldBreak = true;
+                var7 = true;
             }
 
-            if (!world.shouldSuffocate(x + 1, y, z) && leverOrientation == 2)
+            if (!world.shouldSuffocate(x + 1, y, z) && var6 == 2)
             {
-                shouldBreak = true;
+                var7 = true;
             }
 
-            if (!world.shouldSuffocate(x, y, z - 1) && leverOrientation == 3)
+            if (!world.shouldSuffocate(x, y, z - 1) && var6 == 3)
             {
-                shouldBreak = true;
+                var7 = true;
             }
 
-            if (!world.shouldSuffocate(x, y, z + 1) && leverOrientation == 4)
+            if (!world.shouldSuffocate(x, y, z + 1) && var6 == 4)
             {
-                shouldBreak = true;
+                var7 = true;
             }
 
-            if (!world.shouldSuffocate(x, y - 1, z) && leverOrientation == 5)
+            if (!world.shouldSuffocate(x, y - 1, z) && var6 == 5)
             {
-                shouldBreak = true;
+                var7 = true;
             }
 
-            if (!world.shouldSuffocate(x, y - 1, z) && leverOrientation == 6)
+            if (!world.shouldSuffocate(x, y - 1, z) && var6 == 6)
             {
-                shouldBreak = true;
+                var7 = true;
             }
 
-            if (shouldBreak)
+            if (var7)
             {
                 dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
                 world.setBlock(x, y, z, 0);
@@ -145,28 +145,28 @@ internal class BlockLever : Block
 
     public override void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
     {
-        int leverOrientation = iBlockAccess.getBlockMeta(x, y, z) & 7;
-        float leverSize = 3.0F / 16.0F;
-        if (leverOrientation == 1)
+        int var5 = iBlockAccess.getBlockMeta(x, y, z) & 7;
+        float var6 = 3.0F / 16.0F;
+        if (var5 == 1)
         {
-            setBoundingBox(0.0F, 0.2F, 0.5F - leverSize, leverSize * 2.0F, 0.8F, 0.5F + leverSize);
+            setBoundingBox(0.0F, 0.2F, 0.5F - var6, var6 * 2.0F, 0.8F, 0.5F + var6);
         }
-        else if (leverOrientation == 2)
+        else if (var5 == 2)
         {
-            setBoundingBox(1.0F - leverSize * 2.0F, 0.2F, 0.5F - leverSize, 1.0F, 0.8F, 0.5F + leverSize);
+            setBoundingBox(1.0F - var6 * 2.0F, 0.2F, 0.5F - var6, 1.0F, 0.8F, 0.5F + var6);
         }
-        else if (leverOrientation == 3)
+        else if (var5 == 3)
         {
-            setBoundingBox(0.5F - leverSize, 0.2F, 0.0F, 0.5F + leverSize, 0.8F, leverSize * 2.0F);
+            setBoundingBox(0.5F - var6, 0.2F, 0.0F, 0.5F + var6, 0.8F, var6 * 2.0F);
         }
-        else if (leverOrientation == 4)
+        else if (var5 == 4)
         {
-            setBoundingBox(0.5F - leverSize, 0.2F, 1.0F - leverSize * 2.0F, 0.5F + leverSize, 0.8F, 1.0F);
+            setBoundingBox(0.5F - var6, 0.2F, 1.0F - var6 * 2.0F, 0.5F + var6, 0.8F, 1.0F);
         }
         else
         {
-            leverSize = 0.25F;
-            setBoundingBox(0.5F - leverSize, 0.0F, 0.5F - leverSize, 0.5F + leverSize, 0.6F, 0.5F + leverSize);
+            var6 = 0.25F;
+            setBoundingBox(0.5F - var6, 0.0F, 0.5F - var6, 0.5F + var6, 0.6F, 0.5F + var6);
         }
 
     }
@@ -184,26 +184,26 @@ internal class BlockLever : Block
         }
         else
         {
-            int blockMetadata = world.getBlockMeta(x, y, z);
-            int leverOrientation = blockMetadata & 7;
-            int toggleState = 8 - (blockMetadata & 8);
-            world.setBlockMeta(x, y, z, leverOrientation + toggleState);
+            int var6 = world.getBlockMeta(x, y, z);
+            int var7 = var6 & 7;
+            int var8 = 8 - (var6 & 8);
+            world.setBlockMeta(x, y, z, var7 + var8);
             world.setBlocksDirty(x, y, z, x, y, z);
-            world.playSound((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "random.click", 0.3F, toggleState > 0 ? 0.6F : 0.5F);
+            world.playSound((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "random.click", 0.3F, var8 > 0 ? 0.6F : 0.5F);
             world.notifyNeighbors(x, y, z, id);
-            if (leverOrientation == 1)
+            if (var7 == 1)
             {
                 world.notifyNeighbors(x - 1, y, z, id);
             }
-            else if (leverOrientation == 2)
+            else if (var7 == 2)
             {
                 world.notifyNeighbors(x + 1, y, z, id);
             }
-            else if (leverOrientation == 3)
+            else if (var7 == 3)
             {
                 world.notifyNeighbors(x, y, z - 1, id);
             }
-            else if (leverOrientation == 4)
+            else if (var7 == 4)
             {
                 world.notifyNeighbors(x, y, z + 1, id);
             }
@@ -218,24 +218,24 @@ internal class BlockLever : Block
 
     public override void onBreak(World world, int x, int y, int z)
     {
-        int blockMetadata = world.getBlockMeta(x, y, z);
-        if ((blockMetadata & 8) > 0)
+        int var5 = world.getBlockMeta(x, y, z);
+        if ((var5 & 8) > 0)
         {
             world.notifyNeighbors(x, y, z, id);
-            int leverOrientation = blockMetadata & 7;
-            if (leverOrientation == 1)
+            int var6 = var5 & 7;
+            if (var6 == 1)
             {
                 world.notifyNeighbors(x - 1, y, z, id);
             }
-            else if (leverOrientation == 2)
+            else if (var6 == 2)
             {
                 world.notifyNeighbors(x + 1, y, z, id);
             }
-            else if (leverOrientation == 3)
+            else if (var6 == 3)
             {
                 world.notifyNeighbors(x, y, z - 1, id);
             }
-            else if (leverOrientation == 4)
+            else if (var6 == 4)
             {
                 world.notifyNeighbors(x, y, z + 1, id);
             }
@@ -255,15 +255,15 @@ internal class BlockLever : Block
 
     public override bool isStrongPoweringSide(World world, int x, int y, int z, int side)
     {
-        int blockMetadata = world.getBlockMeta(x, y, z);
-        if ((blockMetadata & 8) == 0)
+        int var6 = world.getBlockMeta(x, y, z);
+        if ((var6 & 8) == 0)
         {
             return false;
         }
         else
         {
-            int leverOrientation = blockMetadata & 7;
-            return leverOrientation == 6 && side == 1 ? true : (leverOrientation == 5 && side == 1 ? true : (leverOrientation == 4 && side == 2 ? true : (leverOrientation == 3 && side == 3 ? true : (leverOrientation == 2 && side == 4 ? true : leverOrientation == 1 && side == 5))));
+            int var7 = var6 & 7;
+            return var7 == 6 && side == 1 ? true : (var7 == 5 && side == 1 ? true : (var7 == 4 && side == 2 ? true : (var7 == 3 && side == 3 ? true : (var7 == 2 && side == 4 ? true : var7 == 1 && side == 5))));
         }
     }
 

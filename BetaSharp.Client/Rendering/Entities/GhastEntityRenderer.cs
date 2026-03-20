@@ -11,23 +11,23 @@ public class GhastEntityRenderer : LivingEntityRenderer
     {
     }
 
-    protected void render(EntityGhast entity, float partialTicks)
+    protected void render(EntityGhast var1, float var2)
     {
-        float attackFactor = (entity.prevAttackCounter + (entity.attackCounter - entity.prevAttackCounter) * partialTicks) / 20.0F;
-        if (attackFactor < 0.0F)
+        float var4 = (var1.prevAttackCounter + (var1.attackCounter - var1.prevAttackCounter) * var2) / 20.0F;
+        if (var4 < 0.0F)
         {
-            attackFactor = 0.0F;
+            var4 = 0.0F;
         }
 
-        attackFactor = 1.0F / (attackFactor * attackFactor * attackFactor * attackFactor * attackFactor * 2.0F + 1.0F);
-        float scaleXZ = (8.0F + attackFactor) / 2.0F;
-        float scaleY = (8.0F + 1.0F / attackFactor) / 2.0F;
-        GLManager.GL.Scale(scaleXZ, scaleY, scaleXZ);
+        var4 = 1.0F / (var4 * var4 * var4 * var4 * var4 * 2.0F + 1.0F);
+        float var5 = (8.0F + var4) / 2.0F;
+        float var6 = (8.0F + 1.0F / var4) / 2.0F;
+        GLManager.GL.Scale(var6, var5, var6);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
-    protected override void preRenderCallback(EntityLiving entity, float partialTicks)
+    protected override void preRenderCallback(EntityLiving var1, float var2)
     {
-        render((EntityGhast)entity, partialTicks);
+        render((EntityGhast)var1, var2);
     }
 }
