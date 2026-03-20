@@ -47,25 +47,19 @@ public class WorldTickScheduler
 
     private void ProcessScheduledTicks(bool forceFlush)
     {
-        if (_context.IsRemote)
-        {
-            return;
-        }
+        if (_context.IsRemote) return;
 
         long currentTime = _context.GetTime();
 
-        for (int i = 0; i < 1000; ++i)
-        {
-            if (_scheduledUpdates.Count == 0)
-            {
-                break;
-            }
+        int proportionalLimit = Math.Clamp(_scheduledUpdates.Count / 10, 1000, 8192);
+        
+        int maxTicksPerFrame = forceFlush ? _scheduledUpdates.Count : proportionalLimit;
 
-            BlockUpdate peeked = _scheduledUpdates.Peek();
-            if (!forceFlush && peeked.ScheduledTime > currentTime)
-            {
-                break;
-            }
+        for (int i = 0; i < maxTicksPerFrame; ++i)
+        {
+            if (_scheduledUpdates.Count == 0) break;
+
+            if (!forceFlush && _scheduledUpdates.Peek().ScheduledTime > currentTime) break;
 
             BlockUpdate blockUpdate = _scheduledUpdates.Dequeue();
 
