@@ -121,7 +121,7 @@ internal class ServerCommandHandler
         {
             _commands[name] = command;
         }
-        _helpCommand.Add((command));
+        _helpCommand.Add(command);
     }
 
     /// <summary>
