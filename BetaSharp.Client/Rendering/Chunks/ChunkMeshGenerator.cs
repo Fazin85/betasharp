@@ -1,14 +1,16 @@
+using System.Collections.Concurrent;
 using BetaSharp.Blocks;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
+using Microsoft.Extensions.Logging;
 using Silk.NET.Maths;
 
 namespace BetaSharp.Client.Rendering.Chunks;
 
-internal struct MeshBuildResult
+internal struct MeshBuildResult : IDisposable
 {
     public PooledList<ChunkVertex> Solid;
     public PooledList<ChunkVertex> Translucent;
@@ -26,7 +28,9 @@ internal struct MeshBuildResult
 
 internal class ChunkMeshGenerator : IDisposable
 {
-    private readonly PooledQueue<MeshBuildResult> results = new();
+    private readonly ILogger<ChunkMeshGenerator> _logger = Log.Instance.For<ChunkMeshGenerator>();
+
+    private readonly ConcurrentQueue<MeshBuildResult> _results = new();
     private readonly ObjectPool<PooledList<ChunkVertex>> listPool =
         new(() => new PooledList<ChunkVertex>(), 64);
 
@@ -38,16 +42,9 @@ internal class ChunkMeshGenerator : IDisposable
         MaxConcurrentTasks = maxConcurrentTasks;
     }
 
-    public MeshBuildResult? Mesh
+    public bool TryDequeueMesh(out MeshBuildResult result)
     {
-        get
-        {
-            lock (results)
-            {
-                if (results.IsEmpty) return null;
-                return results.Dequeue();
-            }
-        }
+        return _results.TryDequeue(out result);
     }
 
     public ushort MaxConcurrentTasks
@@ -66,6 +63,7 @@ internal class ChunkMeshGenerator : IDisposable
 
     public void MeshChunk(World world, Vector3D<int> pos, long version)
     {
+        //TODO: OPTIMIZE THIS
         WorldRegionSnapshot cache = new(
             world,
             pos.X - 1, pos.Y - 1, pos.Z - 1,
@@ -82,8 +80,11 @@ internal class ChunkMeshGenerator : IDisposable
             try
             {
                 MeshBuildResult mesh = GenerateMesh(pos, version, cache);
-                lock (results)
-                    results.Enqueue(mesh);
+                _results.Enqueue(mesh);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating chunk mesh at {Pos}", pos);
             }
             finally
             {
@@ -163,7 +164,6 @@ internal class ChunkMeshGenerator : IDisposable
 
     public void Dispose()
     {
-        results.Dispose();
         listPool.Dispose();
     }
 }

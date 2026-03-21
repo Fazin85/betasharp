@@ -387,9 +387,9 @@ public class GameRenderer
         _client.textureManager.BindTexture(_client.textureManager.GetTextureId("/terrain.png"));
         Lighting.turnOff();
 
-        Profiler.Start("sortAndRender");
-        worldRenderer.sortAndRender(entity, 0, (double)tickDelta, frustrumCuller);
-        Profiler.Stop("sortAndRender");
+        Profiler.PushGroup("RenderChunks");
+        worldRenderer.RenderChunks(entity, (double)tickDelta, frustrumCuller, false);
+        Profiler.PopGroup();
 
         GLManager.GL.ShadeModel(GLEnum.Flat);
         Lighting.turnOn();
@@ -423,13 +423,13 @@ public class GameRenderer
         GLManager.GL.Disable(GLEnum.CullFace);
         _client.textureManager.BindTexture(_client.textureManager.GetTextureId("/terrain.png"));
 
-        Profiler.Start("sortAndRender2");
+        Profiler.PushGroup("RenderChunks (transparent)");
 
-        worldRenderer.sortAndRender(entity, 1, tickDelta, frustrumCuller);
+        worldRenderer.RenderChunks(entity, tickDelta, frustrumCuller, true);
 
         GLManager.GL.ShadeModel(GLEnum.Flat);
 
-        Profiler.Stop("sortAndRender2");
+        Profiler.PopGroup();
 
         //TODO: SELCTION BOX/BLOCK BREAKING VISUALIZATON DON'T APPEAR PROPERLY MOST OF THE TIME, SAME WITH ENTITY SHADOWS. VIEW BOBBING MAKES ENTITES BOB UP AND DOWN
 
@@ -899,50 +899,50 @@ public class GameRenderer
     {
         EntityLiving var3 = _client.camera;
         GLManager.GL.Fog(GLEnum.FogColor, updateFogColorBuffer(_fogColorRed, _fogColorGreen, _fogColorBlue, 1.0F));
-        _client.terrainRenderer.chunkRenderer.SetFogColor(_fogColorRed, _fogColorGreen, _fogColorBlue, 1.0f);
+        _client.terrainRenderer.chunkRenderer.FogColor = new Vector4D<float>(_fogColorRed, _fogColorGreen, _fogColorBlue, 1.0f);
         GLManager.GL.Normal3(0.0F, -1.0F, 0.0F);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         if (_cloudFog)
         {
             GLManager.GL.Fog(GLEnum.FogMode, (int)GLEnum.Exp);
             GLManager.GL.Fog(GLEnum.FogDensity, 0.1F);
-            _client.terrainRenderer.chunkRenderer.SetFogMode(1);
-            _client.terrainRenderer.chunkRenderer.SetFogDensity(0.1f);
+            _client.terrainRenderer.chunkRenderer.FogMode = 1;
+            _client.terrainRenderer.chunkRenderer.FogDensity = 0.1f;
         }
         else if (var3.isInFluid(Material.Water))
         {
             GLManager.GL.Fog(GLEnum.FogMode, (int)GLEnum.Exp);
             GLManager.GL.Fog(GLEnum.FogDensity, 0.1F);
-            _client.terrainRenderer.chunkRenderer.SetFogMode(1);
-            _client.terrainRenderer.chunkRenderer.SetFogDensity(0.1f);
+            _client.terrainRenderer.chunkRenderer.FogMode = 1;
+            _client.terrainRenderer.chunkRenderer.FogDensity = 0.1f;
         }
         else if (var3.isInFluid(Material.Lava))
         {
             GLManager.GL.Fog(GLEnum.FogMode, (int)GLEnum.Exp);
             GLManager.GL.Fog(GLEnum.FogDensity, 2.0F);
-            _client.terrainRenderer.chunkRenderer.SetFogMode(1);
-            _client.terrainRenderer.chunkRenderer.SetFogDensity(2.0f);
+            _client.terrainRenderer.chunkRenderer.FogMode = 1;
+            _client.terrainRenderer.chunkRenderer.FogDensity = 2.0f;
         }
         else
         {
             GLManager.GL.Fog(GLEnum.FogMode, (int)GLEnum.Linear);
             GLManager.GL.Fog(GLEnum.FogStart, _viewDistance * 0.25F);
             GLManager.GL.Fog(GLEnum.FogEnd, _viewDistance);
-            _client.terrainRenderer.chunkRenderer.SetFogMode(0);
-            _client.terrainRenderer.chunkRenderer.SetFogStart(_viewDistance * 0.25f);
-            _client.terrainRenderer.chunkRenderer.SetFogEnd(_viewDistance);
+            _client.terrainRenderer.chunkRenderer.FogMode = 0;
+            _client.terrainRenderer.chunkRenderer.FogStart = _viewDistance * 0.25f;
+            _client.terrainRenderer.chunkRenderer.FogEnd = _viewDistance;
             if (mode < 0)
             {
                 GLManager.GL.Fog(GLEnum.FogStart, 0.0F);
                 GLManager.GL.Fog(GLEnum.FogEnd, _viewDistance * 0.8F);
-                _client.terrainRenderer.chunkRenderer.SetFogStart(0.0f);
-                _client.terrainRenderer.chunkRenderer.SetFogEnd(_viewDistance * 0.8f);
+                _client.terrainRenderer.chunkRenderer.FogStart = 0.0f;
+                _client.terrainRenderer.chunkRenderer.FogEnd = _viewDistance * 0.8f;
             }
 
             if (_client.world.dimension.IsNether)
             {
                 GLManager.GL.Fog(GLEnum.FogStart, 0.0F);
-                _client.terrainRenderer.chunkRenderer.SetFogStart(0.0f);
+                _client.terrainRenderer.chunkRenderer.FogStart = 0.0f;
             }
         }
 

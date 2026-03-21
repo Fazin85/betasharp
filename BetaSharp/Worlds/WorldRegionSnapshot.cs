@@ -12,23 +12,16 @@ public class WorldRegionSnapshot : IBlockAccess, IDisposable
 {
     private readonly int _chunkX;
     private readonly int _chunkZ;
-    private readonly ChunkSnapshot[][] _chunks;
+    private readonly ChunkSnapshot[,] _chunks;
     private readonly float[] _lightTable;
     private readonly int _skylightSubtracted;
     private readonly BiomeSource _biomeSource;
     private bool _isLit;
     private readonly Dictionary<BlockPos, BlockEntity> _tileEntityCache = [];
 
-    public WorldRegionSnapshot(World world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
+    public WorldRegionSnapshot(World world, int minX, int var3, int minZ, int maxX, int var6, int maxZ)
     {
-        if (!BiomeSource.Pool.TryTake(out _biomeSource!))
-        {
-            _biomeSource = new(world);
-        }
-        else
-        {
-            _biomeSource.Restore(world);
-        }
+        _biomeSource = world.getBiomeSource();
 
         _chunkX = minX >> 4;
         _chunkZ = minZ >> 4;
@@ -38,22 +31,18 @@ public class WorldRegionSnapshot : IBlockAccess, IDisposable
         int width = maxChunkX - _chunkX + 1;
         int depth = maxChunkZ - _chunkZ + 1;
 
-        _chunks = new ChunkSnapshot[width][];
-        for (int i = 0; i < _chunks.Length; i++)
-        {
-            _chunks[i] = new ChunkSnapshot[depth];
-        }
+        _chunks = new ChunkSnapshot[width, depth];
 
         for (int cx = _chunkX; cx <= maxChunkX; ++cx)
         {
             for (int cz = _chunkZ; cz <= maxChunkZ; ++cz)
             {
                 Chunk originalChunk = world.GetChunk(cx, cz);
-                _chunks[cx - _chunkX][cz - _chunkZ] = new(originalChunk);
+                _chunks[cx - _chunkX, cz - _chunkZ] = new(originalChunk);
             }
         }
 
-        _lightTable = (float[])world.dimension.LightLevelToLuminance.Clone();
+        _lightTable = world.dimension.LightLevelToLuminance;
         _skylightSubtracted = world.ambientDarkness;
     }
 
@@ -65,10 +54,10 @@ public class WorldRegionSnapshot : IBlockAccess, IDisposable
         int chunkIdxZ = (z >> 4) - _chunkZ;
 
         if (chunkIdxX >= 0 && chunkIdxX < _chunks.Length &&
-            chunkIdxZ >= 0 && chunkIdxZ < _chunks[chunkIdxX].Length)
+            chunkIdxZ >= 0 && chunkIdxZ < _chunks.Length)
         {
-            ChunkSnapshot chunk = _chunks[chunkIdxX][chunkIdxZ];
-            return chunk == null ? 0 : chunk.getBlockID(x & 15, y, z & 15);
+            ChunkSnapshot chunk = _chunks[chunkIdxX, chunkIdxZ];
+            return chunk.getBlockID(x & 15, y, z & 15);
         }
 
         return 0;
@@ -86,7 +75,7 @@ public class WorldRegionSnapshot : IBlockAccess, IDisposable
 
         int chunkIdxX = (x >> 4) - _chunkX;
         int chunkIdxZ = (z >> 4) - _chunkZ;
-        return _chunks[chunkIdxX][chunkIdxZ].getBlockMetadata(x & 15, y, z & 15);
+        return _chunks[chunkIdxX, chunkIdxZ].getBlockMetadata(x & 15, y, z & 15);
     }
 
     public BlockEntity? getBlockEntity(int x, int y, int z)
@@ -103,10 +92,9 @@ public class WorldRegionSnapshot : IBlockAccess, IDisposable
         int chunkIdxZ = (z >> 4) - _chunkZ;
 
         if (chunkIdxX >= 0 && chunkIdxX < _chunks.Length &&
-            chunkIdxZ >= 0 && chunkIdxZ < _chunks[chunkIdxX].Length)
+            chunkIdxZ >= 0 && chunkIdxZ < _chunks.Length)
         {
-            ChunkSnapshot chunk = _chunks[chunkIdxX][chunkIdxZ];
-            if (chunk == null) return null;
+            ChunkSnapshot chunk = _chunks[chunkIdxX, chunkIdxZ];
 
             NBTTagCompound? nbt = chunk.GetTileEntityNbt(x & 15, y, z & 15);
             if (nbt != null)
@@ -116,7 +104,7 @@ public class WorldRegionSnapshot : IBlockAccess, IDisposable
                 {
                     _tileEntityCache[pos] = newEntity;
                     return newEntity;
-        }
+                }
             }
         }
 
@@ -163,7 +151,7 @@ public class WorldRegionSnapshot : IBlockAccess, IDisposable
         int chunkIdxX = (x >> 4) - _chunkX;
         int chunkIdxZ = (z >> 4) - _chunkZ;
 
-        ChunkSnapshot chunk = _chunks[chunkIdxX][chunkIdxZ];
+        ChunkSnapshot chunk = _chunks[chunkIdxX, chunkIdxZ];
 
         int lightValue = chunk.getBlockLightValue(x & 15, y, z & 15, _skylightSubtracted);
 
@@ -201,19 +189,14 @@ public class WorldRegionSnapshot : IBlockAccess, IDisposable
     {
         GC.SuppressFinalize(this);
 
-        if (_biomeSource != null)
+        foreach (ChunkSnapshot snapshot in _chunks)
         {
-            BiomeSource.Pool.Add(_biomeSource);
+            snapshot.Dispose();
         }
+    }
 
-        foreach (ChunkSnapshot[] column in _chunks)
-        {
-            if (column == null) continue;
-
-            foreach (ChunkSnapshot snapshot in column)
-            {
-                snapshot?.Dispose();
-            }
-        }
+    ~WorldRegionSnapshot()
+    {
+        Dispose();
     }
 }

@@ -1137,7 +1137,7 @@ public abstract class World : IBlockAccess
 
         int blockX = MathHelper.Floor(entity.x);
         int blockZ = MathHelper.Floor(entity.z);
-        float temperature = (float)getBiomeSource().GetTemperature(blockX, blockZ);
+        float temperature = (float)getBiomeSource().GetSkyTemperature(blockX, blockZ);
         int biomeSkyColorInt = getBiomeSource().GetBiome(blockX, blockZ).GetSkyColorByTemp(temperature);
 
         float red = (biomeSkyColorInt >> 16 & 255) / 255.0F;
