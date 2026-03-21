@@ -207,7 +207,7 @@ public class InventoryPlayer : IInventory
         }
     }
 
-    public ItemStack removeStack(int slotIndex, int amount)
+    public ItemStack? removeStack(int slotIndex, int amount)
     {
         ItemStack[] targetArray = main;
         if (slotIndex >= main.Length)

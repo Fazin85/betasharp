@@ -73,6 +73,7 @@ internal class BlockDispenser : BlockWithEntity
         {
             direction = 2;
         }
+
         if (isWestOpaque && !isEastOpaque)
         {
             direction = 5;
@@ -81,12 +82,13 @@ internal class BlockDispenser : BlockWithEntity
         {
             direction = 4;
         }
+
         @event.World.Writer.SetBlockMeta(x, y, z, direction);
     }
 
     public override int getTextureId(IBlockReader iBlockReader, int x, int y, int z, int side)
     {
-        if (side == 1 || side == 0)
+        if (side is 1 or 0)
         {
             return textureId + 17;
         }
@@ -119,21 +121,20 @@ internal class BlockDispenser : BlockWithEntity
         int dirX = 0;
         int dirZ = 0;
 
-        if (meta == 3)
+        switch (meta)
         {
-            dirZ = 1;
-        }
-        else if (meta == 2)
-        {
-            dirZ = -1;
-        }
-        else if (meta == 5)
-        {
-            dirX = 1;
-        }
-        else
-        {
-            dirX = -1;
+            case 3:
+                dirZ = 1;
+                break;
+            case 2:
+                dirZ = -1;
+                break;
+            case 5:
+                dirX = 1;
+                break;
+            default:
+                dirX = -1;
+                break;
         }
 
         BlockEntityDispenser? dispenser = @event.World.Entities.GetBlockEntity<BlockEntityDispenser>(@event.X, @event.Y, @event.Z);
@@ -142,7 +143,7 @@ internal class BlockDispenser : BlockWithEntity
             return;
         }
 
-        ItemStack itemStack = dispenser.getItemToDispose();
+        ItemStack? itemStack = dispenser.getItemToDispose();
         double spawnX = @event.X + dirX * 0.6D + 0.5D;
         double spawnY = @event.Y + 0.5D;
         double spawnZ = @event.Z + dirZ * 0.6D + 0.5D;
@@ -150,49 +151,48 @@ internal class BlockDispenser : BlockWithEntity
         if (itemStack == null)
         {
             @event.World.Broadcaster.WorldEvent(1001, @event.X, @event.Y, @event.Z, 0);
+            return;
+        }
+
+        if (itemStack.itemId == Item.ARROW.id)
+        {
+            EntityArrow arrow = new(@event.World, spawnX, spawnY, spawnZ);
+            arrow.setArrowHeading(dirX, 0.1F, dirZ, 1.1F, 6.0F);
+            arrow.doesArrowBelongToPlayer = true;
+            @event.World.Entities.SpawnEntity(arrow);
+            @event.World.Broadcaster.WorldEvent(1002, @event.X, @event.Y, @event.Z, 0);
+        }
+        else if (itemStack.itemId == Item.Egg.id)
+        {
+            EntityEgg egg = new(@event.World, spawnX, spawnY, spawnZ);
+            egg.setEggHeading(dirX, 0.1F, dirZ, 1.1F, 6.0F);
+            @event.World.Entities.SpawnEntity(egg);
+            @event.World.Broadcaster.WorldEvent(1002, @event.X, @event.Y, @event.Z, 0);
+        }
+        else if (itemStack.itemId == Item.Snowball.id)
+        {
+            EntitySnowball snowball = new(@event.World, spawnX, spawnY, spawnZ);
+            snowball.setSnowballHeading(dirX, 0.1F, dirZ, 1.1F, 6.0F);
+            @event.World.Entities.SpawnEntity(snowball);
+            @event.World.Broadcaster.WorldEvent(1002, @event.X, @event.Y, @event.Z, 0);
         }
         else
         {
-            if (itemStack.itemId == Item.ARROW.id)
-            {
-                EntityArrow arrow = new(@event.World, spawnX, spawnY, spawnZ);
-                arrow.setArrowHeading(dirX, 0.1F, dirZ, 1.1F, 6.0F);
-                arrow.doesArrowBelongToPlayer = true;
-                @event.World.Entities.SpawnEntity(arrow);
-                @event.World.Broadcaster.WorldEvent(1002, @event.X, @event.Y, @event.Z, 0);
-            }
-            else if (itemStack.itemId == Item.Egg.id)
-            {
-                EntityEgg egg = new(@event.World, spawnX, spawnY, spawnZ);
-                egg.setEggHeading(dirX, 0.1F, dirZ, 1.1F, 6.0F);
-                @event.World.Entities.SpawnEntity(egg);
-                @event.World.Broadcaster.WorldEvent(1002, @event.X, @event.Y, @event.Z, 0);
-            }
-            else if (itemStack.itemId == Item.Snowball.id)
-            {
-                EntitySnowball snowball = new(@event.World, spawnX, spawnY, spawnZ);
-                snowball.setSnowballHeading(dirX, 0.1F, dirZ, 1.1F, 6.0F);
-                @event.World.Entities.SpawnEntity(snowball);
-                @event.World.Broadcaster.WorldEvent(1002, @event.X, @event.Y, @event.Z, 0);
-            }
-            else
-            {
-                EntityItem item = new(@event.World, spawnX, spawnY - 0.3D, spawnZ, itemStack);
-                double randomVelocity = Random.Shared.NextDouble() * 0.1D + 0.2D;
-                item.velocityX = dirX * randomVelocity;
-                item.velocityY = 0.2F;
-                item.velocityZ = dirZ * randomVelocity;
+            EntityItem item = new(@event.World, spawnX, spawnY - 0.3D, spawnZ, itemStack);
+            double randomVelocity = Random.Shared.NextDouble() * 0.1D + 0.2D;
+            item.velocityX = dirX * randomVelocity;
+            item.velocityY = 0.2F;
+            item.velocityZ = dirZ * randomVelocity;
 
-                item.velocityX += @event.World.Random.NextGaussian() * 0.0075D * 6.0D;
-                item.velocityY += @event.World.Random.NextGaussian() * 0.0075D * 6.0D;
-                item.velocityZ += @event.World.Random.NextGaussian() * 0.0075D * 6.0D;
+            item.velocityX += @event.World.Random.NextGaussian() * 0.0075D * 6.0D;
+            item.velocityY += @event.World.Random.NextGaussian() * 0.0075D * 6.0D;
+            item.velocityZ += @event.World.Random.NextGaussian() * 0.0075D * 6.0D;
 
-                @event.World.Entities.SpawnEntity(item);
-                @event.World.Broadcaster.WorldEvent(1000, @event.X, @event.Y, @event.Z, 0);
-            }
-
-            @event.World.Broadcaster.WorldEvent(2000, @event.X, @event.Y, @event.Z, dirX + 1 + (dirZ + 1) * 3);
+            @event.World.Entities.SpawnEntity(item);
+            @event.World.Broadcaster.WorldEvent(1000, @event.X, @event.Y, @event.Z, 0);
         }
+
+        @event.World.Broadcaster.WorldEvent(2000, @event.X, @event.Y, @event.Z, dirX + 1 + (dirZ + 1) * 3);
     }
 
     public override void neighborUpdate(OnTickEvent @event)
@@ -227,7 +227,7 @@ internal class BlockDispenser : BlockWithEntity
 
             for (int slotIndex = 0; slotIndex < dispenser.size(); ++slotIndex)
             {
-                ItemStack stack = dispenser.getStack(slotIndex);
+                ItemStack? stack = dispenser.getStack(slotIndex);
                 if (stack == null) continue;
 
                 float offsetX = random.NextFloat() * 0.8F + 0.1F;

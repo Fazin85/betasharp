@@ -26,7 +26,7 @@ public class BlockEntityFurnace : BlockEntity, IInventory
         return inventory[slot];
     }
 
-    public ItemStack removeStack(int slot, int stack)
+    public ItemStack? removeStack(int slot, int stack)
     {
         if (inventory[slot] != null)
         {

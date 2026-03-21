@@ -906,7 +906,7 @@ public class EntityMinecart : Entity, IInventory
         return cargoItems[slotIndex];
     }
 
-    public ItemStack removeStack(int slotIndex, int amount)
+    public ItemStack? removeStack(int slotIndex, int amount)
     {
         if (cargoItems[slotIndex] != null)
         {

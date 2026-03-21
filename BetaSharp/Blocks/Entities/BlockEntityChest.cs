@@ -20,7 +20,7 @@ internal class BlockEntityChest : BlockEntity, IInventory
         return inventory[stackIndex];
     }
 
-    public ItemStack removeStack(int slot, int amount)
+    public ItemStack? removeStack(int slot, int amount)
     {
         if (inventory[slot] != null)
         {

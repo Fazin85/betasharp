@@ -9,36 +9,37 @@ namespace BetaSharp.Blocks.Entities;
 public class BlockEntityDispenser : BlockEntity, IInventory
 {
     public override BlockEntityType Type => BlockEntity.Dispenser;
-    private ItemStack[] inventory = new ItemStack[9];
-    private readonly JavaRandom random = new();
+    private ItemStack?[] _itemStacks = new ItemStack[9];
+    private readonly JavaRandom _random = new();
 
     public int size()
     {
         return 9;
     }
 
-    public ItemStack getStack(int slot)
+    public ItemStack? getStack(int slot)
     {
-        return inventory[slot];
+        return _itemStacks[slot];
     }
 
-    public ItemStack removeStack(int slot, int amount)
+    public ItemStack? removeStack(int slot, int amount)
     {
-        if (inventory[slot] != null)
+        var item = _itemStacks[slot];
+        if (item != null)
         {
             ItemStack removedStack;
-            if (inventory[slot].count <= amount)
+            if (item.count <= amount)
             {
-                removedStack = inventory[slot];
-                inventory[slot] = null;
+                removedStack = item;
+                _itemStacks[slot] = null;
                 markDirty();
                 return removedStack;
             }
 
-            removedStack = inventory[slot].split(amount);
-            if (inventory[slot].count == 0)
+            removedStack = item.split(amount);
+            if (item.count == 0)
             {
-                inventory[slot] = null;
+                _itemStacks[slot] = null;
             }
 
             markDirty();
@@ -50,7 +51,7 @@ public class BlockEntityDispenser : BlockEntity, IInventory
 
     public void setStack(int slot, ItemStack? stack)
     {
-        inventory[slot] = stack;
+        _itemStacks[slot] = stack;
         if (stack != null && stack.count > getMaxCountPerStack())
         {
             stack.count = getMaxCountPerStack();
@@ -74,14 +75,14 @@ public class BlockEntityDispenser : BlockEntity, IInventory
         return World.Entities.GetBlockEntity<BlockEntityDispenser>(X, Y, Z) == this && player.getSquaredDistance(X + 0.5D, Y + 0.5D, Z + 0.5D) <= 64.0D;
     }
 
-    public ItemStack getItemToDispose()
+    public ItemStack? getItemToDispose()
     {
         int selectedSlot = -1;
         int nonNullCount = 1;
 
-        for (int slotIndex = 0; slotIndex < inventory.Length; ++slotIndex)
+        for (int slotIndex = 0; slotIndex < _itemStacks.Length; ++slotIndex)
         {
-            if (inventory[slotIndex] != null && random.NextInt(nonNullCount++) == 0)
+            if (_itemStacks[slotIndex] != null && _random.NextInt(nonNullCount++) == 0)
             {
                 selectedSlot = slotIndex;
             }
@@ -99,15 +100,15 @@ public class BlockEntityDispenser : BlockEntity, IInventory
     {
         base.readNbt(nbt);
         NBTTagList itemList = nbt.GetTagList("Items");
-        inventory = new ItemStack[size()];
+        _itemStacks = new ItemStack[size()];
 
         for (int itemIndex = 0; itemIndex < itemList.TagCount(); ++itemIndex)
         {
             NBTTagCompound itemTag = (NBTTagCompound)itemList.TagAt(itemIndex);
             int slotIndex = itemTag.GetByte("Slot") & 255;
-            if (slotIndex >= 0 && slotIndex < inventory.Length)
+            if (slotIndex >= 0 && slotIndex < _itemStacks.Length)
             {
-                inventory[slotIndex] = new ItemStack(itemTag);
+                _itemStacks[slotIndex] = new ItemStack(itemTag);
             }
         }
     }
@@ -117,15 +118,16 @@ public class BlockEntityDispenser : BlockEntity, IInventory
         base.writeNbt(nbt);
         NBTTagList itemList = new();
 
-        for (int slotIndex = 0; slotIndex < inventory.Length; ++slotIndex)
+
+        for (int slotIndex = 0; slotIndex < _itemStacks.Length; ++slotIndex)
         {
-            if (inventory[slotIndex] != null)
-            {
-                NBTTagCompound itemTag = new();
-                itemTag.SetByte("Slot", (sbyte)slotIndex);
-                inventory[slotIndex].writeToNBT(itemTag);
-                itemList.SetTag(itemTag);
-            }
+            var itemStack = _itemStacks[slotIndex];
+            if (itemStack == null) continue;
+
+            NBTTagCompound itemTag = new();
+            itemTag.SetByte("Slot", (sbyte)slotIndex);
+            itemStack.writeToNBT(itemTag);
+            itemList.SetTag(itemTag);
         }
 
         nbt.SetTag("Items", itemList);
