@@ -387,9 +387,9 @@ public class GameRenderer
         _client.textureManager.BindTexture(_client.textureManager.GetTextureId("/terrain.png"));
         Lighting.turnOff();
 
-        Profiler.Start("sortAndRender");
-        worldRenderer.sortAndRender(entity, 0, (double)tickDelta, frustrumCuller);
-        Profiler.Stop("sortAndRender");
+        Profiler.PushGroup("RenderChunks");
+        worldRenderer.RenderChunks(entity, (double)tickDelta, frustrumCuller, false);
+        Profiler.PopGroup();
 
         GLManager.GL.ShadeModel(GLEnum.Flat);
         Lighting.turnOn();
@@ -423,13 +423,13 @@ public class GameRenderer
         GLManager.GL.Disable(GLEnum.CullFace);
         _client.textureManager.BindTexture(_client.textureManager.GetTextureId("/terrain.png"));
 
-        Profiler.Start("sortAndRender2");
+        Profiler.PushGroup("RenderChunks (transparent)");
 
-        worldRenderer.sortAndRender(entity, 1, tickDelta, frustrumCuller);
+        worldRenderer.RenderChunks(entity, tickDelta, frustrumCuller, true);
 
         GLManager.GL.ShadeModel(GLEnum.Flat);
 
-        Profiler.Stop("sortAndRender2");
+        Profiler.PopGroup();
 
         //TODO: SELCTION BOX/BLOCK BREAKING VISUALIZATON DON'T APPEAR PROPERLY MOST OF THE TIME, SAME WITH ENTITY SHADOWS. VIEW BOBBING MAKES ENTITES BOB UP AND DOWN
 

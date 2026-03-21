@@ -201,6 +201,7 @@ public class ChunkRenderer : IChunkVisibilityVisitor
             ChunksRendered = _visibleRenderers.Count;
         }
 
+        Profiler.Start("RenderVisible");
         int translucentCount = 0;
         foreach (SubChunkRenderer renderer in _visibleRenderers)
         {
@@ -220,11 +221,17 @@ public class ChunkRenderer : IChunkVisibilityVisitor
                 _translucentRenderers.Add(renderer);
             }
         }
+        Profiler.Stop("RenderVisible");
 
         TranslucentMeshes = translucentCount;
 
+        Profiler.Start("ProcessUpdates");
         ProcessUpdates();
+        Profiler.Stop("ProcessUpdates");
+
+        Profiler.Start("LoadNewMeshes");
         LoadNewMeshes(renderParams.ViewPos);
+        Profiler.Stop("LoadNewMeshes");
 
         GLManager.GL.UseProgram(0);
         Core.VertexArray.Unbind();
