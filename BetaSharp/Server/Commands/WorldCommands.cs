@@ -1,7 +1,7 @@
 using BetaSharp.Entities;
 using BetaSharp.Rules;
+using BetaSharp.Worlds.Core;
 using BetaSharp.Server.Command;
-using BetaSharp.Worlds;
 
 namespace BetaSharp.Server.Commands;
 
@@ -30,11 +30,11 @@ internal static class WorldCommands
                 ServerWorld world = server.worlds[i];
                 if (mode == "add")
                 {
-                    world.synchronizeTimeAndUpdates(world.getTime() + timeValue);
+                    world.SetTime(world.GetTime() + timeValue);
                 }
                 else
                 {
-                    world.synchronizeTimeAndUpdates(timeValue);
+                    world.SetTime(timeValue);
                 }
             }
 
@@ -48,7 +48,7 @@ internal static class WorldCommands
         {
             for (int i = 0; i < server.worlds.Length; i++)
             {
-                server.worlds[i].synchronizeTimeAndUpdates(namedTime);
+                server.worlds[i].SetTime(namedTime);
             }
 
             output.SendMessage($"Time set to {args[0]} ({namedTime})");
@@ -71,17 +71,17 @@ internal static class WorldCommands
             switch (weather)
             {
                 case "clear":
-                    world.globalEntities.Clear();
-                    world.getProperties().IsRaining = false;
-                    world.getProperties().IsThundering = false;
+                    world.Entities.GlobalEntities.Clear();
+                    world.Properties.IsRaining = false;
+                    world.Properties.IsThundering = false;
                     break;
                 case "rain":
-                    world.getProperties().IsRaining = true;
-                    world.getProperties().IsThundering = false;
+                    world.Properties.IsRaining = true;
+                    world.Properties.IsThundering = false;
                     break;
                 case "storm":
-                    world.getProperties().IsRaining = true;
-                    world.getProperties().IsThundering = true;
+                    world.Properties.IsRaining = true;
+                    world.Properties.IsThundering = true;
                     break;
                 default:
                     output.SendMessage("Unknown weather type. Use: clear, rain, or storm");
@@ -94,7 +94,7 @@ internal static class WorldCommands
 
     public static void Seed(BetaSharpServer server, string senderName, string[] args, ICommandOutput output)
     {
-        long seed = server.worlds[0].getSeed();
+        long seed = server.worlds[0].Seed;
         output.SendMessage($"Seed: {seed}");
     }
 
@@ -155,7 +155,7 @@ internal static class WorldCommands
         for (int w = 0; w < server.worlds.Length; w++)
         {
             ServerWorld world = server.worlds[w];
-            var entities = new List<Entity>(world.entities);
+            var entities = new List<Entity>(world.Entities.Entities);
 
             foreach (Entity entity in entities)
             {
@@ -174,7 +174,7 @@ internal static class WorldCommands
 
                 if (shouldKill)
                 {
-                    world.Remove(entity);
+                    world.Entities.Remove(entity);
                     count++;
                 }
             }

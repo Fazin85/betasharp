@@ -29,7 +29,7 @@ internal class AdminCommands
 
         for (int i = 0; i < server.worlds.Length; i++)
         {
-            server.worlds[i].saveWithLoadingDisplay(true, null);
+            server.worlds[i].SaveWithLoadingDisplay(true, null);
         }
 
         LogCommand(server, senderName, "Save complete.");

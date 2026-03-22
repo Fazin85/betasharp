@@ -686,8 +686,8 @@ public class GuiIngame : Gui
         int blockX = _game.objectMouseOver.BlockX;
         int blockY = _game.objectMouseOver.BlockY;
         int blockZ = _game.objectMouseOver.BlockZ;
-        int blockId = _game.world.getBlockId(blockX, blockY, blockZ);
-        int blockMeta = _game.world.getBlockMeta(blockX, blockY, blockZ);
+        int blockId = _game.world.Reader.GetBlockId(blockX, blockY, blockZ);
+        int blockMeta = _game.world.Reader.GetBlockMeta(blockX, blockY, blockZ);
         string sideName = GetTargetedSideName(_game.objectMouseOver.Side);
 
         string blockName = "Unknown";
